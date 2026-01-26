@@ -1,0 +1,10 @@
+Assemblies/
+Libs/*.dll
+.claude/
+decompiled/
+external/
+Source/**/obj/
+
+# IDE files
+*.code-workspace
+*.sln
