@@ -30,6 +30,58 @@ namespace RecoveryProcessTracker.Core
         }
     }
 
+    public class BedRestInterval : IExposable
+    {
+        public int StartTick;
+        public int EndTick;
+
+        public BedRestInterval() { }
+
+        public BedRestInterval(int startTick)
+        {
+            StartTick = startTick;
+            EndTick = -1; // -1 means ongoing
+        }
+
+        public void ExposeData()
+        {
+            Scribe_Values.Look(ref StartTick, "startTick");
+            Scribe_Values.Look(ref EndTick, "endTick", -1);
+        }
+    }
+
+    public class TendingEvent : IExposable
+    {
+        public int Tick;
+        public string DoctorName;
+        public string MedicineName;
+        public string MedicineDefName; // For looking up the icon
+        public float Quality;
+        public int DoctorSkill;
+
+        public TendingEvent() { }
+
+        public TendingEvent(int tick, string doctorName, string medicineName, string medicineDefName, float quality, int doctorSkill)
+        {
+            Tick = tick;
+            DoctorName = doctorName;
+            MedicineName = medicineName;
+            MedicineDefName = medicineDefName;
+            Quality = quality;
+            DoctorSkill = doctorSkill;
+        }
+
+        public void ExposeData()
+        {
+            Scribe_Values.Look(ref Tick, "tick");
+            Scribe_Values.Look(ref DoctorName, "doctorName");
+            Scribe_Values.Look(ref MedicineName, "medicineName");
+            Scribe_Values.Look(ref MedicineDefName, "medicineDefName");
+            Scribe_Values.Look(ref Quality, "quality");
+            Scribe_Values.Look(ref DoctorSkill, "doctorSkill");
+        }
+    }
+
     /// <summary>
     /// Tracks historical data for a specific disease instance.
     /// </summary>
@@ -37,6 +89,8 @@ namespace RecoveryProcessTracker.Core
     {
         public int HediffLoadId;
         public List<DiseaseDataPoint> DataPoints = new List<DiseaseDataPoint>();
+        public List<BedRestInterval> BedRestIntervals = new List<BedRestInterval>();
+        public List<TendingEvent> TendingEvents = new List<TendingEvent>();
 
         // Track the tick when we started recording (for relative time display)
         public int StartTick;
@@ -72,15 +126,52 @@ namespace RecoveryProcessTracker.Core
             }
         }
 
+        public void RecordTendEvent(int tick, string doctorName, string medicineName, string medicineDefName, float quality, int doctorSkill)
+        {
+            TendingEvents.Add(new TendingEvent(tick, doctorName, medicineName, medicineDefName, quality, doctorSkill));
+        }
+
+        public void UpdateBedRest(int tick, bool inBed)
+        {
+            // Get the last interval if it exists
+            BedRestInterval currentInterval = null;
+            if (BedRestIntervals.Count > 0)
+            {
+                currentInterval = BedRestIntervals[BedRestIntervals.Count - 1];
+            }
+
+            if (inBed)
+            {
+                // If we're not currently tracking an open interval, start one
+                if (currentInterval == null || currentInterval.EndTick != -1)
+                {
+                    BedRestIntervals.Add(new BedRestInterval(tick));
+                }
+                // If we have an open interval, it just continues (no action needed)
+            }
+            else
+            {
+                // If we have an open interval, close it
+                if (currentInterval != null && currentInterval.EndTick == -1)
+                {
+                    currentInterval.EndTick = tick;
+                }
+            }
+        }
+
         public void ExposeData()
         {
             Scribe_Values.Look(ref HediffLoadId, "hediffLoadId");
             Scribe_Values.Look(ref StartTick, "startTick");
             Scribe_Collections.Look(ref DataPoints, "dataPoints", LookMode.Deep);
+            Scribe_Collections.Look(ref BedRestIntervals, "bedRestIntervals", LookMode.Deep);
+            Scribe_Collections.Look(ref TendingEvents, "tendingEvents", LookMode.Deep);
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
                 DataPoints ??= new List<DiseaseDataPoint>();
+                BedRestIntervals ??= new List<BedRestInterval>();
+                TendingEvents ??= new List<TendingEvent>();
                 if (DataPoints.Count > 0)
                 {
                     lastRecordedTick = DataPoints[DataPoints.Count - 1].Tick;
@@ -140,9 +231,22 @@ namespace RecoveryProcessTracker.Core
                         if (immunizable == null) continue;
 
                         RecordDiseaseData(hediff, currentTick);
+                        RecordBedRestData(hediff, currentTick, pawn);
                     }
                 }
             }
+        }
+
+        private void RecordBedRestData(Hediff hediff, int currentTick, Pawn pawn)
+        {
+            int loadId = hediff.loadID;
+            if (!histories.TryGetValue(loadId, out var history)) return;
+
+            // Simple check: is the pawn in bed right now?
+            // We could check for medical bed specifically, or just any bed (resting)
+            // HediffComp_Immunizable checks if pawn is in bed for immunity gain
+            bool inBed = pawn.InBed(); 
+            history.UpdateBedRest(currentTick, inBed);
         }
 
         private void RecordDiseaseData(Hediff hediff, int currentTick)
@@ -159,6 +263,20 @@ namespace RecoveryProcessTracker.Core
             }
 
             history.RecordDataPoint(currentTick, prognosis.CurrentImmunity, prognosis.CurrentSeverity);
+        }
+
+        /// <summary>
+        /// Record a tending event for a specific disease.
+        /// </summary>
+        public void RecordTendEvent(Hediff hediff, string doctorName, string medicineName, string medicineDefName, float quality, int doctorSkill)
+        {
+            if (hediff == null) return;
+
+            var history = GetOrCreateHistory(hediff);
+            if (history != null)
+            {
+                history.RecordTendEvent(Find.TickManager.TicksGame, doctorName, medicineName, medicineDefName, quality, doctorSkill);
+            }
         }
 
         /// <summary>
