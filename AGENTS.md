@@ -44,7 +44,9 @@ There is the source code for a similar mod to ours in "decompiled\AmIGonnaMakeIt
 - **DiseaseTracker** (`Source/RecoveryProcessTracker/Core/DiseaseTracker.cs`):
     - A `GameComponent` that tracks disease progression history for all pawns.
     - Maintains a dictionary of `DiseaseHistory` objects keyed by hediff load ID.
-    - Updates every ~1 hour (2500 ticks) to record immunity and severity data points.
+    - Tracks two types of diseases:
+        - **Immunizable diseases** (Plague, Flu, etc.): Records immunity/severity data points every ~1 hour (2500 ticks).
+        - **Cumulative tend diseases** (Gut Worms, Muscle Parasites): Tracks tend events only (no immunity/severity race).
     - Handles data persistence (Save/Load) via `ExposeData`.
 
 - **PrognosisCalculator** (`Source/RecoveryProcessTracker/Core/PrognosisCalculator.cs`):
@@ -68,15 +70,33 @@ There is the source code for a similar mod to ours in "decompiled\AmIGonnaMakeIt
         - Tooltip-like behavior: positions itself near the mouse/tooltip and closes when the tooltip updates.
     - **IMPORTANT: No tooltips allowed** - This window acts as a companion to the game's disease tooltip. When the mouse moves off the disease entry in the health tab, this window closes. Therefore, `TooltipHandler.TipRegion()` cannot be used for interactive elements within this window since users cannot hover over them without triggering the window to close.
 
+- **CumulativeTendWindow** (`Source/RecoveryProcessTracker/UI/CumulativeTendWindow.cs`):
+    - A `Window` subclass that displays cumulative tend progress for diseases like Gut Worms and Muscle Parasites.
+    - These diseases cure through accumulated tend quality (typically 300% total) rather than immunity racing.
+    - Features:
+        - Progress display mirroring in-game tooltip format (e.g., "Progress: 53.2% / 300%").
+        - Visual progress bar showing completion percentage.
+        - Recent tends list (up to 3) with medicine icon, quality added, and doctor name.
+        - Time and tend count estimates based on historical average tend quality and interval.
+    - Uses reflection to access private `totalTendQuality` field in `HediffComp_TendDuration`.
+    - Same tooltip-companion behavior as `DiseaseGraphWindow`.
+
 - **TooltipCompanionPatch** (`Source/RecoveryProcessTracker/Patches/TooltipCompanionPatch.cs`):
     - Harmony patch on `HediffComp_Immunizable.CompTipStringExtra`.
     - Detects when a disease tooltip is shown and automatically opens/positions the `DiseaseGraphWindow`.
+
+- **CumulativeTendPatch** (`Source/RecoveryProcessTracker/Patches/CumulativeTendPatch.cs`):
+    - Harmony patch on `HediffComp_TendDuration.CompTipStringExtra`.
+    - Detects cumulative tend diseases (where `TProps.disappearsAtTotalTendQuality >= 0`).
+    - Skips diseases that also have `HediffComp_Immunizable` (handled by `TooltipCompanionPatch`).
+    - Opens/positions the `CumulativeTendWindow` for qualifying diseases.
 
 - **TendUtilityPatch** (`Source/RecoveryProcessTracker/Patches/TendUtilityPatch.cs`):
     - Harmony patches to capture tending events for diseases.
     - `TendingContext`: Static class that holds context during a tend operation (doctor name, medicine used, skill level).
     - `TendUtility_DoTend_Patch`: Prefix/Postfix on `TendUtility.DoTend` to set up and tear down tending context.
     - `Hediff_Tended_Patch`: Postfix on `HediffWithComps.Tended` to record the tend event.
+    - Records tends for both immunizable diseases AND cumulative tend diseases (where `TProps.disappearsAtTotalTendQuality >= 0`).
     - **Note on tend quality**: The `quality` parameter passed to `Hediff.Tended` is the BASE quality. The actual displayed quality includes ±25% random variance applied in `HediffComp_TendDuration.CompTended`. Always read the final quality from `HediffComp_TendDuration.tendQuality` after tending completes.
 
 ### Data Structures (in DiseaseTracker.cs)
@@ -103,9 +123,11 @@ Source/RecoveryProcessTracker/
 │   ├── DiseaseTracker.cs               # Data tracking & persistence
 │   └── PrognosisCalculator.cs          # Math & prediction logic
 ├── UI/
-│   └── DiseaseGraphWindow.cs           # Graph rendering
+│   ├── DiseaseGraphWindow.cs           # Graph rendering for immunizable diseases
+│   └── CumulativeTendWindow.cs         # Progress display for cumulative tend diseases
 └── Patches/
-    ├── TooltipCompanionPatch.cs        # Harmony patch for tooltip integration
+    ├── TooltipCompanionPatch.cs        # Harmony patch for immunizable disease tooltips
+    ├── CumulativeTendPatch.cs          # Harmony patch for cumulative tend disease tooltips
     └── TendUtilityPatch.cs             # Harmony patch for capturing tend events
 ```
 

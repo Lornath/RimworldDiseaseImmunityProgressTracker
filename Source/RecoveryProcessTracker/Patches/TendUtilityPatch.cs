@@ -69,12 +69,17 @@ namespace RecoveryProcessTracker.Patches
             // Only record if we are in a managed tending context
             if (!TendingContext.Active) return;
 
-            // Only track immunizable diseases that we are monitoring
+            // Record for immunizable diseases OR cumulative tend diseases
             var immunizable = __instance.TryGetComp<HediffComp_Immunizable>();
-            if (immunizable == null) return;
+            var tendComp = __instance.TryGetComp<HediffComp_TendDuration>();
+
+            bool isImmunizable = immunizable != null;
+            bool isCumulativeTend = tendComp != null &&
+                tendComp.TProps.disappearsAtTotalTendQuality >= 0;
+
+            if (!isImmunizable && !isCumulativeTend) return;
 
             // Get the actual tend quality from the comp (includes random variance)
-            var tendComp = __instance.TryGetComp<HediffComp_TendDuration>();
             float actualQuality = tendComp?.tendQuality ?? 0f;
 
             if (__instance.pawn != null && __instance.pawn.IsColonist)
