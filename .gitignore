@@ -4,6 +4,7 @@ Libs/*.dll
 decompiled/
 external/
 Source/**/obj/
+docs/*.pdf
 
 # IDE files
 *.code-workspace
