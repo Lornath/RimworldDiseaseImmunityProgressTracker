@@ -13,6 +13,7 @@ namespace RecoveryProcessTracker.UI
     /// A tooltip companion window that displays cumulative tend progress for diseases
     /// like Gut Worms and Muscle Parasites that cure through accumulated tend quality.
     /// </summary>
+    [StaticConstructorOnStartup]
     public class CumulativeTendWindow : Window
     {
         private readonly Hediff hediff;
@@ -39,7 +40,7 @@ namespace RecoveryProcessTracker.UI
         // Fallback icon for tending without medicine
         private static readonly Texture2D NoMedsIcon = ContentFinder<Texture2D>.Get("UI/Icons/Medical/NoMeds");
 
-        public override Vector2 InitialSize => new Vector2(280f, 200f);
+        public override Vector2 InitialSize => new Vector2(280f, 210f);
 
         protected override float Margin => 0f;
 
@@ -112,8 +113,8 @@ namespace RecoveryProcessTracker.UI
             float currentPct = totalTendQuality * 100f;
             float targetPct = targetQuality * 100f;
             string progressText = $"Progress: {currentPct:0.#}% / {targetPct:0.#}%";
-            Widgets.Label(new Rect(0, yOffset, inRect.width, 20f), progressText);
-            yOffset += 22f;
+            Widgets.Label(new Rect(0, yOffset, inRect.width, 24f), progressText);
+            yOffset += 26f;
 
             // Draw progress bar
             Rect progressBarRect = new Rect(0, yOffset, inRect.width, ProgressBarHeight);

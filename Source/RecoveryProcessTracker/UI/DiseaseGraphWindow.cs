@@ -9,6 +9,7 @@ namespace RecoveryProcessTracker.UI
     /// A tooltip companion window that displays a graphical timeline of disease progression vs immunity gain.
     /// Opens automatically when hovering over an immunizable disease in the health tab.
     /// </summary>
+    [StaticConstructorOnStartup]
     public class DiseaseGraphWindow : Window
     {
         private readonly Hediff hediff;
@@ -48,7 +49,7 @@ namespace RecoveryProcessTracker.UI
         // Fallback icon for tending without medicine
         private static readonly Texture2D NoMedsIcon = ContentFinder<Texture2D>.Get("UI/Icons/Medical/NoMeds");
 
-        public override Vector2 InitialSize => new Vector2(320f, 264f); // Extra height for tend info below x-axis
+        public override Vector2 InitialSize => new Vector2(380f, 264f); // Extra height for tend info below x-axis
 
         public DiseaseGraphWindow(Hediff hediff)
         {
@@ -205,7 +206,7 @@ namespace RecoveryProcessTracker.UI
                 string marginInfo = "";
                 if (!float.IsInfinity(prognosis.MarginDays) && prognosis.MarginDays > 0 && marginPercent > 0)
                 {
-                    marginInfo = $" ({FormatDays(prognosis.MarginDays)}/{marginPercent:P0} margin)";
+                    marginInfo = $" ({FormatDays(prognosis.MarginDays)}/{marginPercent * 100:0}% margin)";
                 }
                 verdictText = $"Will survive - Immune in {FormatDays(prognosis.DaysUntilImmune)}{marginInfo}";
                 verdictColor = SurviveColor;
@@ -221,7 +222,7 @@ namespace RecoveryProcessTracker.UI
                 string shortfallInfo = "";
                 if (!float.IsInfinity(shortfallDays) && shortfallDays > 0 && shortfallPercent > 0)
                 {
-                    shortfallInfo = $" ({FormatDays(shortfallDays)}/{shortfallPercent:P0} short)";
+                    shortfallInfo = $" ({FormatDays(shortfallDays)}/{shortfallPercent * 100:0}% short)";
                 }
                 verdictText = $"Death in {FormatDays(prognosis.DaysUntilDeath)}{shortfallInfo}";
                 verdictColor = RiskColor;
@@ -430,7 +431,7 @@ namespace RecoveryProcessTracker.UI
                 // Draw quality percentage below the icon
                 Text.Font = GameFont.Tiny;
                 Text.Anchor = TextAnchor.UpperCenter;
-                string qualityText = $"{tend.Quality:P0}";
+                string qualityText = $"{tend.Quality * 100:0}%";
                 Rect qualityRect = new Rect(x - 20f, tendInfoY + iconSize - 2f, 40f, 16f);
                 Widgets.Label(qualityRect, qualityText);
                 Text.Anchor = TextAnchor.UpperLeft;
@@ -624,14 +625,14 @@ namespace RecoveryProcessTracker.UI
             if (prognosis.IsValid)
             {
                 // Immunity legend with current value and rate
-                string immRate = prognosis.ImmunityPerDay > 0 ? $"+{prognosis.ImmunityPerDay:P0}/d" : $"{prognosis.ImmunityPerDay:P0}/d";
-                string immText = $"Imm: {prognosis.CurrentImmunity:P0} ({immRate})";
+                string immRate = prognosis.ImmunityPerDay > 0 ? $"+{prognosis.ImmunityPerDay * 100:0}%/d" : $"{prognosis.ImmunityPerDay * 100:0}%/d";
+                string immText = $"Imm: {prognosis.CurrentImmunity * 100:0}% ({immRate})";
                 Widgets.DrawBoxSolid(new Rect(legendArea.x, legendArea.y + 2f, 12f, 3f), ImmunityColor);
                 Widgets.Label(new Rect(legendArea.x + 15f, legendArea.y - 2f, 140f, 16f), immText);
 
                 // Severity legend with current value and rate
-                string sevRate = prognosis.SeverityPerDay > 0 ? $"+{prognosis.SeverityPerDay:P0}/d" : $"{prognosis.SeverityPerDay:P0}/d";
-                string sevText = $"Sev: {prognosis.CurrentSeverity:P0} ({sevRate})";
+                string sevRate = prognosis.SeverityPerDay > 0 ? $"+{prognosis.SeverityPerDay * 100:0}%/d" : $"{prognosis.SeverityPerDay * 100:0}%/d";
+                string sevText = $"Sev: {prognosis.CurrentSeverity * 100:0}% ({sevRate})";
                 Widgets.DrawBoxSolid(new Rect(legendArea.x, legendArea.y + 16f, 12f, 3f), SeverityColor);
                 Widgets.Label(new Rect(legendArea.x + 15f, legendArea.y + 12f, 140f, 16f), sevText);
 

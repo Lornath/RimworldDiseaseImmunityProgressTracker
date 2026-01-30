@@ -86,12 +86,45 @@ namespace RecoveryProcessTracker.Core
     }
 
     /// <summary>
+    /// A data point recording severity and time remaining for time-based diseases.
+    /// </summary>
+    public class TimeBasedDataPoint : IExposable
+    {
+        public int Tick;
+        public float Severity;           // Current severity (0-1)
+        public int TicksRemaining;       // Ticks until cure
+        public int TotalDuration;        // Original duration when disease started
+        public bool WasTended;           // Was actively tended at this point
+
+        public TimeBasedDataPoint() { }
+
+        public TimeBasedDataPoint(int tick, float severity, int ticksRemaining, int totalDuration, bool wasTended)
+        {
+            Tick = tick;
+            Severity = severity;
+            TicksRemaining = ticksRemaining;
+            TotalDuration = totalDuration;
+            WasTended = wasTended;
+        }
+
+        public void ExposeData()
+        {
+            Scribe_Values.Look(ref Tick, "tick");
+            Scribe_Values.Look(ref Severity, "severity");
+            Scribe_Values.Look(ref TicksRemaining, "ticksRemaining");
+            Scribe_Values.Look(ref TotalDuration, "totalDuration");
+            Scribe_Values.Look(ref WasTended, "wasTended");
+        }
+    }
+
+    /// <summary>
     /// Tracks historical data for a specific disease instance.
     /// </summary>
     public class DiseaseHistory : IExposable
     {
         public int HediffLoadId;
         public List<DiseaseDataPoint> DataPoints = new List<DiseaseDataPoint>();
+        public List<TimeBasedDataPoint> TimeBasedDataPoints = new List<TimeBasedDataPoint>();
         public List<BedRestInterval> BedRestIntervals = new List<BedRestInterval>();
         public List<TendingEvent> TendingEvents = new List<TendingEvent>();
 
@@ -105,6 +138,7 @@ namespace RecoveryProcessTracker.Core
         private const int RecordingInterval = 2500;
 
         private int lastRecordedTick = -99999;
+        private int lastTimeBasedRecordedTick = -99999;
 
         public DiseaseHistory() { }
 
@@ -126,6 +160,21 @@ namespace RecoveryProcessTracker.Core
             while (DataPoints.Count > MaxDataPoints)
             {
                 DataPoints.RemoveAt(0);
+            }
+        }
+
+        public void RecordTimeBasedDataPoint(int tick, float severity, int ticksRemaining, int totalDuration, bool wasTended)
+        {
+            // Only record if enough time has passed since last recording
+            if (tick - lastTimeBasedRecordedTick < RecordingInterval) return;
+
+            TimeBasedDataPoints.Add(new TimeBasedDataPoint(tick, severity, ticksRemaining, totalDuration, wasTended));
+            lastTimeBasedRecordedTick = tick;
+
+            // Trim old data points if we have too many
+            while (TimeBasedDataPoints.Count > MaxDataPoints)
+            {
+                TimeBasedDataPoints.RemoveAt(0);
             }
         }
 
@@ -174,17 +223,23 @@ namespace RecoveryProcessTracker.Core
             Scribe_Values.Look(ref HediffLoadId, "hediffLoadId");
             Scribe_Values.Look(ref StartTick, "startTick");
             Scribe_Collections.Look(ref DataPoints, "dataPoints", LookMode.Deep);
+            Scribe_Collections.Look(ref TimeBasedDataPoints, "timeBasedDataPoints", LookMode.Deep);
             Scribe_Collections.Look(ref BedRestIntervals, "bedRestIntervals", LookMode.Deep);
             Scribe_Collections.Look(ref TendingEvents, "tendingEvents", LookMode.Deep);
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
                 DataPoints ??= new List<DiseaseDataPoint>();
+                TimeBasedDataPoints ??= new List<TimeBasedDataPoint>();
                 BedRestIntervals ??= new List<BedRestInterval>();
                 TendingEvents ??= new List<TendingEvent>();
                 if (DataPoints.Count > 0)
                 {
                     lastRecordedTick = DataPoints[DataPoints.Count - 1].Tick;
+                }
+                if (TimeBasedDataPoints.Count > 0)
+                {
+                    lastTimeBasedRecordedTick = TimeBasedDataPoints[TimeBasedDataPoints.Count - 1].Tick;
                 }
             }
         }
@@ -237,7 +292,20 @@ namespace RecoveryProcessTracker.Core
 
                     foreach (var hediff in pawn.health.hediffSet.hediffs)
                     {
-                        // Track immunizable diseases (e.g., Plague, Flu, Malaria)
+                        // Type 3 - Time-based diseases (check FIRST, before Type 1)
+                        // Includes Type 3a (Mechanites) and Type 3b (Fatal rots like Lung Rot, Blood Rot)
+                        // Note: Type 3a has HediffComp_Immunizable but should still be tracked here
+                        var disappearsComp = hediff.TryGetComp<HediffComp_Disappears>();
+                        if (disappearsComp != null && IsTimeBasedDisease(hediff))
+                        {
+                            var tendComp = hediff.TryGetComp<HediffComp_TendDuration>();
+                            RecordTimeBasedData(hediff, currentTick, disappearsComp, tendComp);
+                            continue;
+                        }
+
+                        // Type 1 - Immunizable diseases (Plague, Flu, Malaria, etc.)
+                        // These have immunity racing against severity; whoever hits 100% first wins
+                        // Note: Type 3a Mechanites are excluded above via IsTimeBasedDisease check
                         var immunizable = hediff.TryGetComp<HediffComp_Immunizable>();
                         if (immunizable != null)
                         {
@@ -246,17 +314,112 @@ namespace RecoveryProcessTracker.Core
                             continue;
                         }
 
-                        // Track cumulative tend diseases (e.g., Gut Worms, Muscle Parasites)
-                        var tendComp = hediff.TryGetComp<HediffComp_TendDuration>();
-                        if (tendComp != null && tendComp.TProps.disappearsAtTotalTendQuality >= 0)
+                        // Type 2 - Cumulative tend diseases (Gut Worms, Muscle Parasites)
+                        // These cure through accumulated tend quality (typically 300% total)
+                        var tendCompCumulative = hediff.TryGetComp<HediffComp_TendDuration>();
+                        if (tendCompCumulative != null && tendCompCumulative.TProps.disappearsAtTotalTendQuality >= 0)
                         {
                             // Just ensure history exists for tracking tend events
                             // No data points needed since there's no immunity/severity race
                             GetOrCreateHistory(hediff);
+                            continue;
                         }
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Checks if a hediff is a Type 3a (mechanite) disease (Fibrous/Sensory Mechanites).
+        /// These have HediffComp_Disappears (time-based cure) AND HediffComp_Immunizable,
+        /// but the Immunizable component is ONLY used for severity changes (no immunity gain).
+        /// Treatment manages severity/pain while waiting for time-based cure.
+        /// Non-fatal: severity controls pain level (20% mild, 60% intense at 0.5 threshold).
+        /// </summary>
+        public static bool IsMechaniteDisease(Hediff hediff)
+        {
+            if (hediff == null) return false;
+
+            // Must have HediffComp_Disappears (time-based cure)
+            var disappearsComp = hediff.TryGetComp<HediffComp_Disappears>();
+            if (disappearsComp == null) return false;
+
+            // Must have HediffComp_Immunizable
+            var immunizable = hediff.TryGetComp<HediffComp_Immunizable>();
+            if (immunizable == null) return false;
+
+            // Key check: NO immunity gain when sick (immunityPerDaySick <= 0)
+            // This means the Immunizable comp is only used for severity changes, not immunity racing
+            if (immunizable.Props.immunityPerDaySick > 0) return false;
+
+            // Must be tendable (mechanites are tendable)
+            if (!hediff.def.tendable) return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks if a hediff is a Type 3 (time-based) disease.
+        /// Type 3 diseases cure when a countdown timer expires; treatment manages severity while waiting.
+        ///
+        /// Subtypes:
+        /// - Type 3a (Mechanites): Non-fatal, severity controls pain. Has Immunizable but no immunity gain.
+        ///   Examples: Fibrous Mechanites, Sensory Mechanites
+        /// - Type 3b (Fatal rots): Potentially fatal, severity can kill. No Immunizable component.
+        ///   Examples: Lung Rot, Blood Rot
+        ///
+        /// Common traits: HediffComp_Disappears (timer), NOT cumulative tend.
+        /// Filters out temporary effects like drug highs.
+        /// </summary>
+        public static bool IsTimeBasedDisease(Hediff hediff)
+        {
+            if (hediff == null) return false;
+            var def = hediff.def;
+
+            // Mechanite diseases are a special case of time-based diseases
+            if (IsMechaniteDisease(hediff)) return true;
+
+            // Must have HediffComp_Disappears (the timer component)
+            var disappearsComp = hediff.TryGetComp<HediffComp_Disappears>();
+            if (disappearsComp == null) return false;
+
+            // Must NOT have HediffComp_Immunizable (those are Type 1 - immunity race)
+            // Exception: mechanites have Immunizable but are handled above
+            var immunizable = hediff.TryGetComp<HediffComp_Immunizable>();
+            if (immunizable != null) return false;
+
+            // Must NOT be cumulative tend (those are Type 2)
+            var tendComp = hediff.TryGetComp<HediffComp_TendDuration>();
+            if (tendComp != null && tendComp.TProps.disappearsAtTotalTendQuality >= 0) return false;
+
+            // --- Filter out non-disease temporary effects ---
+
+            // Must be "bad" (not a buff like drug high benefits)
+            if (!def.isBad) return false;
+
+            // Must be tendable (real diseases are tendable; drug effects, anesthetic, etc. are not)
+            if (!def.tendable) return false;
+
+            // Should have lethal severity potential (can actually kill the pawn)
+            // This excludes things like Hangover, CryptosleepSickness
+            if (def.lethalSeverity < 0) return false;
+
+            return true;
+        }
+
+        private void RecordTimeBasedData(Hediff hediff, int currentTick, HediffComp_Disappears disappearsComp, HediffComp_TendDuration tendComp)
+        {
+            var history = GetOrCreateHistory(hediff);
+            if (history == null) return;
+
+            bool wasTended = tendComp != null && tendComp.IsTended;
+            history.RecordTimeBasedDataPoint(
+                currentTick,
+                hediff.Severity,
+                disappearsComp.ticksToDisappear,
+                disappearsComp.disappearsAfterTicks,
+                wasTended
+            );
         }
 
         private void RecordBedRestData(Hediff hediff, int currentTick, Pawn pawn)
