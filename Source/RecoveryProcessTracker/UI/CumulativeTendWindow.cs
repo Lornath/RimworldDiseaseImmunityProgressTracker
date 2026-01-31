@@ -18,7 +18,6 @@ namespace RecoveryProcessTracker.UI
     {
         private readonly Hediff hediff;
         private readonly HediffComp_TendDuration tendComp;
-        private Vector2 openedAtMousePos;
 
         // Reflection for accessing private field
         private static readonly FieldInfo totalTendQualityField = typeof(HediffComp_TendDuration)
@@ -48,7 +47,6 @@ namespace RecoveryProcessTracker.UI
         {
             this.hediff = hediff;
             this.tendComp = tendComp;
-            this.openedAtMousePos = Event.current?.mousePosition ?? Vector2.zero;
 
             // Window configuration for tooltip-like behavior
             doCloseX = false;
@@ -69,29 +67,18 @@ namespace RecoveryProcessTracker.UI
 
         protected override void SetInitialSizeAndPosition()
         {
-            // Position the window above and to the right of the mouse
-            float xPos = openedAtMousePos.x + 15f;
-            float yPos = openedAtMousePos.y - InitialSize.y - 5f;
-
-            // Clamp to screen bounds
-            if (xPos + InitialSize.x > Verse.UI.screenWidth)
-            {
-                xPos = openedAtMousePos.x - InitialSize.x - 15f;
-            }
-            if (yPos < 0)
-            {
-                yPos = 0;
-            }
-            if (yPos + InitialSize.y > Verse.UI.screenHeight)
-            {
-                yPos = Verse.UI.screenHeight - InitialSize.y;
-            }
-
-            windowRect = new Rect(xPos, yPos, InitialSize.x, InitialSize.y);
+            // Use helper to position window avoiding overlap with the game's tooltip
+            windowRect = WindowPositionHelper.CalculateWindowRect(InitialSize);
         }
 
         public override void DoWindowContents(Rect inRect)
         {
+            // Dynamically update position to follow the tooltip as the mouse moves
+            // (Done here in DoWindowContents where Event.current is valid)
+            Rect newRect = WindowPositionHelper.CalculateWindowRect(InitialSize);
+            windowRect.x = newRect.x;
+            windowRect.y = newRect.y;
+
             // Get current cumulative data
             float totalTendQuality = GetTotalTendQuality();
             float targetQuality = tendComp.TProps.disappearsAtTotalTendQuality;

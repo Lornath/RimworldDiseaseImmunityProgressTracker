@@ -180,7 +180,8 @@ Source/RecoveryProcessTracker/
 ├── UI/
 │   ├── DiseaseGraphWindow.cs           # Graph rendering for Type 1 (immunizable) diseases
 │   ├── CumulativeTendWindow.cs         # Progress display for Type 2 (cumulative tend) diseases
-│   └── TimeBasedWindow.cs              # Time/severity display for Type 3 (time-based) diseases
+│   ├── TimeBasedWindow.cs              # Time/severity display for Type 3 (time-based) diseases
+│   └── WindowPositionHelper.cs         # Shared tooltip-companion window positioning logic
 └── Patches/
     ├── TooltipCompanionPatch.cs        # Harmony patch for Type 1 disease tooltips
     ├── CumulativeTendPatch.cs          # Harmony patch for Type 2 disease tooltips
@@ -231,3 +232,44 @@ Standard RimWorld mod layout:
 - Test with maximum-length values (100%, longest names, etc.)
 - Check labels at graph extremes (0% and 100% on axes)
 - Verify descenders aren't clipped by typing test strings with "g", "y", "p", "q", "j"
+
+## Unity GUI Coordinate Systems
+
+**Critical: Mouse position behaves differently depending on context.** Understanding when to use which method is essential for correct window positioning.
+
+### Mouse Position Methods
+
+| Method | Coordinate Space | When to Use |
+|--------|------------------|-------------|
+| `Event.current.mousePosition` | Local to current GUI context | Only during GUI drawing (`OnGUI`, `DoWindowContents`) when you want window-local coords |
+| `Verse.UI.MousePositionOnUIInverted` | Screen coordinates | Anytime - works regardless of GUI matrix state |
+| `GenUI.GetMouseAttachedWindowPos()` | Screen coordinates | Only during GUI drawing (uses `Event.current.mousePosition` internally) |
+
+### The Window Coordinate Trap
+
+Inside a `Window.DoWindowContents(Rect inRect)` method, the GUI matrix has been transformed so that coordinates are relative to the window's content area, **not** the screen.
+
+**Problem:** If you call `Event.current.mousePosition` inside `DoWindowContents()`, you get coordinates relative to the window, not screen coordinates. Using these for positioning another window or calculating screen positions will give wrong results.
+
+**Symptoms of this bug:**
+- Window positioned far off from where expected (e.g., upper-left or offset by the parent window's position)
+- Window movement appears "accelerated" (e.g., mouse moves 5px, window moves 10px) due to coordinate space mismatch
+
+**Solution:** Use `Verse.UI.MousePositionOnUIInverted` which uses `Input.mousePosition` directly and works regardless of GUI matrix state.
+
+### Window Update Methods
+
+| Method | Called During | `Event.current` Valid? |
+|--------|---------------|------------------------|
+| `SetInitialSizeAndPosition()` | Window opening | Yes (if opened during GUI) |
+| `DoWindowContents()` | GUI drawing | Yes, but in **local** coordinates |
+| `WindowUpdate()` | Game update loop | No - may be null, stale, or wrong type |
+
+**Key insight:** If you need to update window position dynamically:
+- Do it in `DoWindowContents()` (not `WindowUpdate()`)
+- Use `Verse.UI.MousePositionOnUIInverted` for screen-space mouse position
+- If replicating tooltip positioning logic, reimplement it using your own mouse position rather than calling `GenUI.GetMouseAttachedWindowPos()` (which uses `Event.current.mousePosition` internally)
+
+### Namespace Collision
+
+This project uses namespace `RecoveryProcessTracker.UI`. RimWorld's UI utilities are in `Verse.UI`. Always use fully-qualified `Verse.UI.screenWidth`, `Verse.UI.MousePositionOnUIInverted`, etc. to avoid ambiguity.
