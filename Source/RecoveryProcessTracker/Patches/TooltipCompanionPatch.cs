@@ -34,10 +34,16 @@ namespace RecoveryProcessTracker.Patches
             // (handled by TimeBasedDiseasePatch instead)
             if (DiseaseTracker.IsMechaniteDisease(hediff)) return;
 
+            // Disable when Numbers mod window is open - it calls CompTipStringExtra during
+            // table rendering which interferes with our tooltip detection
+            if (ModCompatibility.IsNumbersWindowOpen()) return;
+
+            int currentFrame = Time.frameCount;
+
             // Update the active hediff tracker using Unity frame count
             // (works even when game is paused, unlike game ticks)
             activeHediff = hediff;
-            lastActiveFrame = Time.frameCount;
+            lastActiveFrame = currentFrame;
 
             // Close any windows for other hediffs
             DiseaseGraphWindow.CloseOtherWindows(hediff);
