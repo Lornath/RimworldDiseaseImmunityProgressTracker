@@ -1,6 +1,6 @@
 using Verse;
 
-namespace RecoveryProcessTracker.UI
+namespace DiseaseImmunityProgressTracker.UI
 {
     public interface ICompanionWindow
     {

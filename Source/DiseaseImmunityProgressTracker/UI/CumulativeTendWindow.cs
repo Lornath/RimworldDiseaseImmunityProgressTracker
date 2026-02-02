@@ -5,9 +5,9 @@ using System.Reflection;
 using UnityEngine;
 using Verse;
 using RimWorld;
-using RecoveryProcessTracker.Core;
+using DiseaseImmunityProgressTracker.Core;
 
-namespace RecoveryProcessTracker.UI
+namespace DiseaseImmunityProgressTracker.UI
 {
     /// <summary>
     /// A tooltip companion window that displays cumulative tend progress for diseases

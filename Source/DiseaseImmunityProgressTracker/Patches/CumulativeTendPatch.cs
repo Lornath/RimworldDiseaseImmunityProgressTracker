@@ -1,10 +1,10 @@
 using HarmonyLib;
 using RimWorld;
 using Verse;
-using RecoveryProcessTracker.Core;
-using RecoveryProcessTracker.UI;
+using DiseaseImmunityProgressTracker.Core;
+using DiseaseImmunityProgressTracker.UI;
 
-namespace RecoveryProcessTracker.Patches
+namespace DiseaseImmunityProgressTracker.Patches
 {
     /// <summary>
     /// Harmony patch to detect when the tooltip for a cumulative tend disease is being displayed.
@@ -43,9 +43,9 @@ namespace RecoveryProcessTracker.Patches
             {
                 Find.WindowStack.Add(new CumulativeTendWindow(hediff, __instance));
 
-                if (RecoveryProcessTrackerMod.Settings.verboseLogging)
+                if (DiseaseImmunityProgressTrackerMod.Settings.verboseLogging)
                 {
-                    Log.Message($"[RecoveryProcessTracker] Opened cumulative tend window for {hediff.Label}");
+                    Log.Message($"[DiseaseImmunityProgressTracker] Opened cumulative tend window for {hediff.Label}");
                 }
             }
         }

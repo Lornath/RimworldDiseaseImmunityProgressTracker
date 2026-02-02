@@ -1,10 +1,10 @@
 using HarmonyLib;
 using RimWorld;
 using Verse;
-using RecoveryProcessTracker.Core;
-using RecoveryProcessTracker.UI;
+using DiseaseImmunityProgressTracker.Core;
+using DiseaseImmunityProgressTracker.UI;
 
-namespace RecoveryProcessTracker.Patches
+namespace DiseaseImmunityProgressTracker.Patches
 {
     /// <summary>
     /// Harmony patch to detect when the tooltip for a Type 1 (immunizable) disease is being displayed.
@@ -44,12 +44,12 @@ namespace RecoveryProcessTracker.Patches
                 var newWindow = new DiseaseGraphWindow(hediff);
                 Find.WindowStack.Add(newWindow);
 
-                if (RecoveryProcessTrackerMod.Settings.verboseLogging)
+                if (DiseaseImmunityProgressTrackerMod.Settings.verboseLogging)
                 {
                     // Check if it's immediately visible in the stack
                     bool inStack = Find.WindowStack.Windows.Contains(newWindow);
                     var allWindows = CompanionWindowManager.GetOpenCompanionWindows();
-                    Log.Message($"[RecoveryProcessTracker] Opened graph window for {hediff.Label}, inStack={inStack}, position=({newWindow.windowRect.x:F0},{newWindow.windowRect.y:F0}), companionWindowCount={allWindows.Count}");
+                    Log.Message($"[DiseaseImmunityProgressTracker] Opened graph window for {hediff.Label}, inStack={inStack}, position=({newWindow.windowRect.x:F0},{newWindow.windowRect.y:F0}), companionWindowCount={allWindows.Count}");
                 }
             }
         }

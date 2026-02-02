@@ -1,9 +1,9 @@
 using HarmonyLib;
 using RimWorld;
 using Verse;
-using RecoveryProcessTracker.Core;
+using DiseaseImmunityProgressTracker.Core;
 
-namespace RecoveryProcessTracker.Patches
+namespace DiseaseImmunityProgressTracker.Patches
 {
     /// <summary>
     /// Holds context about the current tending action (doctor, medicine)
@@ -52,7 +52,7 @@ namespace RecoveryProcessTracker.Patches
 
         public static void Postfix(Pawn patient)
         {
-            // if (patient != null && patient.IsColonist) Log.Message($"[RecoveryProcessTracker] TendUtility.DoTend Postfix called.");
+            // if (patient != null && patient.IsColonist) Log.Message($"[DiseaseImmunityProgressTracker] TendUtility.DoTend Postfix called.");
             TendingContext.End();
         }
     }
@@ -82,9 +82,9 @@ namespace RecoveryProcessTracker.Patches
             // Get the actual tend quality from the comp (includes random variance)
             float actualQuality = tendComp?.tendQuality ?? 0f;
 
-            if (RecoveryProcessTrackerMod.Settings.verboseLogging && __instance.pawn != null && __instance.pawn.IsColonist)
+            if (DiseaseImmunityProgressTrackerMod.Settings.verboseLogging && __instance.pawn != null && __instance.pawn.IsColonist)
             {
-                Log.Message($"[RecoveryProcessTracker] Recording Tend Event for {__instance.Label} on {__instance.pawn}. Quality: {actualQuality:P1}, Medicine: {TendingContext.MedicineName} ({TendingContext.MedicineDefName})");
+                Log.Message($"[DiseaseImmunityProgressTracker] Recording Tend Event for {__instance.Label} on {__instance.pawn}. Quality: {actualQuality:P1}, Medicine: {TendingContext.MedicineName} ({TendingContext.MedicineDefName})");
             }
 
             // Record the event
