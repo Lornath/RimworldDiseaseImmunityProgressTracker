@@ -44,10 +44,9 @@ namespace RecoveryProcessTracker.Patches
     {
         public static void Prefix(Pawn doctor, Pawn patient, Medicine medicine)
         {
-            if (patient != null && patient.IsColonist && doctor != null)
-            {
-                Log.Message($"[RecoveryProcessTracker] TendUtility.DoTend Prefix called. Doctor: {doctor}, Patient: {patient}");
-            }
+            // Defensive cleanup: ensure any stale context from a previous tending operation
+            // (e.g., if an exception occurred before Postfix ran) is cleared before starting
+            TendingContext.End();
             TendingContext.Begin(doctor, medicine);
         }
 
@@ -83,7 +82,7 @@ namespace RecoveryProcessTracker.Patches
             // Get the actual tend quality from the comp (includes random variance)
             float actualQuality = tendComp?.tendQuality ?? 0f;
 
-            if (__instance.pawn != null && __instance.pawn.IsColonist)
+            if (RecoveryProcessTrackerMod.Settings.verboseLogging && __instance.pawn != null && __instance.pawn.IsColonist)
             {
                 Log.Message($"[RecoveryProcessTracker] Recording Tend Event for {__instance.Label} on {__instance.pawn}. Quality: {actualQuality:P1}, Medicine: {TendingContext.MedicineName} ({TendingContext.MedicineDefName})");
             }
