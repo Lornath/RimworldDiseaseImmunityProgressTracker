@@ -282,28 +282,22 @@ namespace DiseaseImmunityProgressTracker.UI
                 GUI.color = Color.white;
             }
 
-            // Calculate time window - show past and future until cure
-            float pastDays = 0.5f;
-            float futureDays = Mathf.Max(0.5f, disappearsComp.ticksToDisappear / TicksPerDay);
-            float totalDays = pastDays + futureDays;
-            float nowRatio = pastDays / totalDays;
-            float nowX = plotArea.x + plotArea.width * nowRatio;
+            // X-axis represents disease progress from 0% (start) to 100% (cure)
+            // This matches the progress bar above the graph
+            float currentProgress = disappearsComp.Progress; // 0 = just started, 1 = about to cure
+            float nowX = plotArea.x + plotArea.width * currentProgress;
 
             // Draw "now" vertical line
             GUI.color = NowLineColor;
             Widgets.DrawLineVertical(nowX, plotArea.y, plotArea.height);
             GUI.color = Color.white;
 
-            int currentTick = Find.TickManager.TicksGame;
-
             // Draw historical severity data
             if (history != null && history.TimeBasedDataPoints.Count >= 2)
             {
-                int pastTicks = (int)(pastDays * TicksPerDay);
-                int windowStart = currentTick - pastTicks;
-
+                // Filter to points that have valid duration data
                 var relevantPoints = history.TimeBasedDataPoints
-                    .Where(p => p.Tick >= windowStart && p.Tick <= currentTick)
+                    .Where(p => p.TotalDuration > 0)
                     .OrderBy(p => p.Tick)
                     .ToList();
 
@@ -314,8 +308,12 @@ namespace DiseaseImmunityProgressTracker.UI
                         var p1 = relevantPoints[i];
                         var p2 = relevantPoints[i + 1];
 
-                        Vector2 start = TickToGraphPoint(plotArea, p1.Tick, p1.Severity, currentTick, pastDays, totalDays);
-                        Vector2 end = TickToGraphPoint(plotArea, p2.Tick, p2.Severity, currentTick, pastDays, totalDays);
+                        // Calculate progress for each point: how far through the disease was it?
+                        float progress1 = 1f - ((float)p1.TicksRemaining / p1.TotalDuration);
+                        float progress2 = 1f - ((float)p2.TicksRemaining / p2.TotalDuration);
+
+                        Vector2 start = ProgressToGraphPoint(plotArea, progress1, p1.Severity);
+                        Vector2 end = ProgressToGraphPoint(plotArea, progress2, p2.Severity);
                         Widgets.DrawLine(start, end, SeverityColor, 2f);
                     }
                 }
@@ -326,7 +324,7 @@ namespace DiseaseImmunityProgressTracker.UI
             Vector2 sevNow = new Vector2(nowX, sevNowY);
             DrawPointMarker(sevNow, SeverityColor);
 
-            // Draw projection line to end
+            // Draw projection line to end (at x = 100% progress)
             if (prognosis.IsValid && !float.IsNaN(prognosis.ProjectedFinalSeverity))
             {
                 float endY = plotArea.yMax - plotArea.height * Mathf.Clamp01(prognosis.ProjectedFinalSeverity);
@@ -353,24 +351,27 @@ namespace DiseaseImmunityProgressTracker.UI
             Widgets.Label(new Rect(graphArea.x, plotArea.yMax - 14f, leftMargin - 4f, 16f), "0%");
             Text.Anchor = TextAnchor.UpperLeft;
 
-            // X-axis labels
+            // X-axis labels - show progress from start to cure
             Text.Anchor = TextAnchor.UpperCenter;
-            // "Now" label under the now line
-            Widgets.Label(new Rect(nowX - 20f, plotArea.yMax + 1f, 40f, 16f), "Now");
+            // "Start" label at left edge
+            Widgets.Label(new Rect(plotArea.x - 20f, plotArea.yMax + 1f, 40f, 16f), "Start");
             // "Cure" label at right end
             Widgets.Label(new Rect(plotArea.xMax - 20f, plotArea.yMax + 1f, 40f, 16f), "Cure");
+            // "Now" label under the now line (only if not too close to edges to avoid overlap)
+            if (currentProgress > 0.15f && currentProgress < 0.85f)
+            {
+                Widgets.Label(new Rect(nowX - 20f, plotArea.yMax + 1f, 40f, 16f), "Now");
+            }
             Text.Anchor = TextAnchor.UpperLeft;
 
             GUI.color = Color.white;
             Text.Font = GameFont.Small;
         }
 
-        private Vector2 TickToGraphPoint(Rect graphArea, int tick, float value, int currentTick, float pastDays, float totalDays)
+        private Vector2 ProgressToGraphPoint(Rect plotArea, float progress, float severity)
         {
-            float dayOffset = (tick - currentTick) / TicksPerDay;
-            float xRatio = (pastDays + dayOffset) / totalDays;
-            float x = graphArea.x + graphArea.width * xRatio;
-            float y = graphArea.yMax - graphArea.height * Mathf.Clamp01(value);
+            float x = plotArea.x + plotArea.width * Mathf.Clamp01(progress);
+            float y = plotArea.yMax - plotArea.height * Mathf.Clamp01(severity);
             return new Vector2(x, y);
         }
 
