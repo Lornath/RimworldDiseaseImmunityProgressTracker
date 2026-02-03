@@ -21,10 +21,11 @@ namespace DiseaseImmunityProgressTracker.UI
         // Graph layout constants
         private const float GraphPadding = 10f;
         private const float AxisLabelWidth = 36f;
-        private const float AxisLabelHeight = 20f;
         private const float TendInfoHeight = 24f; // Space below x-axis for medicine icons and quality
-        private const float TitleHeight = 24f;
-        private const float VerdictHeight = 18f;
+
+        // Text heights - measured from actual font metrics
+        private static float SmallFontHeight => Text.LineHeightOf(GameFont.Small);
+        private static float TinyFontHeight => Text.LineHeightOf(GameFont.Tiny);
 
         // Time window for the graph (in days)
         private const float DefaultPastDays = 1f;
@@ -49,7 +50,21 @@ namespace DiseaseImmunityProgressTracker.UI
         // Fallback icon for tending without medicine
         private static readonly Texture2D NoMedsIcon = ContentFinder<Texture2D>.Get("UI/Icons/Medical/NoMeds");
 
-        public override Vector2 InitialSize => new Vector2(380f, 264f); // Extra height for tend info below x-axis
+        public override Vector2 InitialSize => new Vector2(380f, CalculateWindowHeight());
+
+        /// <summary>
+        /// Calculate window height based on actual font metrics.
+        /// </summary>
+        private static float CalculateWindowHeight()
+        {
+            const float graphHeight = 140f; // Fixed graph area height
+            return SmallFontHeight                     // Title
+                 + TinyFontHeight + 5f                 // Verdict + gap
+                 + graphHeight                         // Graph area
+                 + TinyFontHeight                      // X-axis labels
+                 + TendInfoHeight                      // Medicine icons and quality
+                 + GraphPadding;                       // Bottom padding
+        }
 
         public DiseaseGraphWindow(Hediff hediff)
         {
@@ -93,19 +108,21 @@ namespace DiseaseImmunityProgressTracker.UI
 
             // Draw title
             Text.Font = GameFont.Small;
+            float smallHeight = SmallFontHeight;
+            float tinyHeight = TinyFontHeight;
             string title = hediff?.Label?.CapitalizeFirst() ?? "Disease";
-            Widgets.Label(new Rect(0, 0, inRect.width, TitleHeight), title);
+            Widgets.Label(new Rect(0, 0, inRect.width, smallHeight), title);
 
             // Draw verdict
-            DrawVerdict(new Rect(0, TitleHeight, inRect.width, VerdictHeight));
+            DrawVerdict(new Rect(0, smallHeight, inRect.width, tinyHeight));
 
             // Calculate graph area (below title and verdict, with padding for axis labels and tend info)
-            float graphTop = TitleHeight + VerdictHeight + 5f;
+            float graphTop = smallHeight + tinyHeight + 5f;
             Rect graphArea = new Rect(
                 AxisLabelWidth,
                 graphTop,
                 inRect.width - AxisLabelWidth - GraphPadding,
-                inRect.height - graphTop - AxisLabelHeight - TendInfoHeight - GraphPadding
+                inRect.height - graphTop - tinyHeight - TendInfoHeight - GraphPadding
             );
 
             // Draw graph background
@@ -291,7 +308,7 @@ namespace DiseaseImmunityProgressTracker.UI
             Text.Anchor = TextAnchor.UpperCenter;
             Widgets.Label(new Rect(graphArea.x - 15f, graphArea.yMax + 2f, 30f, 16f), $"-{pastDays:0.#}d");
             Widgets.Label(new Rect(nowX - 15f, graphArea.yMax + 2f, 30f, 16f), "Now");
-            Widgets.Label(new Rect(graphArea.xMax - 20f, graphArea.yMax + 2f, 40f, 16f), $"+{futureDays:0.#}d");
+            Widgets.Label(new Rect(graphArea.xMax - 35f, graphArea.yMax + 2f, 45f, 16f), $"+{futureDays:0.#}d");
 
             Text.Anchor = TextAnchor.UpperLeft;
             GUI.color = oldColor;
@@ -380,7 +397,7 @@ namespace DiseaseImmunityProgressTracker.UI
             int windowStart = currentTick - pastTicks;
 
             // Y position for tend info (below x-axis labels)
-            float tendInfoY = graphArea.yMax + AxisLabelHeight;
+            float tendInfoY = graphArea.yMax + TinyFontHeight;
 
             foreach (var tend in history.TendingEvents)
             {
@@ -607,6 +624,7 @@ namespace DiseaseImmunityProgressTracker.UI
         private void DrawLegend(Rect legendArea)
         {
             Text.Font = GameFont.Tiny;
+            float rowHeight = TinyFontHeight;
 
             if (prognosis.IsValid)
             {
@@ -614,29 +632,29 @@ namespace DiseaseImmunityProgressTracker.UI
                 string immRate = prognosis.ImmunityPerDay > 0 ? $"+{prognosis.ImmunityPerDay * 100:0}%/d" : $"{prognosis.ImmunityPerDay * 100:0}%/d";
                 string immText = $"Imm: {prognosis.CurrentImmunity * 100:0}% ({immRate})";
                 Widgets.DrawBoxSolid(new Rect(legendArea.x, legendArea.y + 2f, 12f, 3f), ImmunityColor);
-                Widgets.Label(new Rect(legendArea.x + 15f, legendArea.y - 2f, 140f, 16f), immText);
+                Widgets.Label(new Rect(legendArea.x + 15f, legendArea.y - 2f, 140f, rowHeight), immText);
 
                 // Severity legend with current value and rate
                 string sevRate = prognosis.SeverityPerDay > 0 ? $"+{prognosis.SeverityPerDay * 100:0}%/d" : $"{prognosis.SeverityPerDay * 100:0}%/d";
                 string sevText = $"Sev: {prognosis.CurrentSeverity * 100:0}% ({sevRate})";
-                Widgets.DrawBoxSolid(new Rect(legendArea.x, legendArea.y + 16f, 12f, 3f), SeverityColor);
-                Widgets.Label(new Rect(legendArea.x + 15f, legendArea.y + 12f, 140f, 16f), sevText);
+                Widgets.DrawBoxSolid(new Rect(legendArea.x, legendArea.y + rowHeight, 12f, 3f), SeverityColor);
+                Widgets.Label(new Rect(legendArea.x + 15f, legendArea.y + rowHeight - 4f, 140f, rowHeight), sevText);
 
                 // Show data source indicator (above the legend entries to avoid x-axis overlap)
                 if (!prognosis.UsingObservedRates)
                 {
                     GUI.color = AxisColor;
-                    Widgets.Label(new Rect(legendArea.x, legendArea.y - 14f, 160f, 16f), "(est. - gathering data)");
+                    Widgets.Label(new Rect(legendArea.x, legendArea.y - rowHeight, 160f, rowHeight), "(est. - gathering data)");
                     GUI.color = Color.white;
                 }
             }
             else
             {
                 Widgets.DrawBoxSolid(new Rect(legendArea.x, legendArea.y + 2f, 12f, 3f), ImmunityColor);
-                Widgets.Label(new Rect(legendArea.x + 15f, legendArea.y - 2f, 70f, 16f), "Immunity");
+                Widgets.Label(new Rect(legendArea.x + 15f, legendArea.y - 2f, 70f, rowHeight), "Immunity");
 
-                Widgets.DrawBoxSolid(new Rect(legendArea.x, legendArea.y + 16f, 12f, 3f), SeverityColor);
-                Widgets.Label(new Rect(legendArea.x + 15f, legendArea.y + 12f, 70f, 16f), "Severity");
+                Widgets.DrawBoxSolid(new Rect(legendArea.x, legendArea.y + rowHeight, 12f, 3f), SeverityColor);
+                Widgets.Label(new Rect(legendArea.x + 15f, legendArea.y + rowHeight - 4f, 70f, rowHeight), "Severity");
             }
 
             Text.Font = GameFont.Small;

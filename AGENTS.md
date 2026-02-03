@@ -304,10 +304,37 @@ Standard RimWorld mod layout:
 
 **Text clipping is a common issue.** Unity/RimWorld will clip text that doesn't fit in its label rect. Follow these guidelines to prevent it:
 
-### Minimum Label Heights by Font
-- **GameFont.Small**: Use at least **24f height** for labels. This font has larger descenders (g, y, p, q, j) that get clipped with smaller heights.
-- **GameFont.Tiny**: Use at least **16-18f height**. Even tiny font needs room for descenders.
-- **GameFont.Medium**: Use at least **28-30f height**.
+### Measuring Font Heights (PREFERRED)
+
+**Always use `Text.LineHeightOf()` to get actual font metrics instead of hardcoding pixel values.** This prevents descender clipping and adapts to any font changes.
+
+```csharp
+// Define as static properties in your window class:
+private static float SmallFontHeight => Text.LineHeightOf(GameFont.Small);
+private static float TinyFontHeight => Text.LineHeightOf(GameFont.Tiny);
+
+// Use in layout code:
+Widgets.Label(new Rect(x, y, width, SmallFontHeight), "Text with descenders like 'g'");
+```
+
+**For dynamic window heights**, compute the total from measured font heights:
+```csharp
+public override Vector2 InitialSize => new Vector2(320f, CalculateWindowHeight());
+
+private static float CalculateWindowHeight()
+{
+    return Padding * 2
+         + SmallFontHeight + 4f    // Title + gap
+         + TinyFontHeight * 3      // Three rows of tiny text
+         + GraphHeight;            // Fixed-size elements
+}
+```
+
+### Fallback: Minimum Label Heights by Font
+If you must use hardcoded values (not recommended), these are safe minimums:
+- **GameFont.Small**: At least **24f height**
+- **GameFont.Tiny**: At least **18f height**
+- **GameFont.Medium**: At least **30f height**
 
 ### Label Width Considerations
 - **Always size for the longest possible content.** If a label might show "0%" or "100%", size it for "100%" (approximately 36f width for GameFont.Tiny).
@@ -315,7 +342,7 @@ Standard RimWorld mod layout:
 - **Percentage labels**: "100%" needs ~36f width in GameFont.Tiny. Single/double digit percentages need less but always plan for the max.
 
 ### Common Mistakes
-1. **Using 12f or 14f height for labels** - Almost always too small. Start with 16-18f minimum.
+1. **Hardcoding font heights** - Use `Text.LineHeightOf(GameFont.X)` instead of guessing pixel values.
 2. **Calculating width from margins** like `margin - 4f` - This can result in widths that are too narrow. Use explicit widths sized for content.
 3. **Placing labels outside their parent rect** - Labels positioned with negative offsets (e.g., `y - 6f`) may extend outside the clipping region.
 4. **Forgetting about TextAnchor** - Even with `TextAnchor.MiddleCenter`, the rect must be large enough to contain the full text.
