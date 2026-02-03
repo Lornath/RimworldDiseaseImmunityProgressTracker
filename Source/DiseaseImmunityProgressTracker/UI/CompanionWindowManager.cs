@@ -80,7 +80,8 @@ namespace DiseaseImmunityProgressTracker.UI
             {
                 if (window is DiseaseGraphWindow ||
                     window is CumulativeTendWindow ||
-                    window is TimeBasedWindow)
+                    window is TimeBasedWindow ||
+                    window is ToxicBuildupWindow)
                 {
                     windows.Add(window);
                 }

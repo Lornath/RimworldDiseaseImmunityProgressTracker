@@ -51,22 +51,37 @@ The mod tracks diseases using a type system based on their cure mechanics:
 | **Type 2** | Cumulative Tend | Gut Worms, Muscle Parasites | Accumulated tend quality reaches threshold (typically 300%) | `HediffComp_TendDuration` with `disappearsAtTotalTendQuality >= 0` | `CumulativeTendWindow` |
 | **Type 3a** | Mechanites | Fibrous Mechanites, Sensory Mechanites | Time-based (1-2 quadrums); treatment controls severity/pain only | `HediffComp_Disappears` + `HediffComp_Immunizable` (NO immunity gain) | `TimeBasedWindow` |
 | **Type 3b** | Fatal Rots | Lung Rot, Blood Rot | Time-based; treatment prevents fatal severity | `HediffComp_Disappears` + `HediffComp_TendDuration` (no Immunizable) | `TimeBasedWindow` |
+| **Type 4** | Toxic Buildup | Toxic Buildup | Severity heals when safe (-8%/day); exposure blocks recovery | `HediffComp_ImmunizableToxic` (no immunity gain, NOT tendable, lethal) | `ToxicBuildupWindow` |
 
 **Type 3a vs 3b Key Differences:**
 - **Type 3a (Mechanites)**: Non-fatal. Severity controls pain level (0-49% = mild 20% pain, 50-100% = intense 60% pain). Has `HediffComp_Immunizable` but `immunityPerDaySick = 0` (no immunity gain).
 - **Type 3b (Fatal Rots)**: Potentially fatal. Severity can reach lethal levels if untreated. Has `lethalSeverity > 0`.
 
+**Type 4 (Toxic Buildup) Key Differences:**
+- Has `HediffComp_ImmunizableToxic` (extends `HediffComp_Immunizable`) but `immunityPerDaySick = 0` (no immunity gain).
+- NOT tendable - recovery is environmental, not medical.
+- Recovery rate: -8%/day when not exposed to toxins.
+- Exposure sources that block recovery: Toxic Fallout (unroofed), Polluted terrain, Tox Gas.
+- Lethal at 100% severity.
+- Causes dementia/carcinoma risks at 40%+ severity (MTB decreases at higher stages).
+
 **Detection Order in Code:**
-Type 3 diseases are checked FIRST (before Type 1) because Type 3a Mechanites have `HediffComp_Immunizable` which would otherwise cause them to be misclassified as Type 1.
+Type 4 (Toxic Buildup) is checked FIRST, then Type 3 diseases, then Type 1. This ordering prevents misclassification since:
+- Type 4 has `HediffComp_Immunizable` but should not show the Type 1 immunity graph.
+- Type 3a Mechanites have `HediffComp_Immunizable` but should use `TimeBasedWindow`.
 
 ### Core Components
 
 - **DiseaseTracker** (`Source/DiseaseImmunityProgressTracker/Core/DiseaseTracker.cs`):
     - A `GameComponent` that tracks disease progression history for all pawns.
     - Maintains a dictionary of `DiseaseHistory` objects keyed by hediff load ID.
-    - Tracks diseases by type (see Disease Type Classification below).
-    - Contains `IsTimeBasedDisease()` static helper to identify Type 3 diseases (both 3a and 3b).
-    - Contains `IsMechaniteDisease()` static helper to identify Type 3a mechanite diseases.
+    - Tracks diseases by type (see Disease Type Classification above).
+    - Contains static helpers for disease type detection (checked in this order):
+        - `IsToxicBuildupDisease()`: Identifies Type 4 (Toxic Buildup).
+        - `IsTimeBasedDisease()`: Identifies Type 3 diseases (both 3a and 3b).
+        - `IsMechaniteDisease()`: Identifies Type 3a mechanite diseases specifically.
+    - Contains `GetCurrentExposure(pawn)` to get `ExposureFlags` for toxic buildup tracking.
+    - Contains `IsSafeFromToxicExposure(pawn, exposure)` to check if pawn can recover.
     - Handles data persistence (Save/Load) via `ExposeData`.
 
 - **PrognosisCalculator** (`Source/DiseaseImmunityProgressTracker/Core/PrognosisCalculator.cs`):
@@ -132,15 +147,37 @@ Type 3 diseases are checked FIRST (before Type 1) because Type 3a Mechanites hav
         - `CalculateStackedWindowRect(size, self)`: Positions windows in a vertical stack, treating all windows for the same pawn as a group.
         - `UnregisterWindow(window)`: Called in `PreClose()` to clean up slot tracking.
 
+- **ToxicBuildupWindow** (`Source/DiseaseImmunityProgressTracker/UI/ToxicBuildupWindow.cs`):
+    - A `Window` subclass that displays Toxic Buildup (Type 4) disease progress.
+    - Shows severity, exposure status, health risks, and recovery estimate.
+    - Features:
+        - Title with current severity stage (Initial/Minor/Moderate/Serious/Extreme).
+        - Safety status banner: "SAFE - Recovering" or "EXPOSED: [sources]" listing active toxin sources.
+        - Toxic Resistance stat display (shows both ToxicResistance and ToxicEnvironmentResistance if different).
+        - Severity graph with:
+            - Colored background regions showing exposure history (Red=tox gas, Orange=pollution, Blue=safe roofed).
+            - Thin horizontal threshold lines at 40%/60%/80% severity (stage boundaries).
+            - Historical severity trend and projection to recovery or danger.
+        - Legend explaining background colors.
+        - Health risk display (at 40%+ severity): Shows dementia and carcinoma daily risk percentages.
+        - Verdict text: Recovery estimate when safe, or danger warning when exposed.
+    - Same tooltip-companion behavior as other windows.
+
 - **ICompanionWindow** (`Source/DiseaseImmunityProgressTracker/UI/ICompanionWindow.cs`):
-    - Simple interface implemented by all companion windows (`DiseaseGraphWindow`, `CumulativeTendWindow`, `TimeBasedWindow`).
+    - Simple interface implemented by all companion windows (`DiseaseGraphWindow`, `CumulativeTendWindow`, `TimeBasedWindow`, `ToxicBuildupWindow`).
     - Exposes `Hediff Hediff { get; }` property for the manager to identify which pawn/disease a window belongs to.
     - Enables the stacking logic to group windows by pawn.
 
 - **TooltipCompanionPatch** (`Source/DiseaseImmunityProgressTracker/Patches/TooltipCompanionPatch.cs`):
     - Harmony patch on `HediffComp_Immunizable.CompTipStringExtra`.
     - Detects when a Type 1 (immunizable) disease tooltip is shown and opens `DiseaseGraphWindow`.
+    - Skips Type 4 (Toxic Buildup) which has Immunizable but should use `ToxicBuildupWindow`.
     - Skips Type 3a (Mechanites) which have Immunizable but should use `TimeBasedWindow`.
+
+- **ToxicBuildupPatch** (`Source/DiseaseImmunityProgressTracker/Patches/ToxicBuildupPatch.cs`):
+    - Harmony patch on `HediffComp_Immunizable.CompTipStringExtra`.
+    - Only handles Type 4 (Toxic Buildup) diseases identified by `DiseaseTracker.IsToxicBuildupDisease()`.
+    - Opens `ToxicBuildupWindow` when toxic buildup tooltip is shown.
 
 - **CumulativeTendPatch** (`Source/DiseaseImmunityProgressTracker/Patches/CumulativeTendPatch.cs`):
     - Harmony patch on `HediffComp_TendDuration.CompTipStringExtra`.
@@ -194,6 +231,19 @@ When a pawn has multiple diseases, multiple companion windows can be open simult
     - `TicksRemaining`: Ticks until cure
     - `TotalDuration`: Original duration when disease started
     - `WasTended`: Whether the disease was actively tended at this point
+- **ToxicBuildupDataPoint**: Records severity and exposure state at a specific tick (for Type 4):
+    - `Tick`: When this data point was recorded
+    - `Severity`: Current severity (0-1)
+    - `Exposure`: `ExposureFlags` indicating what toxin sources were affecting the pawn
+- **ExposureFlags** (enum with `[Flags]` attribute): Bit flags for toxic exposure sources:
+    - `None`: No exposure
+    - `UnderRoof`: Pawn is under a roof (safe from toxic fallout)
+    - `InPollution`: Pawn is standing on polluted terrain
+    - `InToxGas`: Pawn is in a tox gas cloud
+    - `ToxicFalloutActive`: The map has an active toxic fallout event
+- **ExposureInterval**: Tracks a period of toxic exposure:
+    - `StartTick`, `EndTick`: Time range (EndTick=-1 means ongoing)
+    - `Exposure`: `ExposureFlags` indicating what was affecting the pawn during this interval
 - **BedRestInterval**: Tracks periods when the pawn was in bed:
     - `StartTick`, `EndTick`: Time range (EndTick=-1 means ongoing)
     - `ImmunityGainSpeedFactor`: The bed's immunity gain speed stat (1.0 = no bonus like sleeping spot, ~1.07+ = hospital bed, higher with vitals monitor). Used to vary the blue background brightness in the graph.
@@ -203,7 +253,7 @@ When a pawn has multiple diseases, multiple companion windows can be open simult
     - `MedicineName`: Display label of medicine used
     - `MedicineDefName`: DefName for looking up the medicine's icon (null if no medicine used)
     - `Quality`: The final tend quality (after random variance)
-- **DiseaseHistory**: Container for all tracking data for a single disease instance (supports all three disease types).
+- **DiseaseHistory**: Container for all tracking data for a single disease instance (supports all four disease types).
 
 ### Source Files
 
@@ -213,6 +263,7 @@ Source/DiseaseImmunityProgressTracker/
 ├── DiseaseImmunityProgressTrackerMod.cs        # Main mod class & settings
 ├── Core/
 │   ├── DiseaseTracker.cs               # Data tracking & persistence
+│   ├── ModCompatibility.cs             # Mod compatibility checks (e.g., Numbers mod)
 │   └── PrognosisCalculator.cs          # Math & prediction logic
 ├── UI/
 │   ├── CompanionWindowManager.cs       # Central coordinator for multi-window support
@@ -220,11 +271,13 @@ Source/DiseaseImmunityProgressTracker/
 │   ├── DiseaseGraphWindow.cs           # Graph rendering for Type 1 (immunizable) diseases
 │   ├── CumulativeTendWindow.cs         # Progress display for Type 2 (cumulative tend) diseases
 │   ├── TimeBasedWindow.cs              # Time/severity display for Type 3 (time-based) diseases
+│   ├── ToxicBuildupWindow.cs           # Severity/exposure display for Type 4 (toxic buildup)
 │   └── WindowPositionHelper.cs         # Tooltip position calculation logic
 └── Patches/
     ├── TooltipCompanionPatch.cs        # Harmony patch for Type 1 disease tooltips
     ├── CumulativeTendPatch.cs          # Harmony patch for Type 2 disease tooltips
     ├── TimeBasedDiseasePatch.cs        # Harmony patch for Type 3 disease tooltips
+    ├── ToxicBuildupPatch.cs            # Harmony patch for Type 4 disease tooltips
     └── TendUtilityPatch.cs             # Harmony patch for capturing tend events
 ```
 
