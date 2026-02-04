@@ -419,6 +419,18 @@ namespace DiseaseImmunityProgressTracker.Core
                             continue;
                         }
 
+                        // Type 5 - Chronic diseases like Asthma (check before Type 1)
+                        // Has HediffComp_Immunizable (no immunity gain) + HediffComp_TendDuration
+                        // Treatment quality determines if severity increases or decreases
+                        if (IsChronicDisease(hediff))
+                        {
+                            // Use the standard Type 1 data recording since we track severity vs time
+                            // But note there's no immunity gain - we track just for severity history
+                            RecordDiseaseData(hediff, currentTick);
+                            RecordBedRestData(hediff, currentTick, pawn);
+                            continue;
+                        }
+
                         // Type 3 - Time-based diseases (check before Type 1)
                         // Includes Type 3a (Mechanites) and Type 3b (Fatal rots like Lung Rot, Blood Rot)
                         // Note: Type 3a has HediffComp_Immunizable but should still be tracked here
@@ -434,6 +446,7 @@ namespace DiseaseImmunityProgressTracker.Core
                         // These have immunity racing against severity; whoever hits 100% first wins
                         // Note: Type 3a Mechanites are excluded above via IsTimeBasedDisease check
                         // Note: Type 4 Toxic Buildup is excluded above via IsToxicBuildupDisease check
+                        // Note: Type 5 Chronic diseases are excluded above via IsChronicDisease check
                         var immunizable = hediff.TryGetComp<HediffComp_Immunizable>();
                         if (immunizable != null)
                         {
@@ -531,6 +544,52 @@ namespace DiseaseImmunityProgressTracker.Core
             // Should have lethal severity potential (can actually kill the pawn)
             // This excludes things like Hangover, CryptosleepSickness
             if (def.lethalSeverity < 0) return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks if a hediff is a Type 5 (chronic) disease like Asthma.
+        /// These have HediffComp_Immunizable for severity changes but:
+        /// - No immunity gain (immunityPerDaySick = 0)
+        /// - Has HediffComp_TendDuration (tendable for treatment)
+        /// - NO HediffComp_Disappears (not time-based like mechanites)
+        /// - Severity is managed through treatment quality, not cured
+        ///
+        /// Treatment mechanics (Asthma example):
+        /// - Untreated: +0.25/day severity
+        /// - Tending effect: -0.8 * tendQuality per day
+        /// - At 32% tend quality: severity is stable (0.25 - 0.8*0.32 ≈ 0)
+        /// - Above 32%: severity regresses
+        /// - Below 32%: severity progresses (but slower than untreated)
+        /// </summary>
+        public static bool IsChronicDisease(Hediff hediff)
+        {
+            if (hediff == null) return false;
+            var def = hediff.def;
+
+            // Must have HediffComp_Immunizable (for severity tracking)
+            var immunizable = hediff.TryGetComp<HediffComp_Immunizable>();
+            if (immunizable == null) return false;
+
+            // Key check: NO immunity gain when sick (immunityPerDaySick <= 0)
+            // This distinguishes from Type 1 (immunizable) diseases
+            if (immunizable.Props.immunityPerDaySick > 0) return false;
+
+            // Must have HediffComp_TendDuration (tendable for treatment)
+            // This distinguishes from Type 4 (toxic buildup) which is NOT tendable
+            var tendComp = hediff.TryGetComp<HediffComp_TendDuration>();
+            if (tendComp == null) return false;
+
+            // Must NOT have HediffComp_Disappears (that would be Type 3 time-based)
+            var disappearsComp = hediff.TryGetComp<HediffComp_Disappears>();
+            if (disappearsComp != null) return false;
+
+            // Must be tendable
+            if (!def.tendable) return false;
+
+            // Must be a "bad" hediff
+            if (!def.isBad) return false;
 
             return true;
         }

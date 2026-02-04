@@ -1,0 +1,74 @@
+Visualizes disease/infection progression vs immunity gain with predictive timeline graphs. Shows whether a pawn will survive based on current treatment, helping you make informed decisions about medical care.
+
+[b]Mouse over any pawn's disease in their health tab to see a new window with the history and prediction for the outcome given the current pace of progression.[/b]
+
+[h2]Disease Details[/h2]
+
+Here's a breakdown for each disease type.
+
+[h3]Immunity vs Disease Progression race - Flu, Infections, Malaria, Plague[/h3]
+
+With these, immunity and severity both rise toward 100% and the first to reach 100% determines the outcome. Treatment slows severity and bed rest and pawn health increase immunity gain rate.
+
+[img]https://images.steamusercontent.com/ugc/12377468219375951209/4E311A24CF338EBD11DCEA7B61287C90F621BC3C/?imw=500&imh=500&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false[/img]
+
+[list]
+[*] Shows trend lines for disease severity and immunity
+[*] Estimates if pawn will survive or not, and by how much margin
+[*] Indicators for bed rest (blue background) and tend events with quality (yellow vertical lines)
+[/list]
+
+[h3]Cumulative Treatment - Gut Worms, Muscle Parasites[/h3]
+These are cured when total accumulated tend quality reaches 300% and are non-fatal. Each treatment adds its quality percentage to the total.
+
+[img]https://images.steamusercontent.com/ugc/15714528777803309551/90E024A986396D30C28004CCC58A369308A56A9F/?imw=500&imh=500&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false[/img]
+
+Shows:
+[list]
+[*] Total progress (out of 300% cumulative tend quality) as well as overall percentage complete
+[*] Tend history with quality and tending doctor
+[*] Estimated number of remaining tends to cure the disease
+[/list]
+
+[h3]Purely Time-based - Lung Rot and Fibrous/Sensory Mechanites[/h3]
+
+These cure automatically after a set duration (1-2 quadrums [aka "seasons"]). Treatment keeps severity low while waiting. Mechanites cause pain but aren't fatal, but rots can be fatal if untreated.
+
+[img]https://images.steamusercontent.com/ugc/16844960920894921687/2A1045ECC20B02376BCBA4C211BEB82235A1C80F/?imw=500&imh=500&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false[/img]
+
+Shows the following:
+[list]
+[*] Time remaining in days and a progress bar
+[*] Current severity
+[*] Graph of severity throughout the course of the disease
+[*] Tending history
+[/list]
+
+[h3]Toxic Buildup[/h3]
+Severity increases from being outdoors (unroofed areas) during the toxic fallout event, or standing in polluted terrain or tox gas. It decreases at 8%/day only when away from all sources. Health risks increase above 40% severity.
+
+[img]https://images.steamusercontent.com/ugc/11655932092890877521/0B6665FA5226B085A09F372C9BEB8083C35FF431/?imw=500&imh=500&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false[/img]
+
+Shows:
+[list]
+[*] Current source(s) causing toxic buildup if accumulating, or SAFE if recovering
+[*] Toxic resistance, if any
+[*] Buildup history chart with causes and thresholds shown
+[*] Health risks posed by current severity
+[*] Prognosis
+[/list]
+
+[h3]Asthma[/h3]
+Asthma cannot be cured with medicine alone, the lungs must be replaced for an actual cure.   If tended with a quality of 32% or higher, the severity will decrease, otherwise it will rise slowly to a maximum of 50%.  Symptoms are worse with higher severity.
+
+[img]https://images.steamusercontent.com/ugc/17567889203083882492/0B51E8A1E99271966C49F7A0617BA46F7D67971F/?imw=500&imh=500&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false[/img]
+
+Shows:
+[list]
+[*] Current tending and affect on progression
+[*] Historic progression and trend given current tending quality
+[*] Tending history
+[/list]
+
+[h2]Compatibility[/h2]
+This was tested only on Vanilla diseases, I have no idea if it'll work with any additional disease provided by other addons.
