@@ -70,5 +70,18 @@ Shows:
 [*] Tending history
 [/list]
 
+[h3]Artery Blockage[/h3]
+Artery Blockage is a chronic heart condition that progresses very slowly over time (typically years). It cannot be treated medically - the only cures are heart replacement, healer mech serum, luciferium, or a biosculpter. As severity increases through stages, the risk of heart attacks escalates.
+
+[img]https://images.steamusercontent.com/ugc/16983212180750045629/FA2495CE43F427675B434039D772A2048ABB6E5C/?imw=500&imh=500&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false[/img]
+
+Shows:
+[list]
+[*] Current severity and stage
+[*] Progression rate and estimated time to next stage
+[*] Heart attack risk (daily percentage and expected attacks before the next stage)
+[*] Severity graph showing historical trend and projection
+[*] Available cure options
+
 [h2]Compatibility[/h2]
 This was tested only on Vanilla diseases, I have no idea if it'll work with any additional disease provided by other addons.

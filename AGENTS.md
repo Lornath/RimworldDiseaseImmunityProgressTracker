@@ -53,6 +53,7 @@ The mod tracks diseases using a type system based on their cure mechanics:
 | **Type 3b** | Fatal Rots | Lung Rot, Blood Rot | Time-based; treatment prevents fatal severity | `HediffComp_Disappears` + `HediffComp_TendDuration` (no Immunizable) | `TimeBasedWindow` |
 | **Type 4** | Toxic Buildup | Toxic Buildup | Severity heals when safe (-8%/day); exposure blocks recovery | `HediffComp_ImmunizableToxic` (no immunity gain, NOT tendable, lethal) | `ToxicBuildupWindow` |
 | **Type 5** | Chronic | Asthma | Treatment quality controls severity; no cure, permanent management | `HediffComp_Immunizable` (NO immunity gain) + `HediffComp_TendDuration` | `ChronicDiseaseWindow` |
+| **Type 6** | Artery Blockage | Artery Blockage | Heart replacement, healer serum, luciferium, biosculpter | `HediffComp_Immunizable` (NO immunity gain, NOT tendable, lethal) | `ArteryBlockageWindow` |
 
 **Type 3a vs 3b Key Differences:**
 - **Type 3a (Mechanites)**: Non-fatal. Severity controls pain level (0-49% = mild 20% pain, 50-100% = intense 60% pain). Has `HediffComp_Immunizable` but `immunityPerDaySick = 0` (no immunity gain).
@@ -80,8 +81,19 @@ The mod tracks diseases using a type system based on their cure mechanics:
   - Below threshold: severity still increases, but slower
 - Has stage thresholds (30%, 45% for asthma) that determine symptom severity.
 
+**Type 6 (Artery Blockage) Key Differences:**
+- Has `HediffComp_Immunizable` but `immunityPerDaySick = 0` (no immunity gain).
+- NOT tendable - cannot be treated medically (like Type 4, unlike Type 5).
+- Lethal at 100% severity (like Type 4, unlike Type 5 which caps below 100%).
+- Very slow progression: base rate 0.0007/day with 0.5-3x random factor (~0.1%/day average).
+- Causes heart attacks with escalating MTB at each severity stage (300, 200, 100, 60, 30 days).
+- Stage thresholds: 0% (minor), 20% (minor), 40% (major), 60% (major), 90% (extreme).
+- Only curable by: heart replacement, healer serum, luciferium, biosculpter.
+- Distinguished from Type 4 by checking for the **specific** `HediffComp_ImmunizableToxic` subclass (Type 4) vs base `HediffComp_Immunizable` (Type 6).
+- Detected explicitly by `defName == "HeartArteryBlockage"` to avoid misclassification.
+
 **Detection Order in Code:**
-Type 4 (Toxic Buildup) is checked FIRST, then Type 5 (Chronic), then Type 3 diseases, then Type 1. This ordering prevents misclassification since:
+Type 4 (Toxic Buildup) is checked FIRST, then Type 6 (Artery Blockage), then Type 5 (Chronic), then Type 3 diseases, then Type 1. This ordering prevents misclassification since:
 - Type 4 has `HediffComp_Immunizable` but should not show the Type 1 immunity graph.
 - Type 5 has `HediffComp_Immunizable` but should use `ChronicDiseaseWindow`.
 - Type 3a Mechanites have `HediffComp_Immunizable` but should use `TimeBasedWindow`.
@@ -93,7 +105,8 @@ Type 4 (Toxic Buildup) is checked FIRST, then Type 5 (Chronic), then Type 3 dise
     - Maintains a dictionary of `DiseaseHistory` objects keyed by hediff load ID.
     - Tracks diseases by type (see Disease Type Classification above).
     - Contains static helpers for disease type detection (checked in this order):
-        - `IsToxicBuildupDisease()`: Identifies Type 4 (Toxic Buildup).
+        - `IsToxicBuildupDisease()`: Identifies Type 4 (Toxic Buildup) by checking for `HediffComp_ImmunizableToxic` subclass.
+        - `IsArteryBlockage()`: Identifies Type 6 (Artery Blockage) by defName.
         - `IsChronicDisease()`: Identifies Type 5 (Chronic diseases like Asthma).
         - `IsTimeBasedDisease()`: Identifies Type 3 diseases (both 3a and 3b).
         - `IsMechaniteDisease()`: Identifies Type 3a mechanite diseases specifically.
@@ -197,16 +210,33 @@ Type 4 (Toxic Buildup) is checked FIRST, then Type 5 (Chronic), then Type 3 dise
     - Calculates regression threshold dynamically: `-severityPerDayNotImmune / severityPerDayTended`.
     - Same tooltip-companion behavior as other windows.
 
+- **ArteryBlockageWindow** (`Source/DiseaseImmunityProgressTracker/UI/ArteryBlockageWindow.cs`):
+    - A `Window` subclass that displays Artery Blockage (Type 6) disease progress.
+    - Shows severity, progression rate, heart attack risk, and cure options.
+    - Features:
+        - Title with current severity stage (Minor/Major/Extreme).
+        - Severity display and progress bar with stage threshold markers (20%, 40%, 60%, 90%).
+        - Progression info showing rate (~0.1%/day) and time estimates to next stage and fatal.
+        - Heart attack risk display showing current daily risk percentage and MTB.
+        - Severity graph with:
+            - Longer time scale (past 2 quadrums, future 1 quadrum) due to slow progression.
+            - Horizontal threshold lines at stage boundaries (20%, 40%, 60%, 90%).
+            - Historical severity trend and projection.
+        - Cure options reminder: Replace heart, healer serum, luciferium, biosculpter.
+        - Verdict text showing risk level based on current stage.
+    - Same tooltip-companion behavior as other windows.
+
 - **ICompanionWindow** (`Source/DiseaseImmunityProgressTracker/UI/ICompanionWindow.cs`):
-    - Simple interface implemented by all companion windows (`DiseaseGraphWindow`, `CumulativeTendWindow`, `TimeBasedWindow`, `ToxicBuildupWindow`, `ChronicDiseaseWindow`).
+    - Simple interface implemented by all companion windows (`DiseaseGraphWindow`, `CumulativeTendWindow`, `TimeBasedWindow`, `ToxicBuildupWindow`, `ChronicDiseaseWindow`, `ArteryBlockageWindow`).
     - Exposes `Hediff Hediff { get; }` property for the manager to identify which pawn/disease a window belongs to.
     - Enables the stacking logic to group windows by pawn.
 
 - **TooltipCompanionPatch** (`Source/DiseaseImmunityProgressTracker/Patches/TooltipCompanionPatch.cs`):
     - Harmony patch on `HediffComp_Immunizable.CompTipStringExtra`.
     - Detects when a Type 1 (immunizable) disease tooltip is shown and opens `DiseaseGraphWindow`.
-    - Skips Type 4 (Toxic Buildup) which has Immunizable but should use `ToxicBuildupWindow`.
+    - Skips Type 4 (Toxic Buildup) which has ImmunizableToxic but should use `ToxicBuildupWindow`.
     - Skips Type 5 (Chronic) which has Immunizable but should use `ChronicDiseaseWindow`.
+    - Skips Type 6 (Artery Blockage) which has Immunizable but should use `ArteryBlockageWindow`.
     - Skips Type 3a (Mechanites) which have Immunizable but should use `TimeBasedWindow`.
 
 - **ChronicDiseasePatch** (`Source/DiseaseImmunityProgressTracker/Patches/ChronicDiseasePatch.cs`):
@@ -218,6 +248,11 @@ Type 4 (Toxic Buildup) is checked FIRST, then Type 5 (Chronic), then Type 3 dise
     - Harmony patch on `HediffComp_Immunizable.CompTipStringExtra`.
     - Only handles Type 4 (Toxic Buildup) diseases identified by `DiseaseTracker.IsToxicBuildupDisease()`.
     - Opens `ToxicBuildupWindow` when toxic buildup tooltip is shown.
+
+- **ArteryBlockagePatch** (`Source/DiseaseImmunityProgressTracker/Patches/ArteryBlockagePatch.cs`):
+    - Harmony patch on `HediffComp_Immunizable.CompTipStringExtra`.
+    - Only handles Type 6 (Artery Blockage) diseases identified by `DiseaseTracker.IsArteryBlockage()`.
+    - Opens `ArteryBlockageWindow` when artery blockage tooltip is shown.
 
 - **CumulativeTendPatch** (`Source/DiseaseImmunityProgressTracker/Patches/CumulativeTendPatch.cs`):
     - Harmony patch on `HediffComp_TendDuration.CompTipStringExtra`.
@@ -264,7 +299,7 @@ When a pawn has multiple diseases, multiple companion windows can be open simult
 
 ### Data Structures (in DiseaseTracker.cs)
 
-- **DiseaseDataPoint**: Records immunity and severity at a specific tick (for Type 1 diseases).
+- **DiseaseDataPoint**: Records immunity and severity at a specific tick (for Type 1, Type 5, and Type 6 diseases). For Type 6 (Artery Blockage), the Immunity field is always 0.
 - **TimeBasedDataPoint**: Records severity and time remaining at a specific tick (for Type 3 diseases):
     - `Tick`: When this data point was recorded
     - `Severity`: Current severity (0-1)
@@ -313,6 +348,7 @@ Source/DiseaseImmunityProgressTracker/
 │   ├── TimeBasedWindow.cs              # Time/severity display for Type 3 (time-based) diseases
 │   ├── ToxicBuildupWindow.cs           # Severity/exposure display for Type 4 (toxic buildup)
 │   ├── ChronicDiseaseWindow.cs         # Treatment/severity display for Type 5 (chronic) diseases
+│   ├── ArteryBlockageWindow.cs         # Heart attack risk display for Type 6 (artery blockage)
 │   └── WindowPositionHelper.cs         # Tooltip position calculation logic
 └── Patches/
     ├── TooltipCompanionPatch.cs        # Harmony patch for Type 1 disease tooltips
@@ -320,6 +356,7 @@ Source/DiseaseImmunityProgressTracker/
     ├── TimeBasedDiseasePatch.cs        # Harmony patch for Type 3 disease tooltips
     ├── ToxicBuildupPatch.cs            # Harmony patch for Type 4 disease tooltips
     ├── ChronicDiseasePatch.cs          # Harmony patch for Type 5 disease tooltips
+    ├── ArteryBlockagePatch.cs          # Harmony patch for Type 6 disease tooltips
     └── TendUtilityPatch.cs             # Harmony patch for capturing tend events
 ```
 
