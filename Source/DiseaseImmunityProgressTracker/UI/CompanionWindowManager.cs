@@ -78,10 +78,7 @@ namespace DiseaseImmunityProgressTracker.UI
             var windows = new List<Window>();
             foreach (var window in Find.WindowStack.Windows)
             {
-                if (window is DiseaseGraphWindow ||
-                    window is CumulativeTendWindow ||
-                    window is TimeBasedWindow ||
-                    window is ToxicBuildupWindow)
+                if (window is ICompanionWindow)
                 {
                     windows.Add(window);
                 }

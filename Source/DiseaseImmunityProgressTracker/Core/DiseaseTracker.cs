@@ -445,6 +445,15 @@ namespace DiseaseImmunityProgressTracker.Core
                             continue;
                         }
 
+                        // Type 7 - Food Poisoning (check before Type 3)
+                        // Only has HediffComp_SeverityPerDay, no immunity/tending/disappears
+                        // Severity starts at 1.0 and decreases linearly over 24 hours
+                        if (IsFoodPoisoning(hediff))
+                        {
+                            RecordFoodPoisoningData(hediff, currentTick);
+                            continue;
+                        }
+
                         // Type 3 - Time-based diseases (check before Type 1)
                         // Includes Type 3a (Mechanites) and Type 3b (Fatal rots like Lung Rot, Blood Rot)
                         // Note: Type 3a has HediffComp_Immunizable but should still be tracked here
@@ -653,6 +662,22 @@ namespace DiseaseImmunityProgressTracker.Core
         }
 
         /// <summary>
+        /// Checks if a hediff is Food Poisoning.
+        /// This is a Type 7 disease - fixed 24-hour ordeal with no treatment.
+        ///
+        /// Properties:
+        /// - Only has HediffComp_SeverityPerDay (severityPerDay = -1)
+        /// - Initial severity 1.0, linear decrease to 0 over 24 hours
+        /// - No immunity, no tending, no disappears timer
+        /// - Three stages: Initial (sev >= 0.80), Major (sev >= 0.20), Recovering (sev < 0.20)
+        /// </summary>
+        public static bool IsFoodPoisoning(Hediff hediff)
+        {
+            if (hediff == null) return false;
+            return hediff.def.defName == "FoodPoisoning";
+        }
+
+        /// <summary>
         /// Checks if a hediff is Artery Blockage specifically.
         /// This is a Type 6 disease - progressive, untreatable, lethal chronic condition.
         ///
@@ -756,6 +781,16 @@ namespace DiseaseImmunityProgressTracker.Core
 
             // Update exposure interval tracking
             history.UpdateExposureState(currentTick, exposure);
+        }
+
+        private void RecordFoodPoisoningData(Hediff hediff, int currentTick)
+        {
+            var history = GetOrCreateHistory(hediff);
+            if (history == null) return;
+
+            // Food Poisoning uses the standard DiseaseDataPoint format
+            // The Immunity field isn't used (always 0), Severity tracks the countdown
+            history.RecordDataPoint(currentTick, 0f, hediff.Severity);
         }
 
         private void RecordArteryBlockageData(Hediff hediff, int currentTick)
