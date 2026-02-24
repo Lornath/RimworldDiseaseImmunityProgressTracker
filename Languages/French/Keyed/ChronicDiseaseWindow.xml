@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- ChronicDiseaseWindow (Type 5: Chronic diseases like Asthma) -->
+  <DIPT_CDW_FallbackTitle>Condition Chronique</DIPT_CDW_FallbackTitle>
+  <DIPT_CDW_NotTreatedProgressing>Non traité - EN PROGRESSION</DIPT_CDW_NotTreatedProgressing>
+  <DIPT_CDW_EffectRegressing>EN RÉGRESSION</DIPT_CDW_EffectRegressing>
+  <DIPT_CDW_EffectSlowing>RALENTISSEMENT</DIPT_CDW_EffectSlowing>
+  <DIPT_CDW_EffectStable>STABLE</DIPT_CDW_EffectStable>
+  <DIPT_CDW_Treatment>Traitement : {0}% - {1}{2}</DIPT_CDW_Treatment>
+  <DIPT_CDW_SeverityWithMax>Gravité : {0}% (max {1}%)</DIPT_CDW_SeverityWithMax>
+  <DIPT_CDW_PercentComplete>{0}%</DIPT_CDW_PercentComplete>
+  <DIPT_CDW_HintRegress> [Régression]</DIPT_CDW_HintRegress>
+  <DIPT_CDW_HintSlow> [Lent]</DIPT_CDW_HintSlow>
+  <DIPT_CDW_HintMinimal> [Minimal]</DIPT_CDW_HintMinimal>
+  <DIPT_CDW_TendEntry>{0}%{1} - {2}</DIPT_CDW_TendEntry>
+  <DIPT_CDW_VerdictRegressing>EN RÉGRESSION - Gravité en baisse ({0}%/j)</DIPT_CDW_VerdictRegressing>
+  <DIPT_CDW_VerdictImproving>AMÉLIORATION - Régression lente ({0}%/j)</DIPT_CDW_VerdictImproving>
+  <DIPT_CDW_VerdictStable>STABLE - Gravité maintenue (&gt;{0}% nécessaire pour régresser)</DIPT_CDW_VerdictStable>
+  <DIPT_CDW_VerdictSlowing>RALENTISSEMENT - Meilleur traitement nécessaire (&gt;{0}% pour régresser)</DIPT_CDW_VerdictSlowing>
+  <DIPT_CDW_VerdictProgressing>EN PROGRESSION - Traitement nécessaire ! (&gt;{0}% pour régresser)</DIPT_CDW_VerdictProgressing>
+</LanguageData>

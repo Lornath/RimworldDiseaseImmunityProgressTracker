@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- Strings reused across multiple windows -->
+  <DIPT_Shared_RecentTends>Tratamientos recientes:</DIPT_Shared_RecentTends>
+  <DIPT_Shared_NoTendsRecorded>Sin tratamientos registrados</DIPT_Shared_NoTendsRecorded>
+  <DIPT_Shared_SelfTend>Autotratamiento</DIPT_Shared_SelfTend>
+  <DIPT_Shared_Calculating>Calculando…</DIPT_Shared_Calculating>
+  <DIPT_Shared_Now>Ahora</DIPT_Shared_Now>
+  <DIPT_Shared_AxisPast>-{0}d</DIPT_Shared_AxisPast>
+  <DIPT_Shared_AxisFuture>+{0}d</DIPT_Shared_AxisFuture>
+</LanguageData>

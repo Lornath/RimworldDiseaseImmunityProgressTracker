@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- FoodPoisoningWindow (Type 7: Food Poisoning) -->
+  <DIPT_FPW_Title>Lebensmittelvergiftung - {0}</DIPT_FPW_Title>
+  <DIPT_FPW_Resolving>Klingt ab…</DIPT_FPW_Resolving>
+  <DIPT_FPW_Countdown>Noch {0} Std. {1} Min.</DIPT_FPW_Countdown>
+  <DIPT_FPW_StageInitial>Anfänglich</DIPT_FPW_StageInitial>
+  <DIPT_FPW_StageMajor>Intensiv</DIPT_FPW_StageMajor>
+  <DIPT_FPW_StageRecovering>Erholung</DIPT_FPW_StageRecovering>
+  <DIPT_FPW_DurationInitial>~4,8 Std.</DIPT_FPW_DurationInitial>
+  <DIPT_FPW_DurationMajor>~14,4 Std.</DIPT_FPW_DurationMajor>
+  <DIPT_FPW_DurationRecovering>~4,8 Std.</DIPT_FPW_DurationRecovering>
+  <DIPT_FPW_MajorStageIn>Intensive Phase in ~{0} Std.</DIPT_FPW_MajorStageIn>
+  <DIPT_FPW_RecoveryStartsIn>Erholung beginnt in ~{0} Std.</DIPT_FPW_RecoveryStartsIn>
+  <DIPT_FPW_DoneIn>Vorbei in ~{0} Std.</DIPT_FPW_DoneIn>
+  <DIPT_FPW_VomitingEvery7h>Erbrechen erwartet alle ~7 Stunden</DIPT_FPW_VomitingEvery7h>
+  <DIPT_FPW_VomitingEvery5h>Erbrechen erwartet alle ~5 Stunden</DIPT_FPW_VomitingEvery5h>
+  <DIPT_FPW_VomitingEvery10h>Erbrechen erwartet alle ~10 Stunden</DIPT_FPW_VomitingEvery10h>
+  <DIPT_FPW_StageDescInitial>Ausbruch - Symptome nehmen zu</DIPT_FPW_StageDescInitial>
+  <DIPT_FPW_StageDescMajor>Schlimmste Phase - stark beeinträchtigt</DIPT_FPW_StageDescMajor>
+  <DIPT_FPW_StageDescRecovering>Erholung - Symptome lassen nach</DIPT_FPW_StageDescRecovering>
+  <DIPT_FPW_VerdictWorstComing>Das Schlimmste steht noch bevor - mach dich bereit</DIPT_FPW_VerdictWorstComing>
+  <DIPT_FPW_VerdictHangInThere>Halte durch, Erholung beginnt in ~{0} Std.</DIPT_FPW_VerdictHangInThere>
+  <DIPT_FPW_VerdictAlmostWorst>Fast durch das Schlimmste - Erholung in ~{0} Std.</DIPT_FPW_VerdictAlmostWorst>
+  <DIPT_FPW_VerdictAlmostDone>Fast vorbei! Noch ~{0} Std.</DIPT_FPW_VerdictAlmostDone>
+</LanguageData>

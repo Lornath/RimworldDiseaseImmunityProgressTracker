@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- ArteryBlockageWindow (Type 6: Artery Blockage) -->
+  <DIPT_ABW_Title>Obstruction Artérielle ({0})</DIPT_ABW_Title>
+  <DIPT_ABW_StageMinor>Mineur</DIPT_ABW_StageMinor>
+  <DIPT_ABW_StageMajor>Majeur</DIPT_ABW_StageMajor>
+  <DIPT_ABW_StageExtreme>Extrême</DIPT_ABW_StageExtreme>
+  <DIPT_ABW_Severity>Gravité : {0}%</DIPT_ABW_Severity>
+  <DIPT_ABW_ProgressionRate>Progression : ~{0}%/jour</DIPT_ABW_ProgressionRate>
+  <DIPT_ABW_NextStage>Stade suivant ({0} {1}%) : ~{2}</DIPT_ABW_NextStage>
+  <DIPT_ABW_FatalIn>Fatal (100%) : ~{0}</DIPT_ABW_FatalIn>
+  <DIPT_ABW_ProgressionStalled>Progression bloquée</DIPT_ABW_ProgressionStalled>
+  <DIPT_ABW_TimeYears>{0} ans</DIPT_ABW_TimeYears>
+  <DIPT_ABW_TimeQuadrums>{0} quadrums</DIPT_ABW_TimeQuadrums>
+  <DIPT_ABW_TimeDays>{0} jours</DIPT_ABW_TimeDays>
+  <DIPT_ABW_HeartAttackRisk>Risque d'Infarctus</DIPT_ABW_HeartAttackRisk>
+  <DIPT_ABW_CurrentRisk>Actuel : {0}%/jour (TME {1}j)</DIPT_ABW_CurrentRisk>
+  <DIPT_ABW_ExpectedAttacks>~{0} crises attendues avant le stade suivant</DIPT_ABW_ExpectedAttacks>
+  <DIPT_ABW_CuresLabel>Remèdes :</DIPT_ABW_CuresLabel>
+  <DIPT_ABW_CuresList>Remplacement du cœur, sérum guérisseur, luciferium, biosculpteur</DIPT_ABW_CuresList>
+  <DIPT_ABW_VerdictCritical>CRITIQUE - Risque extrême d'infarctus (TME {0}j)</DIPT_ABW_VerdictCritical>
+  <DIPT_ABW_VerdictSerious>GRAVE - Risque élevé d'infarctus (TME {0}j)</DIPT_ABW_VerdictSerious>
+  <DIPT_ABW_VerdictModerate>MODÉRÉ - Risque accru d'infarctus (TME {0}j)</DIPT_ABW_VerdictModerate>
+  <DIPT_ABW_VerdictMild>LÉGER - Faible risque d'infarctus (TME {0}j)</DIPT_ABW_VerdictMild>
+  <DIPT_ABW_VerdictEarly>PRÉCOCE - Très faible risque d'infarctus (TME {0}j)</DIPT_ABW_VerdictEarly>
+</LanguageData>

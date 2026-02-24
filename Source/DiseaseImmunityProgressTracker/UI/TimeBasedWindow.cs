@@ -159,7 +159,7 @@ namespace DiseaseImmunityProgressTracker.UI
             // Draw recent tends section
             Text.Font = GameFont.Tiny;
             GUI.color = AxisColor;
-            Widgets.Label(new Rect(contentRect.x, yOffset, contentWidth, tinyHeight), "Recent tends:");
+            Widgets.Label(new Rect(contentRect.x, yOffset, contentWidth, tinyHeight), "DIPT_Shared_RecentTends".Translate());
             GUI.color = Color.white;
             yOffset += tinyHeight + 2f;
 
@@ -182,16 +182,16 @@ namespace DiseaseImmunityProgressTracker.UI
             if (daysRemaining < 1f)
             {
                 float hoursRemaining = disappearsComp.ticksToDisappear / TicksPerHour;
-                timeText = $"Time remaining: {hoursRemaining:0.#}h";
+                timeText = "DIPT_TBW_TimeRemainingHours".Translate($"{hoursRemaining:0.#}");
             }
             else
             {
-                timeText = $"Time remaining: {daysRemaining:0.#} days";
+                timeText = "DIPT_TBW_TimeRemainingDays".Translate($"{daysRemaining:0.#}");
             }
 
             // Show tending status on the same line
             bool isTended = tendComp != null && tendComp.IsTended;
-            string tendStatus = isTended ? "[Tended]" : "[Needs tending]";
+            string tendStatus = isTended ? (string)"DIPT_TBW_Tended".Translate() : (string)"DIPT_TBW_NeedsTending".Translate();
             Color tendColor = isTended ? TendedColor : NeedsTendingColor;
 
             Text.Font = GameFont.Small;
@@ -227,7 +227,7 @@ namespace DiseaseImmunityProgressTracker.UI
             Text.Font = GameFont.Small;
             Text.Anchor = TextAnchor.MiddleCenter;
             int progressPct = (int)(progress * 100);
-            Widgets.Label(rect, $"{progressPct}% complete");
+            Widgets.Label(rect, "DIPT_TBW_PercentComplete".Translate($"{progressPct}"));
             Text.Anchor = TextAnchor.UpperLeft;
         }
 
@@ -244,11 +244,11 @@ namespace DiseaseImmunityProgressTracker.UI
                 // For mechanites, show pain level instead of just severity
                 string painLevel = hediff.Severity >= MechanitePainThreshold ? "Intense pain" : "Mild pain";
                 int painPct = hediff.Severity >= MechanitePainThreshold ? 60 : 20;
-                Widgets.Label(new Rect(rect.x, rect.y, rect.width, 20f), $"Severity: {severityPct}% ({painLevel}, {painPct}%)");
+                Widgets.Label(new Rect(rect.x, rect.y, rect.width, 20f), "DIPT_TBW_SeverityWithPain".Translate(severityPct, painLevel, painPct));
             }
             else
             {
-                Widgets.Label(new Rect(rect.x, rect.y, rect.width, 20f), $"Severity: {severityPct}%");
+                Widgets.Label(new Rect(rect.x, rect.y, rect.width, 20f), "DIPT_TBW_Severity".Translate($"{severityPct}"));
             }
             GUI.color = Color.white;
 
@@ -376,13 +376,13 @@ namespace DiseaseImmunityProgressTracker.UI
             // X-axis labels - show progress from start to cure
             Text.Anchor = TextAnchor.UpperCenter;
             // "Start" label at left edge
-            Widgets.Label(new Rect(plotArea.x - 20f, plotArea.yMax + 1f, 40f, 16f), "Start");
+            Widgets.Label(new Rect(plotArea.x - 20f, plotArea.yMax + 1f, 40f, 16f), "DIPT_TBW_AxisStart".Translate());
             // "Cure" label at right end
-            Widgets.Label(new Rect(plotArea.xMax - 20f, plotArea.yMax + 1f, 40f, 16f), "Cure");
+            Widgets.Label(new Rect(plotArea.xMax - 20f, plotArea.yMax + 1f, 40f, 16f), "DIPT_TBW_AxisCure".Translate());
             // "Now" label under the now line (only if not too close to edges to avoid overlap)
             if (currentProgress > 0.15f && currentProgress < 0.85f)
             {
-                Widgets.Label(new Rect(nowX - 20f, plotArea.yMax + 1f, 40f, 16f), "Now");
+                Widgets.Label(new Rect(nowX - 20f, plotArea.yMax + 1f, 40f, 16f), "DIPT_Shared_Now".Translate());
             }
             Text.Anchor = TextAnchor.UpperLeft;
 
@@ -429,7 +429,7 @@ namespace DiseaseImmunityProgressTracker.UI
             if (history == null || history.TendingEvents.Count == 0)
             {
                 GUI.color = AxisColor;
-                Widgets.Label(rect, "  No tends recorded yet");
+                Widgets.Label(rect, "DIPT_Shared_NoTendsRecorded".Translate());
                 GUI.color = Color.white;
                 return;
             }
@@ -473,11 +473,11 @@ namespace DiseaseImmunityProgressTracker.UI
             string doctorInfo = tend.DoctorName;
             if (doctorInfo == "Self/Unknown" || string.IsNullOrEmpty(doctorInfo))
             {
-                doctorInfo = "Self-tend";
+                doctorInfo = "DIPT_Shared_SelfTend".Translate();
             }
 
             int qualityPct = (int)(tend.Quality * 100);
-            string text = $"{qualityPct}% - {doctorInfo}";
+            string text = "DIPT_TBW_TendEntry".Translate($"{qualityPct}", doctorInfo);
 
             Rect textRect = new Rect(iconRect.xMax + iconPadding, rect.y, rect.width - iconSize - iconPadding - 4f, rect.height);
             Widgets.Label(textRect, text);
@@ -492,7 +492,7 @@ namespace DiseaseImmunityProgressTracker.UI
 
             if (!prognosis.IsValid)
             {
-                verdictText = "Calculating...";
+                verdictText = "DIPT_Shared_Calculating".Translate();
                 verdictColor = AxisColor;
             }
             else if (isMechanite)
@@ -505,39 +505,39 @@ namespace DiseaseImmunityProgressTracker.UI
 
                 if (!currentlyIntense && !projectedIntense)
                 {
-                    verdictText = "SAFE - Pain controlled (mild, 20%)";
+                    verdictText = "DIPT_TBW_VerdictSafePainControlled".Translate();
                     verdictColor = SafeColor;
                 }
                 else if (!currentlyIntense && projectedIntense)
                 {
-                    verdictText = "WARNING - Pain will intensify without tending";
+                    verdictText = "DIPT_TBW_VerdictWarningPainIntensify".Translate();
                     verdictColor = WarningColor;
                 }
                 else if (currentlyIntense && prognosis.SeverityChangePerDay < 0)
                 {
-                    verdictText = "IMPROVING - Pain decreasing with treatment";
+                    verdictText = "DIPT_TBW_VerdictImprovingPainDecreasing".Translate();
                     verdictColor = SafeColor;
                 }
                 else
                 {
-                    verdictText = "INTENSE PAIN - Keep tended to reduce";
+                    verdictText = "DIPT_TBW_VerdictIntensePain".Translate();
                     verdictColor = DangerColor;
                 }
             }
             else if (prognosis.WillSurvive)
             {
                 int projectedPct = (int)(prognosis.ProjectedFinalSeverity * 100);
-                verdictText = $"SAFE - Will survive (projected {projectedPct}%)";
+                verdictText = "DIPT_TBW_VerdictSafeWillSurvive".Translate($"{projectedPct}");
                 verdictColor = SafeColor;
             }
             else if (prognosis.ProjectedFinalSeverity >= 0.9f)
             {
-                verdictText = "DANGER - Severity may reach fatal levels!";
+                verdictText = "DIPT_TBW_VerdictDanger".Translate();
                 verdictColor = DangerColor;
             }
             else
             {
-                verdictText = "MONITOR - Severity rising";
+                verdictText = "DIPT_TBW_VerdictMonitor".Translate();
                 verdictColor = WarningColor;
             }
 

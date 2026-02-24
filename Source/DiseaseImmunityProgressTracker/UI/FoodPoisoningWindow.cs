@@ -170,7 +170,7 @@ namespace DiseaseImmunityProgressTracker.UI
             // Capitalize first letter
             if (stageName.Length > 0)
                 stageName = char.ToUpper(stageName[0]) + stageName.Substring(1);
-            Widgets.Label(rect, $"Food Poisoning - {stageName}");
+            Widgets.Label(rect, "DIPT_FPW_Title".Translate(stageName));
         }
 
         private void DrawCountdown(Rect rect, float hoursRemaining)
@@ -180,13 +180,13 @@ namespace DiseaseImmunityProgressTracker.UI
             string timeText;
             if (hoursRemaining <= 0)
             {
-                timeText = "Resolving...";
+                timeText = "DIPT_FPW_Resolving".Translate();
             }
             else
             {
                 int hours = (int)hoursRemaining;
                 int minutes = (int)((hoursRemaining - hours) * 60);
-                timeText = $"{hours}h {minutes:D2}m remaining";
+                timeText = "DIPT_FPW_Countdown".Translate($"{hours}", $"{minutes:D2}");
             }
 
             GUI.color = SafeColor;
@@ -240,36 +240,36 @@ namespace DiseaseImmunityProgressTracker.UI
             Text.Anchor = TextAnchor.UpperCenter;
 
             GUI.color = InitialColor;
-            Widgets.Label(new Rect(rect.x, rect.y, initialWidth, rowHeight), "Initial");
+            Widgets.Label(new Rect(rect.x, rect.y, initialWidth, rowHeight), "DIPT_FPW_StageInitial".Translate());
 
             GUI.color = MajorColor;
-            Widgets.Label(new Rect(rect.x + initialWidth, rect.y, majorWidth, rowHeight), "Major");
+            Widgets.Label(new Rect(rect.x + initialWidth, rect.y, majorWidth, rowHeight), "DIPT_FPW_StageMajor".Translate());
 
             GUI.color = RecoveringColor;
-            Widgets.Label(new Rect(rect.x + initialWidth + majorWidth, rect.y, recoveringWidth, rowHeight), "Recovering");
+            Widgets.Label(new Rect(rect.x + initialWidth + majorWidth, rect.y, recoveringWidth, rowHeight), "DIPT_FPW_StageRecovering".Translate());
 
             // Duration labels
             GUI.color = AxisColor;
-            Widgets.Label(new Rect(rect.x, rect.y + rowHeight, initialWidth, rowHeight), "~4.8h");
-            Widgets.Label(new Rect(rect.x + initialWidth, rect.y + rowHeight, majorWidth, rowHeight), "~14.4h");
-            Widgets.Label(new Rect(rect.x + initialWidth + majorWidth, rect.y + rowHeight, recoveringWidth, rowHeight), "~4.8h");
+            Widgets.Label(new Rect(rect.x, rect.y + rowHeight, initialWidth, rowHeight), "DIPT_FPW_DurationInitial".Translate());
+            Widgets.Label(new Rect(rect.x + initialWidth, rect.y + rowHeight, majorWidth, rowHeight), "DIPT_FPW_DurationMajor".Translate());
+            Widgets.Label(new Rect(rect.x + initialWidth + majorWidth, rect.y + rowHeight, recoveringWidth, rowHeight), "DIPT_FPW_DurationRecovering".Translate());
 
             // Time-to-next-stage indicator
             float timeToNextStage = CalculateTimeToNextStage(severity, hoursRemaining);
             string nextStageText = "";
             if (severity >= InitialThreshold)
             {
-                nextStageText = $"Major stage in ~{timeToNextStage:0.#}h";
+                nextStageText = "DIPT_FPW_MajorStageIn".Translate($"{timeToNextStage:0.#}");
                 GUI.color = WarningColor;
             }
             else if (severity >= MajorThreshold)
             {
-                nextStageText = $"Recovery starts in ~{timeToNextStage:0.#}h";
+                nextStageText = "DIPT_FPW_RecoveryStartsIn".Translate($"{timeToNextStage:0.#}");
                 GUI.color = SafeColor;
             }
             else
             {
-                nextStageText = $"Done in ~{hoursRemaining:0.#}h";
+                nextStageText = "DIPT_FPW_DoneIn".Translate($"{hoursRemaining:0.#}");
                 GUI.color = SafeColor;
             }
             Text.Anchor = TextAnchor.UpperCenter;
@@ -309,17 +309,17 @@ namespace DiseaseImmunityProgressTracker.UI
             if (severity >= InitialThreshold)
             {
                 // MTB 0.3 days = every ~7 hours
-                vomitText = "Expected vomiting every ~7 hours";
+                vomitText = "DIPT_FPW_VomitingEvery7h".Translate();
             }
             else if (severity >= MajorThreshold)
             {
                 // MTB 0.2 days = every ~5 hours
-                vomitText = "Expected vomiting every ~5 hours";
+                vomitText = "DIPT_FPW_VomitingEvery5h".Translate();
             }
             else
             {
                 // MTB 0.4 days = every ~10 hours
-                vomitText = "Expected vomiting every ~10 hours";
+                vomitText = "DIPT_FPW_VomitingEvery10h".Translate();
             }
 
             GUI.color = AxisColor;
@@ -330,17 +330,17 @@ namespace DiseaseImmunityProgressTracker.UI
             Color stageColor;
             if (severity >= InitialThreshold)
             {
-                stageDesc = "Onset - symptoms ramping up";
+                stageDesc = "DIPT_FPW_StageDescInitial".Translate();
                 stageColor = InitialColor;
             }
             else if (severity >= MajorThreshold)
             {
-                stageDesc = "Worst phase - severely impaired";
+                stageDesc = "DIPT_FPW_StageDescMajor".Translate();
                 stageColor = MajorColor;
             }
             else
             {
-                stageDesc = "Recovering - symptoms easing";
+                stageDesc = "DIPT_FPW_StageDescRecovering".Translate();
                 stageColor = RecoveringColor;
             }
 
@@ -358,24 +358,24 @@ namespace DiseaseImmunityProgressTracker.UI
 
             if (severity >= InitialThreshold)
             {
-                verdictText = "The worst part is coming soon - brace yourself";
+                verdictText = "DIPT_FPW_VerdictWorstComing".Translate();
                 verdictColor = WarningColor;
             }
             else if (severity >= 0.50f)
             {
                 float hoursToRecovery = CalculateTimeToNextStage(severity, hoursRemaining);
-                verdictText = $"Hang in there, recovery starts in ~{hoursToRecovery:0.#}h";
+                verdictText = "DIPT_FPW_VerdictHangInThere".Translate($"{hoursToRecovery:0.#}");
                 verdictColor = DangerColor;
             }
             else if (severity >= MajorThreshold)
             {
                 float hoursToRecovery = CalculateTimeToNextStage(severity, hoursRemaining);
-                verdictText = $"Almost through the worst - recovery in ~{hoursToRecovery:0.#}h";
+                verdictText = "DIPT_FPW_VerdictAlmostWorst".Translate($"{hoursToRecovery:0.#}");
                 verdictColor = WarningColor;
             }
             else
             {
-                verdictText = $"Almost done! ~{hoursRemaining:0.#}h to go";
+                verdictText = "DIPT_FPW_VerdictAlmostDone".Translate($"{hoursRemaining:0.#}");
                 verdictColor = SafeColor;
             }
 

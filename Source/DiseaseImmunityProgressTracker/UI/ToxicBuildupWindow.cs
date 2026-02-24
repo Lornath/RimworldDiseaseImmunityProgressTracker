@@ -182,17 +182,17 @@ namespace DiseaseImmunityProgressTracker.UI
             Text.Font = GameFont.Small;
             string stageName = GetStageName(hediff.Severity);
             int severityPct = (int)(hediff.Severity * 100);
-            string title = $"Toxic Buildup ({stageName}) - {severityPct}%";
+            string title = "DIPT_TXW_Title".Translate(stageName, $"{severityPct}");
             Widgets.Label(rect, title);
         }
 
         private string GetStageName(float severity)
         {
-            if (severity >= ExtremeThreshold) return "Extreme";
-            if (severity >= SeriousThreshold) return "Serious";
-            if (severity >= ModerateThreshold) return "Moderate";
-            if (severity >= 0.2f) return "Minor";
-            return "Initial";
+            if (severity >= ExtremeThreshold) return "DIPT_TXW_StageExtreme".Translate();
+            if (severity >= SeriousThreshold) return "DIPT_TXW_StageSerious".Translate();
+            if (severity >= ModerateThreshold) return "DIPT_TXW_StageModerate".Translate();
+            if (severity >= 0.2f) return "DIPT_TXW_StageMinor".Translate();
+            return "DIPT_TXW_StageInitial".Translate();
         }
 
         private void DrawExposureStatus(Rect rect, ExposureFlags exposure, bool isSafe)
@@ -202,22 +202,22 @@ namespace DiseaseImmunityProgressTracker.UI
             if (isSafe)
             {
                 GUI.color = SafeColor;
-                Widgets.Label(rect, "SAFE - Recovering");
+                Widgets.Label(rect, "DIPT_TXW_SafeRecovering".Translate());
             }
             else
             {
                 // Build list of active exposure sources
                 var sources = new List<string>();
                 if ((exposure & ExposureFlags.InToxGas) != 0)
-                    sources.Add("Tox gas");
+                    sources.Add("DIPT_TXW_ExposureToxGas".Translate());
                 if ((exposure & ExposureFlags.InPollution) != 0)
-                    sources.Add("Pollution");
+                    sources.Add("DIPT_TXW_ExposurePollution".Translate());
                 if ((exposure & ExposureFlags.ToxicFalloutActive) != 0 && (exposure & ExposureFlags.UnderRoof) == 0)
-                    sources.Add("Toxic fallout");
+                    sources.Add("DIPT_TXW_ExposureToxicFallout".Translate());
 
                 GUI.color = DangerColor;
                 string sourceList = sources.Count > 0 ? string.Join(", ", sources) : "Unknown";
-                Widgets.Label(rect, $"EXPOSED: {sourceList}");
+                Widgets.Label(rect, "DIPT_TXW_ExposedTo".Translate(sourceList));
             }
 
             GUI.color = Color.white;
@@ -237,16 +237,16 @@ namespace DiseaseImmunityProgressTracker.UI
             string resistText;
             if (toxicResistance >= 1f && toxicEnvResistance >= 1f)
             {
-                resistText = "Toxic Resistance: 100% (immune)";
+                resistText = "DIPT_TXW_ResistanceImmune".Translate();
                 GUI.color = SafeColor;
             }
             else if (toxicResistance != toxicEnvResistance)
             {
-                resistText = $"Toxic Resistance: {toxicResistance * 100:0}% / Env: {toxicEnvResistance * 100:0}%";
+                resistText = "DIPT_TXW_ResistanceBoth".Translate($"{toxicResistance * 100:0}", $"{toxicEnvResistance * 100:0}");
             }
             else
             {
-                resistText = $"Toxic Resistance: {toxicResistance * 100:0}%";
+                resistText = "DIPT_TXW_ResistanceSingle".Translate($"{toxicResistance * 100:0}");
             }
 
             Widgets.Label(rect, resistText);
@@ -344,9 +344,9 @@ namespace DiseaseImmunityProgressTracker.UI
 
             // X-axis labels
             Text.Anchor = TextAnchor.UpperCenter;
-            Widgets.Label(new Rect(plotArea.x - 20f, plotArea.yMax + 1f, 40f, 16f), $"-{pastDays:0}d");
-            Widgets.Label(new Rect(nowX - 20f, plotArea.yMax + 1f, 40f, 16f), "Now");
-            Widgets.Label(new Rect(plotArea.xMax - 20f, plotArea.yMax + 1f, 40f, 16f), $"+{futureDays:0.#}d");
+            Widgets.Label(new Rect(plotArea.x - 20f, plotArea.yMax + 1f, 40f, 16f), "DIPT_Shared_AxisPast".Translate($"{pastDays:0}"));
+            Widgets.Label(new Rect(nowX - 20f, plotArea.yMax + 1f, 40f, 16f), "DIPT_Shared_Now".Translate());
+            Widgets.Label(new Rect(plotArea.xMax - 20f, plotArea.yMax + 1f, 40f, 16f), "DIPT_Shared_AxisFuture".Translate($"{futureDays:0.#}"));
             Text.Anchor = TextAnchor.UpperLeft;
 
             GUI.color = Color.white;
@@ -560,19 +560,19 @@ namespace DiseaseImmunityProgressTracker.UI
             // Blue = safe (roofed during fallout)
             Widgets.DrawBoxSolid(new Rect(x, rect.y + 3f, boxSize, boxSize), SafeRoofedColor);
             x += boxSize + 2f;
-            Widgets.Label(new Rect(x, rect.y, 50f, rect.height), "Safe");
+            Widgets.Label(new Rect(x, rect.y, 50f, rect.height), "DIPT_TXW_LegendSafe".Translate());
             x += 40f + spacing;
 
             // Orange = pollution
             Widgets.DrawBoxSolid(new Rect(x, rect.y + 3f, boxSize, boxSize), PollutionColor);
             x += boxSize + 2f;
-            Widgets.Label(new Rect(x, rect.y, 55f, rect.height), "Pollution");
+            Widgets.Label(new Rect(x, rect.y, 55f, rect.height), "DIPT_TXW_ExposurePollution".Translate());
             x += 50f + spacing;
 
             // Red = tox gas
             Widgets.DrawBoxSolid(new Rect(x, rect.y + 3f, boxSize, boxSize), ToxGasColor);
             x += boxSize + 2f;
-            Widgets.Label(new Rect(x, rect.y, 55f, rect.height), "Tox gas");
+            Widgets.Label(new Rect(x, rect.y, 55f, rect.height), "DIPT_TXW_ExposureToxGas".Translate());
 
             GUI.color = Color.white;
         }
@@ -585,7 +585,7 @@ namespace DiseaseImmunityProgressTracker.UI
             // Draw header with severity stage
             string stageName = GetStageName(hediff.Severity).ToUpper();
             GUI.color = GetStageColor(hediff.Severity);
-            Widgets.Label(new Rect(rect.x, rect.y, rect.width, rowHeight), $"[{stageName}] exposure risks:");
+            Widgets.Label(new Rect(rect.x, rect.y, rect.width, rowHeight), "DIPT_TXW_ExposureRisks".Translate(stageName));
             GUI.color = Color.white;
 
             var (dementiaMTB, carcinomaMTB) = GetCurrentStageMTBs(hediff.Severity);
@@ -595,7 +595,7 @@ namespace DiseaseImmunityProgressTracker.UI
             {
                 float dailyDementiaRisk = CalculateDailyRisk(dementiaMTB);
                 GUI.color = GetRiskColor(dailyDementiaRisk);
-                Widgets.Label(new Rect(rect.x + 8f, yOffset, rect.width - 8f, rowHeight), $"Dementia: ~{dailyDementiaRisk:0.#}% per day");
+                Widgets.Label(new Rect(rect.x + 8f, yOffset, rect.width - 8f, rowHeight), "DIPT_TXW_RiskDementia".Translate($"{dailyDementiaRisk:0.#}"));
                 yOffset += rowHeight;
             }
 
@@ -603,7 +603,7 @@ namespace DiseaseImmunityProgressTracker.UI
             {
                 float dailyCarcinomaRisk = CalculateDailyRisk(carcinomaMTB);
                 GUI.color = GetRiskColor(dailyCarcinomaRisk);
-                Widgets.Label(new Rect(rect.x + 8f, yOffset, rect.width - 8f, rowHeight), $"Carcinoma: ~{dailyCarcinomaRisk:0.#}% per day");
+                Widgets.Label(new Rect(rect.x + 8f, yOffset, rect.width - 8f, rowHeight), "DIPT_TXW_RiskCarcinoma".Translate($"{dailyCarcinomaRisk:0.#}"));
             }
 
             GUI.color = Color.white;
@@ -652,13 +652,13 @@ namespace DiseaseImmunityProgressTracker.UI
             {
                 if (severity < 0.1f)
                 {
-                    verdictText = "RECOVERING - Nearly cleared";
+                    verdictText = "DIPT_TXW_VerdictNearlyCleared".Translate();
                     verdictColor = SafeColor;
                 }
                 else
                 {
                     float daysToRecover = severity / (-RecoveryRatePerDay);
-                    verdictText = $"RECOVERING - Clear in ~{daysToRecover:0.#} days";
+                    verdictText = "DIPT_TXW_VerdictClearInDays".Translate($"{daysToRecover:0.#}");
                     verdictColor = SafeColor;
                 }
             }
@@ -681,36 +681,36 @@ namespace DiseaseImmunityProgressTracker.UI
             if ((exposure & ExposureFlags.InToxGas) != 0)
             {
                 if (severity >= ExtremeThreshold)
-                    return "CRITICAL - Get out of tox gas immediately!";
+                    return "DIPT_TXW_VerdictCriticalToxGas".Translate();
                 if (severity >= SeriousThreshold)
-                    return "Move out of tox gas - Severity rising fast!";
-                return "Move out of tox gas to begin recovery";
+                    return "DIPT_TXW_VerdictWarnToxGasRising".Translate();
+                return "DIPT_TXW_VerdictToxGasBeginRecovery".Translate();
             }
 
             // Pollution
             if ((exposure & ExposureFlags.InPollution) != 0)
             {
                 if (severity >= ExtremeThreshold)
-                    return "CRITICAL - Get off polluted terrain!";
+                    return "DIPT_TXW_VerdictCriticalPollution".Translate();
                 if (severity >= SeriousThreshold)
-                    return "Avoid polluted terrain - Severity rising";
-                return "Move off polluted terrain to begin recovery";
+                    return "DIPT_TXW_VerdictWarnPollutionRising".Translate();
+                return "DIPT_TXW_VerdictPollutionBeginRecovery".Translate();
             }
 
             // Toxic fallout (unroofed)
             if ((exposure & ExposureFlags.ToxicFalloutActive) != 0 && (exposure & ExposureFlags.UnderRoof) == 0)
             {
                 if (severity >= ExtremeThreshold)
-                    return "CRITICAL - Get under a roof immediately!";
+                    return "DIPT_TXW_VerdictCriticalFallout".Translate();
                 if (severity >= SeriousThreshold)
-                    return "Find shelter - Severity rising toward lethal";
-                return "Get under a roof to begin recovery";
+                    return "DIPT_TXW_VerdictWarnFalloutRising".Translate();
+                return "DIPT_TXW_VerdictFalloutBeginRecovery".Translate();
             }
 
             // Fallback for unknown exposure
             if (severity >= ExtremeThreshold)
-                return "CRITICAL - Find safety immediately!";
-            return "Find safety to begin recovery";
+                return "DIPT_TXW_VerdictCriticalGeneral".Translate();
+            return "DIPT_TXW_VerdictGeneralBeginRecovery".Translate();
         }
 
         public override void WindowUpdate()

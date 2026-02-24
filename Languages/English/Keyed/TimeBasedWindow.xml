@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- TimeBasedWindow (Type 3: Time-based diseases - Mechanites and Fatal Rots) -->
+  <DIPT_TBW_TimeRemainingHours>Time remaining: {0}h</DIPT_TBW_TimeRemainingHours>
+  <DIPT_TBW_TimeRemainingDays>Time remaining: {0} days</DIPT_TBW_TimeRemainingDays>
+  <DIPT_TBW_Tended>[Tended]</DIPT_TBW_Tended>
+  <DIPT_TBW_NeedsTending>[Needs tending]</DIPT_TBW_NeedsTending>
+  <DIPT_TBW_SeverityWithPain>Severity: {0}% ({1}, {2}%)</DIPT_TBW_SeverityWithPain>
+  <DIPT_TBW_Severity>Severity: {0}%</DIPT_TBW_Severity>
+  <DIPT_TBW_PercentComplete>{0}% complete</DIPT_TBW_PercentComplete>
+  <DIPT_TBW_AxisStart>Start</DIPT_TBW_AxisStart>
+  <DIPT_TBW_AxisCure>Cure</DIPT_TBW_AxisCure>
+  <DIPT_TBW_VerdictSafePainControlled>SAFE - Pain controlled (mild, 20%)</DIPT_TBW_VerdictSafePainControlled>
+  <DIPT_TBW_VerdictWarningPainIntensify>WARNING - Pain will intensify without tending</DIPT_TBW_VerdictWarningPainIntensify>
+  <DIPT_TBW_VerdictImprovingPainDecreasing>IMPROVING - Pain decreasing with treatment</DIPT_TBW_VerdictImprovingPainDecreasing>
+  <DIPT_TBW_VerdictIntensePain>INTENSE PAIN - Keep tended to reduce</DIPT_TBW_VerdictIntensePain>
+  <DIPT_TBW_VerdictSafeWillSurvive>SAFE - Will survive (projected {0}%)</DIPT_TBW_VerdictSafeWillSurvive>
+  <DIPT_TBW_VerdictDanger>DANGER - Severity may reach fatal levels!</DIPT_TBW_VerdictDanger>
+  <DIPT_TBW_VerdictMonitor>MONITOR - Severity rising</DIPT_TBW_VerdictMonitor>
+  <DIPT_TBW_TendEntry>{0}% - {1}</DIPT_TBW_TendEntry>
+</LanguageData>

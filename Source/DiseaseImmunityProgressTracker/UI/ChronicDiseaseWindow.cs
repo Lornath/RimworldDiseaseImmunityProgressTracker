@@ -137,7 +137,7 @@ namespace DiseaseImmunityProgressTracker.UI
 
             // Draw title
             Text.Font = GameFont.Small;
-            string title = hediff?.Label?.CapitalizeFirst() ?? "Chronic Condition";
+            string title = hediff?.Label?.CapitalizeFirst() ?? "DIPT_CDW_FallbackTitle".Translate();
             Widgets.Label(new Rect(contentRect.x, yOffset, contentWidth, smallHeight), title);
             yOffset += smallHeight + 4f;
 
@@ -160,7 +160,7 @@ namespace DiseaseImmunityProgressTracker.UI
             // Draw recent tends section
             Text.Font = GameFont.Tiny;
             GUI.color = AxisColor;
-            Widgets.Label(new Rect(contentRect.x, yOffset, contentWidth, tinyHeight), "Recent tends:");
+            Widgets.Label(new Rect(contentRect.x, yOffset, contentWidth, tinyHeight), "DIPT_Shared_RecentTends".Translate());
             GUI.color = Color.white;
             yOffset += tinyHeight + 2f;
 
@@ -183,7 +183,7 @@ namespace DiseaseImmunityProgressTracker.UI
             {
                 // Not tended
                 GUI.color = NeedsTendingColor;
-                Widgets.Label(rect, "Not treated - PROGRESSING");
+                Widgets.Label(rect, "DIPT_CDW_NotTreatedProgressing".Translate());
                 GUI.color = Color.white;
             }
             else
@@ -197,17 +197,17 @@ namespace DiseaseImmunityProgressTracker.UI
 
                 if (prognosis.SeverityChangePerDay <= -0.01f)
                 {
-                    effectText = "REGRESSING";
+                    effectText = "DIPT_CDW_EffectRegressing".Translate();
                     effectColor = SafeColor;
                 }
                 else if (prognosis.SeverityChangePerDay >= 0.01f)
                 {
-                    effectText = "SLOWING";
+                    effectText = "DIPT_CDW_EffectSlowing".Translate();
                     effectColor = WarningColor;
                 }
                 else
                 {
-                    effectText = "STABLE";
+                    effectText = "DIPT_CDW_EffectStable".Translate();
                     effectColor = TendedColor;
                 }
 
@@ -228,7 +228,7 @@ namespace DiseaseImmunityProgressTracker.UI
                 }
 
                 GUI.color = effectColor;
-                Widgets.Label(rect, $"Treatment: {qualityPct}% - {effectText}{timeText}");
+                Widgets.Label(rect, "DIPT_CDW_Treatment".Translate($"{qualityPct}", effectText, timeText));
                 GUI.color = Color.white;
             }
         }
@@ -242,7 +242,7 @@ namespace DiseaseImmunityProgressTracker.UI
 
             Color severityColor = GetSeverityColor(hediff.Severity, maxSeverity);
             GUI.color = severityColor;
-            Widgets.Label(rect, $"Severity: {severityPct}% (max {maxPct}%)");
+            Widgets.Label(rect, "DIPT_CDW_SeverityWithMax".Translate($"{severityPct}", $"{maxPct}"));
             GUI.color = Color.white;
         }
 
@@ -287,7 +287,7 @@ namespace DiseaseImmunityProgressTracker.UI
             Text.Font = GameFont.Small;
             Text.Anchor = TextAnchor.MiddleCenter;
             int severityPct = (int)(hediff.Severity * 100);
-            Widgets.Label(rect, $"{severityPct}%");
+            Widgets.Label(rect, "DIPT_CDW_PercentComplete".Translate($"{severityPct}"));
             Text.Anchor = TextAnchor.UpperLeft;
         }
 
@@ -429,9 +429,9 @@ namespace DiseaseImmunityProgressTracker.UI
 
             // X-axis labels
             Text.Anchor = TextAnchor.UpperCenter;
-            Widgets.Label(new Rect(plotArea.x - 15f, plotArea.yMax + 1f, 30f, 16f), "-2d");
-            Widgets.Label(new Rect(nowX - 15f, plotArea.yMax + 1f, 30f, 16f), "Now");
-            Widgets.Label(new Rect(plotArea.xMax - 15f, plotArea.yMax + 1f, 30f, 16f), "+2d");
+            Widgets.Label(new Rect(plotArea.x - 15f, plotArea.yMax + 1f, 30f, 16f), "DIPT_Shared_AxisPast".Translate("2"));
+            Widgets.Label(new Rect(nowX - 15f, plotArea.yMax + 1f, 30f, 16f), "DIPT_Shared_Now".Translate());
+            Widgets.Label(new Rect(plotArea.xMax - 15f, plotArea.yMax + 1f, 30f, 16f), "DIPT_Shared_AxisFuture".Translate("2"));
             Text.Anchor = TextAnchor.UpperLeft;
 
             GUI.color = Color.white;
@@ -460,7 +460,7 @@ namespace DiseaseImmunityProgressTracker.UI
             if (history == null || history.TendingEvents.Count == 0)
             {
                 GUI.color = AxisColor;
-                Widgets.Label(rect, "  No tends recorded yet");
+                Widgets.Label(rect, "DIPT_Shared_NoTendsRecorded".Translate());
                 GUI.color = Color.white;
                 return;
             }
@@ -509,24 +509,24 @@ namespace DiseaseImmunityProgressTracker.UI
             string effectHint = "";
             if (tend.Quality >= regressionThreshold)
             {
-                effectHint = " [Regress]";
+                effectHint = "DIPT_CDW_HintRegress".Translate();
             }
             else if (tend.Quality >= regressionThreshold * 0.5f)
             {
-                effectHint = " [Slow]";
+                effectHint = "DIPT_CDW_HintSlow".Translate();
             }
             else
             {
-                effectHint = " [Minimal]";
+                effectHint = "DIPT_CDW_HintMinimal".Translate();
             }
 
             string doctorInfo = tend.DoctorName;
             if (doctorInfo == "Self/Unknown" || string.IsNullOrEmpty(doctorInfo))
             {
-                doctorInfo = "Self-tend";
+                doctorInfo = "DIPT_Shared_SelfTend".Translate();
             }
 
-            string text = $"{qualityPct}%{effectHint} - {doctorInfo}";
+            string text = "DIPT_CDW_TendEntry".Translate($"{qualityPct}", effectHint, doctorInfo);
 
             Rect textRect = new Rect(iconRect.xMax + iconPadding, rect.y, rect.width - iconSize - iconPadding - 4f, rect.height);
             Widgets.Label(textRect, text);
@@ -541,7 +541,7 @@ namespace DiseaseImmunityProgressTracker.UI
 
             if (!prognosis.IsValid)
             {
-                verdictText = "Calculating...";
+                verdictText = "DIPT_Shared_Calculating".Translate();
                 verdictColor = AxisColor;
             }
             else
@@ -551,27 +551,27 @@ namespace DiseaseImmunityProgressTracker.UI
 
                 if (prognosis.SeverityChangePerDay <= -0.1f)
                 {
-                    verdictText = $"REGRESSING - Severity decreasing ({prognosis.SeverityChangePerDay * 100:+0;-0}%/d)";
+                    verdictText = "DIPT_CDW_VerdictRegressing".Translate($"{prognosis.SeverityChangePerDay * 100:+0;-0}");
                     verdictColor = SafeColor;
                 }
                 else if (prognosis.SeverityChangePerDay <= -0.01f)
                 {
-                    verdictText = $"IMPROVING - Slowly regressing ({prognosis.SeverityChangePerDay * 100:+0;-0}%/d)";
+                    verdictText = "DIPT_CDW_VerdictImproving".Translate($"{prognosis.SeverityChangePerDay * 100:+0;-0}");
                     verdictColor = SafeColor;
                 }
                 else if (prognosis.SeverityChangePerDay < 0.01f)
                 {
-                    verdictText = $"STABLE - Severity maintained (need >{thresholdPct}% to regress)";
+                    verdictText = "DIPT_CDW_VerdictStable".Translate($"{thresholdPct}");
                     verdictColor = TendedColor;
                 }
                 else if (tendComp != null && tendComp.IsTended)
                 {
-                    verdictText = $"SLOWING - Better treatment needed (>{thresholdPct}% to regress)";
+                    verdictText = "DIPT_CDW_VerdictSlowing".Translate($"{thresholdPct}");
                     verdictColor = WarningColor;
                 }
                 else
                 {
-                    verdictText = $"PROGRESSING - Needs treatment! (>{thresholdPct}% to regress)";
+                    verdictText = "DIPT_CDW_VerdictProgressing".Translate($"{thresholdPct}");
                     verdictColor = DangerColor;
                 }
             }

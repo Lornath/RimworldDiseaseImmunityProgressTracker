@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- FoodPoisoningWindow (Type 7: Food Poisoning) -->
+  <DIPT_FPW_Title>食物中毒 - {0}</DIPT_FPW_Title>
+  <DIPT_FPW_Resolving>恢复中…</DIPT_FPW_Resolving>
+  <DIPT_FPW_Countdown>剩余{0}时{1}分</DIPT_FPW_Countdown>
+  <DIPT_FPW_StageInitial>初期</DIPT_FPW_StageInitial>
+  <DIPT_FPW_StageMajor>高峰期</DIPT_FPW_StageMajor>
+  <DIPT_FPW_StageRecovering>恢复期</DIPT_FPW_StageRecovering>
+  <DIPT_FPW_DurationInitial>约4.8小时</DIPT_FPW_DurationInitial>
+  <DIPT_FPW_DurationMajor>约14.4小时</DIPT_FPW_DurationMajor>
+  <DIPT_FPW_DurationRecovering>约4.8小时</DIPT_FPW_DurationRecovering>
+  <DIPT_FPW_MajorStageIn>约{0}小时后进入高峰期</DIPT_FPW_MajorStageIn>
+  <DIPT_FPW_RecoveryStartsIn>约{0}小时后开始恢复</DIPT_FPW_RecoveryStartsIn>
+  <DIPT_FPW_DoneIn>约{0}小时后结束</DIPT_FPW_DoneIn>
+  <DIPT_FPW_VomitingEvery7h>预计每约7小时呕吐一次</DIPT_FPW_VomitingEvery7h>
+  <DIPT_FPW_VomitingEvery5h>预计每约5小时呕吐一次</DIPT_FPW_VomitingEvery5h>
+  <DIPT_FPW_VomitingEvery10h>预计每约10小时呕吐一次</DIPT_FPW_VomitingEvery10h>
+  <DIPT_FPW_StageDescInitial>发病 - 症状逐渐加重</DIPT_FPW_StageDescInitial>
+  <DIPT_FPW_StageDescMajor>最严重阶段 - 严重受损</DIPT_FPW_StageDescMajor>
+  <DIPT_FPW_StageDescRecovering>恢复中 - 症状减轻</DIPT_FPW_StageDescRecovering>
+  <DIPT_FPW_VerdictWorstComing>最难熬的时刻即将到来 - 做好准备</DIPT_FPW_VerdictWorstComing>
+  <DIPT_FPW_VerdictHangInThere>坚持住，约{0}小时后开始恢复</DIPT_FPW_VerdictHangInThere>
+  <DIPT_FPW_VerdictAlmostWorst>最难熬的时刻即将过去 - 约{0}小时后恢复</DIPT_FPW_VerdictAlmostWorst>
+  <DIPT_FPW_VerdictAlmostDone>快结束了！还有约{0}小时</DIPT_FPW_VerdictAlmostDone>
+</LanguageData>

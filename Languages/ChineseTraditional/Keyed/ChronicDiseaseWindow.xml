@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- ChronicDiseaseWindow (Type 5: Chronic diseases like Asthma) -->
+  <DIPT_CDW_FallbackTitle>慢性病</DIPT_CDW_FallbackTitle>
+  <DIPT_CDW_NotTreatedProgressing>未治療 - 持續惡化</DIPT_CDW_NotTreatedProgressing>
+  <DIPT_CDW_EffectRegressing>好轉中</DIPT_CDW_EffectRegressing>
+  <DIPT_CDW_EffectSlowing>減緩中</DIPT_CDW_EffectSlowing>
+  <DIPT_CDW_EffectStable>穩定</DIPT_CDW_EffectStable>
+  <DIPT_CDW_Treatment>治療：{0}% - {1}{2}</DIPT_CDW_Treatment>
+  <DIPT_CDW_SeverityWithMax>嚴重度：{0}%（最高{1}%）</DIPT_CDW_SeverityWithMax>
+  <DIPT_CDW_PercentComplete>{0}%</DIPT_CDW_PercentComplete>
+  <DIPT_CDW_HintRegress> [好轉]</DIPT_CDW_HintRegress>
+  <DIPT_CDW_HintSlow> [減緩]</DIPT_CDW_HintSlow>
+  <DIPT_CDW_HintMinimal> [微效]</DIPT_CDW_HintMinimal>
+  <DIPT_CDW_TendEntry>{0}%{1} - {2}</DIPT_CDW_TendEntry>
+  <DIPT_CDW_VerdictRegressing>好轉中 - 嚴重度降低（{0}%/天）</DIPT_CDW_VerdictRegressing>
+  <DIPT_CDW_VerdictImproving>改善中 - 緩慢好轉（{0}%/天）</DIPT_CDW_VerdictImproving>
+  <DIPT_CDW_VerdictStable>穩定 - 嚴重度維持（需&gt;{0}%才能好轉）</DIPT_CDW_VerdictStable>
+  <DIPT_CDW_VerdictSlowing>減緩中 - 需要更好的治療（&gt;{0}%才能好轉）</DIPT_CDW_VerdictSlowing>
+  <DIPT_CDW_VerdictProgressing>持續惡化 - 需要治療！（&gt;{0}%才能好轉）</DIPT_CDW_VerdictProgressing>
+</LanguageData>

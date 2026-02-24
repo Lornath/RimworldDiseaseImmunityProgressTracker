@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- FoodPoisoningWindow (Type 7: Food Poisoning) -->
+  <DIPT_FPW_Title>Intoxication Alimentaire - {0}</DIPT_FPW_Title>
+  <DIPT_FPW_Resolving>En voie de guérison…</DIPT_FPW_Resolving>
+  <DIPT_FPW_Countdown>Reste {0}h {1}min</DIPT_FPW_Countdown>
+  <DIPT_FPW_StageInitial>Initial</DIPT_FPW_StageInitial>
+  <DIPT_FPW_StageMajor>Intense</DIPT_FPW_StageMajor>
+  <DIPT_FPW_StageRecovering>Rétablissement</DIPT_FPW_StageRecovering>
+  <DIPT_FPW_DurationInitial>~4,8h</DIPT_FPW_DurationInitial>
+  <DIPT_FPW_DurationMajor>~14,4h</DIPT_FPW_DurationMajor>
+  <DIPT_FPW_DurationRecovering>~4,8h</DIPT_FPW_DurationRecovering>
+  <DIPT_FPW_MajorStageIn>Phase intense dans ~{0}h</DIPT_FPW_MajorStageIn>
+  <DIPT_FPW_RecoveryStartsIn>Rétablissement dans ~{0}h</DIPT_FPW_RecoveryStartsIn>
+  <DIPT_FPW_DoneIn>Terminé dans ~{0}h</DIPT_FPW_DoneIn>
+  <DIPT_FPW_VomitingEvery7h>Vomissements attendus toutes les ~7 heures</DIPT_FPW_VomitingEvery7h>
+  <DIPT_FPW_VomitingEvery5h>Vomissements attendus toutes les ~5 heures</DIPT_FPW_VomitingEvery5h>
+  <DIPT_FPW_VomitingEvery10h>Vomissements attendus toutes les ~10 heures</DIPT_FPW_VomitingEvery10h>
+  <DIPT_FPW_StageDescInitial>Début - symptômes s'intensifiant</DIPT_FPW_StageDescInitial>
+  <DIPT_FPW_StageDescMajor>Pire phase - sévèrement diminué</DIPT_FPW_StageDescMajor>
+  <DIPT_FPW_StageDescRecovering>Rétablissement - symptômes s'atténuant</DIPT_FPW_StageDescRecovering>
+  <DIPT_FPW_VerdictWorstComing>Le pire arrive bientôt - préparez-vous</DIPT_FPW_VerdictWorstComing>
+  <DIPT_FPW_VerdictHangInThere>Tenez bon, rétablissement dans ~{0}h</DIPT_FPW_VerdictHangInThere>
+  <DIPT_FPW_VerdictAlmostWorst>Presque sorti du pire - rétablissement dans ~{0}h</DIPT_FPW_VerdictAlmostWorst>
+  <DIPT_FPW_VerdictAlmostDone>Presque terminé ! ~{0}h restantes</DIPT_FPW_VerdictAlmostDone>
+</LanguageData>

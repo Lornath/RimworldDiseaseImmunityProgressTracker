@@ -158,7 +158,7 @@ namespace DiseaseImmunityProgressTracker.UI
             if (!prognosis.IsValid)
             {
                 GUI.color = AxisColor;
-                Widgets.Label(rect, "Unable to calculate prognosis");
+                Widgets.Label(rect, "DIPT_DGW_NoPrognosis".Translate());
                 GUI.color = Color.white;
                 return;
             }
@@ -172,11 +172,11 @@ namespace DiseaseImmunityProgressTracker.UI
                 if (prognosis.SeverityPerDay < 0f && prognosis.CurrentSeverity > 0f
                     && !float.IsInfinity(prognosis.DaysUntilSeverityCleared))
                 {
-                    verdictText = $"Immune - All clear in {FormatDays(prognosis.DaysUntilSeverityCleared)}";
+                    verdictText = "DIPT_DGW_ImmuneAllClear".Translate(FormatDays(prognosis.DaysUntilSeverityCleared));
                 }
                 else
                 {
-                    verdictText = "Immune";
+                    verdictText = "DIPT_DGW_Immune".Translate();
                 }
                 verdictColor = SurviveColor;
             }
@@ -185,11 +185,11 @@ namespace DiseaseImmunityProgressTracker.UI
             {
                 if (prognosis.ImmunityPerDay > 0f && !float.IsInfinity(prognosis.DaysUntilImmune))
                 {
-                    verdictText = $"Recovering - Immune in {FormatDays(prognosis.DaysUntilImmune)}";
+                    verdictText = "DIPT_DGW_RecoveringImmuneIn".Translate(FormatDays(prognosis.DaysUntilImmune));
                 }
                 else
                 {
-                    verdictText = "Stable";
+                    verdictText = "DIPT_DGW_Stable".Translate();
                 }
                 verdictColor = SurviveColor;
             }
@@ -198,11 +198,11 @@ namespace DiseaseImmunityProgressTracker.UI
             {
                 if (!float.IsInfinity(prognosis.DaysUntilDeath))
                 {
-                    verdictText = $"At risk - Death in {FormatDays(prognosis.DaysUntilDeath)}";
+                    verdictText = "DIPT_DGW_AtRiskDeathIn".Translate(FormatDays(prognosis.DaysUntilDeath));
                 }
                 else
                 {
-                    verdictText = "At risk";
+                    verdictText = "DIPT_DGW_AtRisk".Translate();
                 }
                 verdictColor = RiskColor;
             }
@@ -219,7 +219,7 @@ namespace DiseaseImmunityProgressTracker.UI
                 {
                     marginInfo = $" ({FormatDays(prognosis.MarginDays)}/{marginPercent * 100:0}% margin)";
                 }
-                verdictText = $"Will survive - Immune in {FormatDays(prognosis.DaysUntilImmune)}{marginInfo}";
+                verdictText = "DIPT_DGW_WillSurviveImmuneIn".Translate(FormatDays(prognosis.DaysUntilImmune)) + marginInfo;
                 verdictColor = SurviveColor;
             }
             else
@@ -235,7 +235,7 @@ namespace DiseaseImmunityProgressTracker.UI
                 {
                     shortfallInfo = $" ({FormatDays(shortfallDays)}/{shortfallPercent * 100:0}% short)";
                 }
-                verdictText = $"Death in {FormatDays(prognosis.DaysUntilDeath)}{shortfallInfo}";
+                verdictText = "DIPT_DGW_DeathIn".Translate(FormatDays(prognosis.DaysUntilDeath)) + shortfallInfo;
                 verdictColor = RiskColor;
             }
 
@@ -314,9 +314,9 @@ namespace DiseaseImmunityProgressTracker.UI
             float nowX = graphArea.x + graphArea.width * nowRatio;
 
             Text.Anchor = TextAnchor.UpperCenter;
-            Widgets.Label(new Rect(graphArea.x - 15f, graphArea.yMax + 2f, 30f, 16f), $"-{pastDays:0.#}d");
-            Widgets.Label(new Rect(nowX - 15f, graphArea.yMax + 2f, 30f, 16f), "Now");
-            Widgets.Label(new Rect(graphArea.xMax - 35f, graphArea.yMax + 2f, 45f, 16f), $"+{futureDays:0.#}d");
+            Widgets.Label(new Rect(graphArea.x - 15f, graphArea.yMax + 2f, 30f, 16f), "DIPT_Shared_AxisPast".Translate($"{pastDays:0.#}"));
+            Widgets.Label(new Rect(nowX - 15f, graphArea.yMax + 2f, 30f, 16f), "DIPT_Shared_Now".Translate());
+            Widgets.Label(new Rect(graphArea.xMax - 35f, graphArea.yMax + 2f, 45f, 16f), "DIPT_Shared_AxisFuture".Translate($"{futureDays:0.#}"));
 
             Text.Anchor = TextAnchor.UpperLeft;
             GUI.color = oldColor;
@@ -647,14 +647,18 @@ namespace DiseaseImmunityProgressTracker.UI
             if (prognosis.IsValid)
             {
                 // Immunity legend with current value and rate
-                string immRate = prognosis.ImmunityPerDay > 0 ? $"+{prognosis.ImmunityPerDay * 100:0}%/d" : $"{prognosis.ImmunityPerDay * 100:0}%/d";
-                string immText = $"Imm: {prognosis.CurrentImmunity * 100:0}% ({immRate})";
+                string immRate = prognosis.ImmunityPerDay > 0
+                    ? "DIPT_DGW_RatePlus".Translate($"{prognosis.ImmunityPerDay * 100:0}")
+                    : "DIPT_DGW_RateMinus".Translate($"{prognosis.ImmunityPerDay * 100:0}");
+                string immText = "DIPT_DGW_ImmLine".Translate($"{prognosis.CurrentImmunity * 100:0}", immRate);
                 Widgets.DrawBoxSolid(new Rect(legendArea.x, legendArea.y + 2f, 12f, 3f), ImmunityColor);
                 Widgets.Label(new Rect(legendArea.x + 15f, legendArea.y - 2f, 140f, rowHeight), immText);
 
                 // Severity legend with current value and rate
-                string sevRate = prognosis.SeverityPerDay > 0 ? $"+{prognosis.SeverityPerDay * 100:0}%/d" : $"{prognosis.SeverityPerDay * 100:0}%/d";
-                string sevText = $"Sev: {prognosis.CurrentSeverity * 100:0}% ({sevRate})";
+                string sevRate = prognosis.SeverityPerDay > 0
+                    ? "DIPT_DGW_RatePlus".Translate($"{prognosis.SeverityPerDay * 100:0}")
+                    : "DIPT_DGW_RateMinus".Translate($"{prognosis.SeverityPerDay * 100:0}");
+                string sevText = "DIPT_DGW_SevLine".Translate($"{prognosis.CurrentSeverity * 100:0}", sevRate);
                 Widgets.DrawBoxSolid(new Rect(legendArea.x, legendArea.y + rowHeight, 12f, 3f), SeverityColor);
                 Widgets.Label(new Rect(legendArea.x + 15f, legendArea.y + rowHeight - 4f, 140f, rowHeight), sevText);
 
@@ -662,17 +666,17 @@ namespace DiseaseImmunityProgressTracker.UI
                 if (!prognosis.UsingObservedRates)
                 {
                     GUI.color = AxisColor;
-                    Widgets.Label(new Rect(legendArea.x, legendArea.y - rowHeight, 160f, rowHeight), "(est. - gathering data)");
+                    Widgets.Label(new Rect(legendArea.x, legendArea.y - rowHeight, 160f, rowHeight), "DIPT_DGW_EstGatheringData".Translate());
                     GUI.color = Color.white;
                 }
             }
             else
             {
                 Widgets.DrawBoxSolid(new Rect(legendArea.x, legendArea.y + 2f, 12f, 3f), ImmunityColor);
-                Widgets.Label(new Rect(legendArea.x + 15f, legendArea.y - 2f, 70f, rowHeight), "Immunity");
+                Widgets.Label(new Rect(legendArea.x + 15f, legendArea.y - 2f, 70f, rowHeight), "DIPT_DGW_LegendImmunity".Translate());
 
                 Widgets.DrawBoxSolid(new Rect(legendArea.x, legendArea.y + rowHeight, 12f, 3f), SeverityColor);
-                Widgets.Label(new Rect(legendArea.x + 15f, legendArea.y + rowHeight - 4f, 70f, rowHeight), "Severity");
+                Widgets.Label(new Rect(legendArea.x + 15f, legendArea.y + rowHeight - 4f, 70f, rowHeight), "DIPT_DGW_LegendSeverity".Translate());
             }
 
             Text.Font = GameFont.Small;

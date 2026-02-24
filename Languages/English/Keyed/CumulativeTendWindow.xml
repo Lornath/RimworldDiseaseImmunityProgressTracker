@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- CumulativeTendWindow (Type 2: Cumulative tend diseases) -->
+  <DIPT_CTW_Progress>Progress: {0}% / {1}%</DIPT_CTW_Progress>
+  <DIPT_CTW_PercentComplete>{0}% complete</DIPT_CTW_PercentComplete>
+  <DIPT_CTW_TendEntry>+{0}% - {1}</DIPT_CTW_TendEntry>
+  <DIPT_CTW_WillCureNextTend>Will be cured on next tend!</DIPT_CTW_WillCureNextTend>
+  <DIPT_CTW_TendsRemaining>Est. ~{0} tends remaining (~{1})</DIPT_CTW_TendsRemaining>
+</LanguageData>
