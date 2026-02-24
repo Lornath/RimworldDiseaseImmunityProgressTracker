@@ -28,6 +28,44 @@ Tell the user to run this to deploy, do not attempt to deploy automatically:
 .\deploy.ps1
 ```
 
+## Localization / Translations
+
+All user-facing strings must go through RimWorld's Keyed XML translation system — **never hardcode strings directly in C# source**.
+
+### Adding or changing UI strings
+
+1. **Add the key to `Languages/English/Keyed/<WindowFile>.xml`** (or `Shared.xml` if used in 2+ windows).
+   - Key naming: `DIPT_{WindowAbbrev}_{DescriptiveName}` (e.g. `DIPT_DGW_Immune`)
+   - Format parameters use `{0}`, `{1}`, etc.: `<DIPT_DGW_DeathIn>Death in {0}</DIPT_DGW_DeathIn>`
+   - Escape `>` as `&gt;` when it appears literally in a value.
+
+2. **Use `.Translate()` in C#** instead of a string literal:
+   ```csharp
+   // Wrong:
+   verdictText = "Immune";
+   // Right:
+   verdictText = "DIPT_DGW_Immune".Translate();
+   // With parameters:
+   verdictText = "DIPT_DGW_DeathIn".Translate(FormatDays(daysRemaining));
+   ```
+
+3. **Add the same key to every other language file** that exists for that window. Current languages: `English`, `ChineseSimplified`, `ChineseTraditional`, `German`, `Spanish`, `SpanishLatin`, `French`. Machine-translate the value if needed — a human translator can refine it later.
+
+4. **Do not call `.Translate()` in static field initializers** (C# limitation). Instead, translate at the point of use, or add a helper method like `TranslateStageName()`.
+
+### Window abbreviations
+| Abbrev | File |
+|--------|------|
+| `Shared` | `Shared.xml` |
+| `Settings` | `Settings.xml` |
+| `DGW` | `DiseaseGraphWindow.xml` |
+| `CTW` | `CumulativeTendWindow.xml` |
+| `TBW` | `TimeBasedWindow.xml` |
+| `TXW` | `ToxicBuildupWindow.xml` |
+| `CDW` | `ChronicDiseaseWindow.xml` |
+| `ABW` | `ArteryBlockageWindow.xml` |
+| `FPW` | `FoodPoisoningWindow.xml` |
+
 ## Decompiled Reference Code
 
 Shared RimWorld decompiled source lives at `../decompiled/RimWorld/` (parent directory).
