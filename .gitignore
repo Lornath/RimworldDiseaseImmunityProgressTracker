@@ -10,3 +10,7 @@ docs/*.pdf
 *.code-workspace
 *.sln
 .vscode
+.vs
+
+# macOS
+.DS_Store
