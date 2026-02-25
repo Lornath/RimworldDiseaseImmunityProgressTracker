@@ -21,6 +21,7 @@ namespace RecoveryProcessTracker.UI
         private const float GraphPadding = 10f;
         private const float AxisLabelWidth = 30f;
         private const float AxisLabelHeight = 20f;
+        private const float TendInfoHeight = 24f; // Space below x-axis for medicine icons and quality
         private const float TitleHeight = 20f;
         private const float VerdictHeight = 18f;
 
@@ -39,8 +40,13 @@ namespace RecoveryProcessTracker.UI
         private static readonly Color ProjectionDimFactor = new Color(0.7f, 0.7f, 0.7f, 0.7f);
         private static readonly Color SurviveColor = new Color(0.4f, 1f, 0.4f);
         private static readonly Color RiskColor = new Color(1f, 0.4f, 0.4f);
+        private static readonly Color BedRestColor = new Color(0.2f, 0.4f, 0.8f, 0.2f); // Light Blue transparent
+        private static readonly Color TendingLineColor = new Color(1f, 0.9f, 0.2f, 0.7f); // Yellowish
 
-        public override Vector2 InitialSize => new Vector2(320f, 240f);
+        // Fallback icon for tending without medicine
+        private static readonly Texture2D NoMedsIcon = ContentFinder<Texture2D>.Get("UI/Icons/Medical/NoMeds");
+
+        public override Vector2 InitialSize => new Vector2(320f, 264f); // Extra height for tend info below x-axis
 
         public DiseaseGraphWindow(Hediff hediff)
         {
@@ -104,13 +110,13 @@ namespace RecoveryProcessTracker.UI
             // Draw verdict
             DrawVerdict(new Rect(0, TitleHeight, inRect.width, VerdictHeight));
 
-            // Calculate graph area (below title and verdict, with padding for axis labels)
+            // Calculate graph area (below title and verdict, with padding for axis labels and tend info)
             float graphTop = TitleHeight + VerdictHeight + 5f;
             Rect graphArea = new Rect(
                 AxisLabelWidth,
                 graphTop,
                 inRect.width - AxisLabelWidth - GraphPadding,
-                inRect.height - graphTop - AxisLabelHeight - GraphPadding
+                inRect.height - graphTop - AxisLabelHeight - TendInfoHeight - GraphPadding
             );
 
             // Draw graph background
@@ -120,6 +126,9 @@ namespace RecoveryProcessTracker.UI
             float futureDays = CalculateFutureDays();
             float pastDays = DefaultPastDays;
 
+            // Draw bed rest background (behind grid)
+            DrawBedRestIntervals(graphArea, history, pastDays, futureDays);
+            
             // Draw grid lines
             DrawGridLines(graphArea);
 
@@ -328,6 +337,104 @@ namespace RecoveryProcessTracker.UI
 
             // Draw current point and projection (future)
             DrawProjectionLines(graphArea, nowX, pastDays, futureDays, totalDays);
+
+            // Draw tending markers (overlay)
+            DrawTendingMarkers(graphArea, history, currentTick, pastDays, totalDays);
+        }
+
+        private void DrawBedRestIntervals(Rect graphArea, DiseaseHistory history, float pastDays, float futureDays)
+        {
+            if (history == null || history.BedRestIntervals.Count == 0) return;
+
+            int currentTick = Find.TickManager.TicksGame;
+            float totalDays = pastDays + futureDays;
+            int pastTicks = (int)(pastDays * PrognosisCalculator.TicksPerDay);
+            int windowStart = currentTick - pastTicks;
+
+            foreach (var interval in history.BedRestIntervals)
+            {
+                // Skip if interval ends before window starts
+                int endTick = interval.EndTick == -1 ? currentTick : interval.EndTick;
+                if (endTick < windowStart) continue;
+
+                // Skip if interval starts after current time (shouldn't happen for history)
+                if (interval.StartTick > currentTick) continue;
+
+                // Clamp to window
+                int visibleStart = Mathf.Max(interval.StartTick, windowStart);
+                int visibleEnd = Mathf.Min(endTick, currentTick);
+
+                if (visibleStart >= visibleEnd) continue;
+
+                float startX = TickToX(graphArea, visibleStart, currentTick, pastDays, totalDays);
+                float endX = TickToX(graphArea, visibleEnd, currentTick, pastDays, totalDays);
+
+                // Draw rectangle
+                Rect rect = new Rect(startX, graphArea.y, endX - startX, graphArea.height);
+                Widgets.DrawBoxSolid(rect, BedRestColor);
+            }
+        }
+
+        private void DrawTendingMarkers(Rect graphArea, DiseaseHistory history, int currentTick, float pastDays, float totalDays)
+        {
+            if (history == null) return;
+
+            if (history.TendingEvents.Count == 0) return;
+
+            int pastTicks = (int)(pastDays * PrognosisCalculator.TicksPerDay);
+            int windowStart = currentTick - pastTicks;
+
+            // Y position for tend info (below x-axis labels)
+            float tendInfoY = graphArea.yMax + AxisLabelHeight;
+
+            foreach (var tend in history.TendingEvents)
+            {
+                if (tend.Tick < windowStart || tend.Tick > currentTick) continue;
+
+                float x = TickToX(graphArea, tend.Tick, currentTick, pastDays, totalDays);
+
+                // Draw vertical line through the graph
+                Color oldColor = GUI.color;
+                GUI.color = TendingLineColor;
+                Widgets.DrawLineVertical(x, graphArea.y, graphArea.height);
+                GUI.color = oldColor;
+
+                // Draw medicine icon below x-axis
+                const float iconSize = 18f;
+                Rect iconRect = new Rect(x - iconSize / 2f, tendInfoY, iconSize, iconSize);
+
+                // Look up the ThingDef for the medicine icon, or use NoMeds icon as fallback
+                Texture2D icon = NoMedsIcon;
+                if (!string.IsNullOrEmpty(tend.MedicineDefName))
+                {
+                    ThingDef medicineDef = DefDatabase<ThingDef>.GetNamedSilentFail(tend.MedicineDefName);
+                    if (medicineDef?.uiIcon != null)
+                    {
+                        icon = medicineDef.uiIcon;
+                    }
+                }
+
+                if (icon != null)
+                {
+                    GUI.DrawTexture(iconRect, icon);
+                }
+
+                // Draw quality percentage below the icon
+                Text.Font = GameFont.Tiny;
+                Text.Anchor = TextAnchor.UpperCenter;
+                string qualityText = $"{tend.Quality:P0}";
+                Rect qualityRect = new Rect(x - 20f, tendInfoY + iconSize - 2f, 40f, 16f);
+                Widgets.Label(qualityRect, qualityText);
+                Text.Anchor = TextAnchor.UpperLeft;
+                Text.Font = GameFont.Small;
+            }
+        }
+
+        private float TickToX(Rect graphArea, int tick, int currentTick, float pastDays, float totalDays)
+        {
+            float dayOffset = (tick - currentTick) / PrognosisCalculator.TicksPerDay;
+            float xRatio = (pastDays + dayOffset) / totalDays;
+            return graphArea.x + graphArea.width * xRatio;
         }
 
         private void DrawHistoricalLines(Rect graphArea, DiseaseHistory history, int currentTick, float pastDays, float totalDays)
@@ -540,7 +647,11 @@ namespace RecoveryProcessTracker.UI
             base.WindowUpdate();
 
             // Close if the hediff we're tracking is no longer active in the tooltip
-            if (!Patches.TooltipCompanionPatch.IsTooltipActiveFor(hediff))
+            // AND the mouse is not currently over our window (allowing interaction)
+            bool tooltipActive = Patches.TooltipCompanionPatch.IsTooltipActiveFor(hediff);
+            bool mouseOverWindow = Mouse.IsOver(windowRect);
+
+            if (!tooltipActive && !mouseOverWindow)
             {
                 Close(false);
             }
