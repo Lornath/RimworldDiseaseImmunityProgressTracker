@@ -13,7 +13,6 @@ namespace RecoveryProcessTracker.UI
     public class DiseaseGraphWindow : Window
     {
         private readonly Hediff hediff;
-        private Vector2 openedAtMousePos;
 
         // Cached prognosis (recalculated each frame)
         private PrognosisCalculator.PrognosisResult prognosis;
@@ -54,7 +53,6 @@ namespace RecoveryProcessTracker.UI
         public DiseaseGraphWindow(Hediff hediff)
         {
             this.hediff = hediff;
-            this.openedAtMousePos = Event.current?.mousePosition ?? Vector2.zero;
 
             // Window configuration for tooltip-like behavior
             doCloseX = false;
@@ -75,31 +73,18 @@ namespace RecoveryProcessTracker.UI
 
         protected override void SetInitialSizeAndPosition()
         {
-            // Position the window above and to the right of the mouse
-            // Our bottom-left corner anchors near the mouse position
-            // This places our graph above the standard tooltip (which anchors its top-left to mouse)
-            float xPos = openedAtMousePos.x + 15f;
-            float yPos = openedAtMousePos.y - InitialSize.y - 5f; // 5px gap above mouse
-
-            // Clamp to screen bounds
-            if (xPos + InitialSize.x > Verse.UI.screenWidth)
-            {
-                xPos = openedAtMousePos.x - InitialSize.x - 15f;
-            }
-            if (yPos < 0)
-            {
-                yPos = 0;
-            }
-            if (yPos + InitialSize.y > Verse.UI.screenHeight)
-            {
-                yPos = Verse.UI.screenHeight - InitialSize.y;
-            }
-
-            windowRect = new Rect(xPos, yPos, InitialSize.x, InitialSize.y);
+            // Use helper to position window avoiding overlap with the game's tooltip
+            windowRect = WindowPositionHelper.CalculateWindowRect(InitialSize);
         }
 
         public override void DoWindowContents(Rect inRect)
         {
+            // Dynamically update position to follow the tooltip as the mouse moves
+            // (Done here in DoWindowContents where Event.current is valid)
+            Rect newRect = WindowPositionHelper.CalculateWindowRect(InitialSize);
+            windowRect.x = newRect.x;
+            windowRect.y = newRect.y;
+
             // Get history and calculate prognosis using observed rates if available
             var tracker = DiseaseTracker.Instance;
             var history = tracker?.GetOrCreateHistory(hediff);
