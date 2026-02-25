@@ -14,7 +14,7 @@ namespace RecoveryProcessTracker.UI
         private const float EstimatedTooltipWidth = 260f;
         private const float EstimatedTooltipHeight = 200f;
 
-        // Tooltip positioning constants (from GenVerse.UI.GetMouseAttachedWindowPos)
+        // Tooltip positioning constants (from GenUI.GetMouseAttachedWindowPos)
         private const float TooltipOffsetBelow = 14f;
         private const float TooltipOffsetAbove = 5f;
         private const float TooltipOffsetX = 16f;
@@ -40,7 +40,7 @@ namespace RecoveryProcessTracker.UI
 
         /// <summary>
         /// Calculate where the game would position a tooltip of given size.
-        /// Reimplements GenVerse.UI.GetMouseAttachedWindowPos logic using the provided mouse position
+        /// Reimplements GenUI.GetMouseAttachedWindowPos logic using the provided mouse position
         /// (since GenUI version uses Event.current.mousePosition which may be in local coords).
         /// </summary>
         private static Vector2 CalculateTooltipPosition(Vector2 mousePos, float tooltipWidth, float tooltipHeight)
@@ -86,7 +86,7 @@ namespace RecoveryProcessTracker.UI
         /// <returns>The Rect for the window position</returns>
         public static Rect CalculateWindowRect(Vector2 mousePos, Vector2 windowSize)
         {
-            // Calculate where the tooltip would be positioned
+            // Calculate where the tooltip would be positioned (using estimates)
             Vector2 tooltipPos = CalculateTooltipPosition(mousePos, EstimatedTooltipWidth, EstimatedTooltipHeight);
 
             // Determine if the tooltip is above or below the mouse by comparing Y positions
