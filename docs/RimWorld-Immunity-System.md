@@ -4,9 +4,9 @@ Based on exploration of the RimWorld decompiled source code and the RimWorld Wik
 
 ---
 
-## 1. THREE TYPES OF DISEASE MECHANICS
+## 1. FOUR TYPES OF DISEASE MECHANICS
 
-Not all diseases work the same way. RimWorld has three distinct disease mechanics:
+Not all diseases work the same way. RimWorld has four distinct disease mechanics:
 
 ### Type 1: Immunity Race (Most Common)
 The disease progresses over time, and treatment slows progression. Immunity is gained independently based on `ImmunityGainSpeed`. Once immunity reaches 100%, the disease severity starts decreasing and the pawn recovers.
@@ -22,6 +22,29 @@ The disease does NOT progress. Treatment must reach a **total tend quality of 30
 The disease progresses over time, and treatment slows/prevents progression. The disease only fades after a certain time passes (not immunity-based).
 
 **Applies to**: Lung rot, Fibrous mechanites, Sensory mechanites, Blood rot
+
+### Type 4: Environmental Severity (Toxic Buildup)
+Severity accumulates from environmental exposure and naturally decreases when safe. NOT tendable - recovery is purely environmental. Lethal at 100% severity. Has health risks (dementia, carcinoma) at higher severity stages.
+
+**Applies to**: Toxic Buildup
+
+**Key mechanics**:
+- Uses `HediffComp_ImmunizableToxic` (extends `HediffComp_Immunizable`) but with `immunityPerDaySick = 0` (no immunity gain)
+- Recovery rate: **-8%/day** when not exposed to toxins (`severityPerDayNotImmune = -0.08`)
+- Accumulation rate: **+40%/day** from toxic fallout (unroofed) or pollution
+- Recovery is **blocked** (not just slowed) when exposed:
+  - Standing on polluted terrain AND `ToxicEnvironmentResistance < 100%`
+  - OR Unroofed during toxic fallout AND `ToxicResistance < 100%`
+  - OR In tox gas cloud (any density)
+
+**Severity stages and health risks**:
+
+| Stage | Severity | Dementia MTB | Carcinoma MTB | Daily Risk |
+|-------|----------|--------------|---------------|------------|
+| Initial | 0-40% | None | None | 0% |
+| Moderate | 40-60% | 146 days | 438 days | ~0.7% / ~0.2% |
+| Serious | 60-80% | 37 days | 111 days | ~2.7% / ~0.9% |
+| Extreme | 80-100% | 13 days | 39 days | ~7.7% / ~2.6% |
 
 ---
 
@@ -352,10 +375,12 @@ From HealthTuning.cs:
 | ImmunityRecord.cs | Tracks immunity per disease, calculates per-tick gain |
 | ImmunityHandler.cs | Manages all immunities, contract chance formula |
 | HediffComp_Immunizable.cs | Disease severity calculation with immunity dependency |
+| HediffComp_ImmunizableToxic.cs | Type 4: Toxic buildup - extends Immunizable, blocks recovery when exposed |
 | TendUtility.cs | Treatment quality formula (doctor + bed + medicine) |
 | HediffComp_TendDuration.cs | How tending slows disease |
 | StatDefOf.cs | Defines ImmunityGainSpeed, BedRestEffectiveness, MedicalTendQuality |
 | HealthTuning.cs | Constants and thresholds |
+| GasUtility.cs | Tox gas exposure effects, damage application |
 
 ---
 
@@ -392,6 +417,17 @@ From HealthTuning.cs:
 - Treatment slows/prevents progression while waiting
 - Keep severity low until the timer runs out
 
+### For Type 4 Diseases (Environmental - Toxic Buildup):
+- **NOT tendable** - medical treatment does nothing
+- Recovery requires **avoiding all toxin sources**:
+  - Stay under a roof during toxic fallout events
+  - Avoid polluted terrain (Biotech DLC)
+  - Avoid tox gas clouds
+- Recovery rate is slow: only **-8%/day** when safe
+- At higher severity (40%+), risk of permanent conditions (dementia, carcinoma) increases
+- Pawns with 100% Toxic Resistance or Toxic Environment Resistance are immune to those respective sources
+- **Best strategy**: Keep pawns indoors during toxic fallout, clean up pollution, avoid tox gas
+
 ---
 
 Once immunity reaches 100% (Type 1), severity starts decreasing and the pawn recovers.
@@ -405,10 +441,12 @@ Once immunity reaches 100% (Type 1), severity starts decreasing and the pawn rec
 ../decompiled/RimWorld/Verse/ImmunityRecord.cs
 ../decompiled/RimWorld/Verse/ImmunityHandler.cs
 ../decompiled/RimWorld/Verse/HediffComp_Immunizable.cs
+../decompiled/RimWorld/Verse/HediffComp_ImmunizableToxic.cs  # Type 4 - Toxic Buildup
 ../decompiled/RimWorld/RimWorld/TendUtility.cs
 ../decompiled/RimWorld/Verse/HediffComp_TendDuration.cs
 ../decompiled/RimWorld/RimWorld/StatDefOf.cs
 ../decompiled/RimWorld/Verse/HealthTuning.cs
+../decompiled/RimWorld/Verse/GasUtility.cs  # Tox gas exposure logic
 ```
 
 ---

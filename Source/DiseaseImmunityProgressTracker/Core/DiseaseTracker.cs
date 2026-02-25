@@ -1,9 +1,77 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using RimWorld;
 using Verse;
 
 namespace DiseaseImmunityProgressTracker.Core
 {
+    /// <summary>
+    /// Flags indicating what toxic exposure sources are affecting a pawn.
+    /// Multiple flags can be set simultaneously.
+    /// </summary>
+    [Flags]
+    public enum ExposureFlags
+    {
+        None = 0,
+        UnderRoof = 1,          // Safe from fallout (blue in graph)
+        InPollution = 2,        // On polluted terrain (orange in graph)
+        InToxGas = 4,           // In tox gas cloud (red in graph)
+        ToxicFalloutActive = 8  // Map has active toxic fallout event
+    }
+
+    /// <summary>
+    /// A data point recording severity and exposure state for toxic buildup.
+    /// </summary>
+    public class ToxicBuildupDataPoint : IExposable
+    {
+        public int Tick;
+        public float Severity;
+        public ExposureFlags Exposure;
+
+        public ToxicBuildupDataPoint() { }
+
+        public ToxicBuildupDataPoint(int tick, float severity, ExposureFlags exposure)
+        {
+            Tick = tick;
+            Severity = severity;
+            Exposure = exposure;
+        }
+
+        public void ExposeData()
+        {
+            Scribe_Values.Look(ref Tick, "tick");
+            Scribe_Values.Look(ref Severity, "severity");
+            Scribe_Values.Look(ref Exposure, "exposure");
+        }
+    }
+
+    /// <summary>
+    /// Tracks a period of toxic exposure with a specific set of flags.
+    /// </summary>
+    public class ExposureInterval : IExposable
+    {
+        public int StartTick;
+        public int EndTick;  // -1 = ongoing
+        public ExposureFlags Exposure;
+
+        public ExposureInterval() { }
+
+        public ExposureInterval(int startTick, ExposureFlags exposure)
+        {
+            StartTick = startTick;
+            EndTick = -1;
+            Exposure = exposure;
+        }
+
+        public void ExposeData()
+        {
+            Scribe_Values.Look(ref StartTick, "startTick");
+            Scribe_Values.Look(ref EndTick, "endTick", -1);
+            Scribe_Values.Look(ref Exposure, "exposure");
+        }
+    }
+
     /// <summary>
     /// A single data point recording immunity and severity at a point in time.
     /// </summary>
@@ -125,7 +193,9 @@ namespace DiseaseImmunityProgressTracker.Core
         public int HediffLoadId;
         public List<DiseaseDataPoint> DataPoints = new List<DiseaseDataPoint>();
         public List<TimeBasedDataPoint> TimeBasedDataPoints = new List<TimeBasedDataPoint>();
+        public List<ToxicBuildupDataPoint> ToxicBuildupDataPoints = new List<ToxicBuildupDataPoint>();
         public List<BedRestInterval> BedRestIntervals = new List<BedRestInterval>();
+        public List<ExposureInterval> ExposureIntervals = new List<ExposureInterval>();
         public List<TendingEvent> TendingEvents = new List<TendingEvent>();
 
         // Track the tick when we started recording (for relative time display)
@@ -139,6 +209,7 @@ namespace DiseaseImmunityProgressTracker.Core
 
         private int lastRecordedTick = -99999;
         private int lastTimeBasedRecordedTick = -99999;
+        private int lastToxicBuildupRecordedTick = -99999;
 
         public DiseaseHistory() { }
 
@@ -176,6 +247,45 @@ namespace DiseaseImmunityProgressTracker.Core
             {
                 TimeBasedDataPoints.RemoveAt(0);
             }
+        }
+
+        public void RecordToxicBuildupDataPoint(int tick, float severity, ExposureFlags exposure)
+        {
+            // Only record if enough time has passed since last recording
+            if (tick - lastToxicBuildupRecordedTick < RecordingInterval) return;
+
+            ToxicBuildupDataPoints.Add(new ToxicBuildupDataPoint(tick, severity, exposure));
+            lastToxicBuildupRecordedTick = tick;
+
+            // Trim old data points if we have too many
+            while (ToxicBuildupDataPoints.Count > MaxDataPoints)
+            {
+                ToxicBuildupDataPoints.RemoveAt(0);
+            }
+        }
+
+        public void UpdateExposureState(int tick, ExposureFlags exposure)
+        {
+            // Get the last interval if it exists
+            ExposureInterval currentInterval = null;
+            if (ExposureIntervals.Count > 0)
+            {
+                currentInterval = ExposureIntervals[ExposureIntervals.Count - 1];
+            }
+
+            // Check if exposure state changed
+            if (currentInterval == null || currentInterval.EndTick != -1)
+            {
+                // No current interval - start a new one
+                ExposureIntervals.Add(new ExposureInterval(tick, exposure));
+            }
+            else if (currentInterval.Exposure != exposure)
+            {
+                // Exposure state changed - close current and start new
+                currentInterval.EndTick = tick;
+                ExposureIntervals.Add(new ExposureInterval(tick, exposure));
+            }
+            // If exposure is the same, just continue the current interval
         }
 
         public void RecordTendEvent(int tick, string doctorName, string medicineName, string medicineDefName, float quality, int doctorSkill)
@@ -224,14 +334,18 @@ namespace DiseaseImmunityProgressTracker.Core
             Scribe_Values.Look(ref StartTick, "startTick");
             Scribe_Collections.Look(ref DataPoints, "dataPoints", LookMode.Deep);
             Scribe_Collections.Look(ref TimeBasedDataPoints, "timeBasedDataPoints", LookMode.Deep);
+            Scribe_Collections.Look(ref ToxicBuildupDataPoints, "toxicBuildupDataPoints", LookMode.Deep);
             Scribe_Collections.Look(ref BedRestIntervals, "bedRestIntervals", LookMode.Deep);
+            Scribe_Collections.Look(ref ExposureIntervals, "exposureIntervals", LookMode.Deep);
             Scribe_Collections.Look(ref TendingEvents, "tendingEvents", LookMode.Deep);
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
                 DataPoints ??= new List<DiseaseDataPoint>();
                 TimeBasedDataPoints ??= new List<TimeBasedDataPoint>();
+                ToxicBuildupDataPoints ??= new List<ToxicBuildupDataPoint>();
                 BedRestIntervals ??= new List<BedRestInterval>();
+                ExposureIntervals ??= new List<ExposureInterval>();
                 TendingEvents ??= new List<TendingEvent>();
                 if (DataPoints.Count > 0)
                 {
@@ -240,6 +354,10 @@ namespace DiseaseImmunityProgressTracker.Core
                 if (TimeBasedDataPoints.Count > 0)
                 {
                     lastTimeBasedRecordedTick = TimeBasedDataPoints[TimeBasedDataPoints.Count - 1].Tick;
+                }
+                if (ToxicBuildupDataPoints.Count > 0)
+                {
+                    lastToxicBuildupRecordedTick = ToxicBuildupDataPoints[ToxicBuildupDataPoints.Count - 1].Tick;
                 }
             }
         }
@@ -292,7 +410,16 @@ namespace DiseaseImmunityProgressTracker.Core
 
                     foreach (var hediff in pawn.health.hediffSet.hediffs)
                     {
-                        // Type 3 - Time-based diseases (check FIRST, before Type 1)
+                        // Type 4 - Toxic Buildup (check FIRST)
+                        // Has HediffComp_ImmunizableToxic but no immunity gain, not tendable
+                        // Recovery happens when not exposed to toxins
+                        if (IsToxicBuildupDisease(hediff))
+                        {
+                            RecordToxicBuildupData(hediff, currentTick, pawn);
+                            continue;
+                        }
+
+                        // Type 3 - Time-based diseases (check before Type 1)
                         // Includes Type 3a (Mechanites) and Type 3b (Fatal rots like Lung Rot, Blood Rot)
                         // Note: Type 3a has HediffComp_Immunizable but should still be tracked here
                         var disappearsComp = hediff.TryGetComp<HediffComp_Disappears>();
@@ -306,6 +433,7 @@ namespace DiseaseImmunityProgressTracker.Core
                         // Type 1 - Immunizable diseases (Plague, Flu, Malaria, etc.)
                         // These have immunity racing against severity; whoever hits 100% first wins
                         // Note: Type 3a Mechanites are excluded above via IsTimeBasedDisease check
+                        // Note: Type 4 Toxic Buildup is excluded above via IsToxicBuildupDisease check
                         var immunizable = hediff.TryGetComp<HediffComp_Immunizable>();
                         if (immunizable != null)
                         {
@@ -405,6 +533,133 @@ namespace DiseaseImmunityProgressTracker.Core
             if (def.lethalSeverity < 0) return false;
 
             return true;
+        }
+
+        /// <summary>
+        /// Checks if a hediff is a Type 4 (toxic buildup) disease.
+        /// These have HediffComp_ImmunizableToxic (extends HediffComp_Immunizable) but:
+        /// - No immunity gain (immunityPerDaySick = 0)
+        /// - Lethal at 100% severity
+        /// - NOT tendable (recovery is environmental, not medical)
+        /// - NO HediffComp_Disappears (not time-based)
+        ///
+        /// Recovery happens naturally (-8%/day) when not exposed to toxins.
+        /// Exposure stops recovery and can add severity.
+        /// </summary>
+        public static bool IsToxicBuildupDisease(Hediff hediff)
+        {
+            if (hediff == null) return false;
+            var def = hediff.def;
+
+            // Must have HediffComp_Immunizable
+            var immunizable = hediff.TryGetComp<HediffComp_Immunizable>();
+            if (immunizable == null) return false;
+
+            // Key check: NO immunity gain when sick (immunityPerDaySick <= 0)
+            // This distinguishes toxic buildup from Type 1 (immunizable) diseases
+            if (immunizable.Props.immunityPerDaySick > 0) return false;
+
+            // Must NOT have HediffComp_Disappears (that would be Type 3 time-based)
+            var disappearsComp = hediff.TryGetComp<HediffComp_Disappears>();
+            if (disappearsComp != null) return false;
+
+            // Must be lethal (toxic buildup kills at 100%)
+            if (def.lethalSeverity < 0) return false;
+
+            // Must NOT be tendable (toxic buildup is not treated medically)
+            // This distinguishes from Type 3a mechanites which ARE tendable
+            if (def.tendable) return false;
+
+            // Must be a "bad" hediff
+            if (!def.isBad) return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Get the current exposure flags for a pawn.
+        /// Checks for toxic fallout, polluted terrain, and tox gas.
+        /// </summary>
+        public static ExposureFlags GetCurrentExposure(Pawn pawn)
+        {
+            if (pawn == null || !pawn.Spawned || pawn.Map == null)
+                return ExposureFlags.None;
+
+            ExposureFlags flags = ExposureFlags.None;
+            var map = pawn.Map;
+            var position = pawn.Position;
+
+            // Check if under roof (relevant for toxic fallout)
+            if (position.Roofed(map))
+            {
+                flags |= ExposureFlags.UnderRoof;
+            }
+
+            // Check for active toxic fallout on the map
+            bool toxicFalloutActive = map.GameConditionManager.ActiveConditions
+                .Any(x => x.def.conditionClass == typeof(GameCondition_ToxicFallout));
+            if (toxicFalloutActive)
+            {
+                flags |= ExposureFlags.ToxicFalloutActive;
+            }
+
+            // Check for polluted terrain (requires Biotech)
+            if (ModsConfig.BiotechActive && position.IsPolluted(map))
+            {
+                flags |= ExposureFlags.InPollution;
+            }
+
+            // Check for tox gas (requires Biotech)
+            if (ModsConfig.BiotechActive && position.GasDensity(map, GasType.ToxGas) > 0)
+            {
+                flags |= ExposureFlags.InToxGas;
+            }
+
+            return flags;
+        }
+
+        /// <summary>
+        /// Check if a pawn is currently safe from toxic exposure (can recover).
+        /// Based on HediffComp_ImmunizableToxic.SeverityChangePerDay logic.
+        /// </summary>
+        public static bool IsSafeFromToxicExposure(Pawn pawn, ExposureFlags exposure)
+        {
+            if (pawn == null) return true;
+
+            // In tox gas = always exposed
+            if ((exposure & ExposureFlags.InToxGas) != 0)
+                return false;
+
+            // On polluted terrain and not immune = exposed (blocks recovery)
+            if ((exposure & ExposureFlags.InPollution) != 0)
+            {
+                if (pawn.GetStatValue(StatDefOf.ToxicEnvironmentResistance) < 1f)
+                    return false;
+            }
+
+            // Toxic fallout active and not roofed and not immune = exposed (blocks recovery)
+            if ((exposure & ExposureFlags.ToxicFalloutActive) != 0 &&
+                (exposure & ExposureFlags.UnderRoof) == 0)
+            {
+                if (pawn.GetStatValue(StatDefOf.ToxicResistance) < 1f)
+                    return false;
+            }
+
+            return true;
+        }
+
+        private void RecordToxicBuildupData(Hediff hediff, int currentTick, Pawn pawn)
+        {
+            var history = GetOrCreateHistory(hediff);
+            if (history == null) return;
+
+            ExposureFlags exposure = GetCurrentExposure(pawn);
+
+            // Record data point
+            history.RecordToxicBuildupDataPoint(currentTick, hediff.Severity, exposure);
+
+            // Update exposure interval tracking
+            history.UpdateExposureState(currentTick, exposure);
         }
 
         private void RecordTimeBasedData(Hediff hediff, int currentTick, HediffComp_Disappears disappearsComp, HediffComp_TendDuration tendComp)

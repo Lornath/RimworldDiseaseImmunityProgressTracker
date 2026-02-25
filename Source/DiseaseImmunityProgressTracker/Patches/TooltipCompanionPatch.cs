@@ -25,6 +25,9 @@ namespace DiseaseImmunityProgressTracker.Patches
             var pawn = __instance.Pawn;
             if (pawn == null || pawn.Dead) return;
 
+            // Skip Type 4 (Toxic Buildup) - handled by ToxicBuildupPatch
+            if (DiseaseTracker.IsToxicBuildupDisease(hediff)) return;
+
             // Skip Type 3a (Mechanites) - they have Immunizable but should use TimeBasedWindow
             // (handled by TimeBasedDiseasePatch instead)
             if (DiseaseTracker.IsMechaniteDisease(hediff)) return;
