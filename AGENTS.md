@@ -54,6 +54,7 @@ The mod tracks diseases using a type system based on their cure mechanics:
 | **Type 4** | Toxic Buildup | Toxic Buildup | Severity heals when safe (-8%/day); exposure blocks recovery | `HediffComp_ImmunizableToxic` (no immunity gain, NOT tendable, lethal) | `ToxicBuildupWindow` |
 | **Type 5** | Chronic | Asthma | Treatment quality controls severity; no cure, permanent management | `HediffComp_Immunizable` (NO immunity gain) + `HediffComp_TendDuration` | `ChronicDiseaseWindow` |
 | **Type 6** | Artery Blockage | Artery Blockage | Heart replacement, healer serum, luciferium, biosculpter | `HediffComp_Immunizable` (NO immunity gain, NOT tendable, lethal) | `ArteryBlockageWindow` |
+| **Type 7** | Food Poisoning | Food Poisoning | No treatment; fixed ~24h duration, severity decreases from 1.0 to 0 | `HediffComp_SeverityPerDay` only (no immunity, no tending, no disappears) | `FoodPoisoningWindow` |
 
 **Type 3a vs 3b Key Differences:**
 - **Type 3a (Mechanites)**: Non-fatal. Severity controls pain level (0-49% = mild 20% pain, 50-100% = intense 60% pain). Has `HediffComp_Immunizable` but `immunityPerDaySick = 0` (no immunity gain).
@@ -92,10 +93,20 @@ The mod tracks diseases using a type system based on their cure mechanics:
 - Distinguished from Type 4 by checking for the **specific** `HediffComp_ImmunizableToxic` subclass (Type 4) vs base `HediffComp_Immunizable` (Type 6).
 - Detected explicitly by `defName == "HeartArteryBlockage"` to avoid misclassification.
 
+**Type 7 (Food Poisoning) Key Differences:**
+- Only has `HediffComp_SeverityPerDay` (severityPerDay = -1). No immunity, no tending, no disappears timer.
+- Severity starts at 1.0 and decreases linearly to 0 over ~24 hours.
+- Three stages: Initial (sev >= 0.80, ~4.8h), Major (sev >= 0.20, ~14.4h), Recovering (sev < 0.20, ~4.8h).
+- No treatment possible - pawn just has to wait it out.
+- Stage effects: Initial (20% pain, consciousness x60%), Major (40% pain, consciousness x50%), Recovering (20% pain, consciousness x60%).
+- Vomiting frequency varies by stage: MTB 0.3d (Initial), 0.2d (Major), 0.4d (Recovering).
+- Detected explicitly by `defName == "FoodPoisoning"`.
+
 **Detection Order in Code:**
-Type 4 (Toxic Buildup) is checked FIRST, then Type 6 (Artery Blockage), then Type 5 (Chronic), then Type 3 diseases, then Type 1. This ordering prevents misclassification since:
+Type 4 (Toxic Buildup) is checked FIRST, then Type 6 (Artery Blockage), then Type 5 (Chronic), then Type 7 (Food Poisoning), then Type 3 diseases, then Type 1. This ordering prevents misclassification since:
 - Type 4 has `HediffComp_Immunizable` but should not show the Type 1 immunity graph.
 - Type 5 has `HediffComp_Immunizable` but should use `ChronicDiseaseWindow`.
+- Type 7 has only `HediffComp_SeverityPerDay` (no other comps), checked before Type 3 to be explicit.
 - Type 3a Mechanites have `HediffComp_Immunizable` but should use `TimeBasedWindow`.
 
 ### Core Components
@@ -108,6 +119,7 @@ Type 4 (Toxic Buildup) is checked FIRST, then Type 6 (Artery Blockage), then Typ
         - `IsToxicBuildupDisease()`: Identifies Type 4 (Toxic Buildup) by checking for `HediffComp_ImmunizableToxic` subclass.
         - `IsArteryBlockage()`: Identifies Type 6 (Artery Blockage) by defName.
         - `IsChronicDisease()`: Identifies Type 5 (Chronic diseases like Asthma).
+        - `IsFoodPoisoning()`: Identifies Type 7 (Food Poisoning) by defName.
         - `IsTimeBasedDisease()`: Identifies Type 3 diseases (both 3a and 3b).
         - `IsMechaniteDisease()`: Identifies Type 3a mechanite diseases specifically.
     - Contains `GetCurrentExposure(pawn)` to get `ExposureFlags` for toxic buildup tracking.
@@ -226,8 +238,22 @@ Type 4 (Toxic Buildup) is checked FIRST, then Type 6 (Artery Blockage), then Typ
         - Verdict text showing risk level based on current stage.
     - Same tooltip-companion behavior as other windows.
 
+- **FoodPoisoningWindow** (`Source/DiseaseImmunityProgressTracker/UI/FoodPoisoningWindow.cs`):
+    - A `Window` subclass that displays Food Poisoning (Type 7) progress.
+    - Shows countdown timer, staged progress bar, current symptoms, and verdict.
+    - Features:
+        - Title with disease name and current stage (Initial/Major/Recovering).
+        - Countdown timer showing hours and minutes remaining (green text).
+        - Staged progress bar: three colored segments (orange=Initial 20%, red=Major 60%, green=Recovering 20%) with white marker at current position.
+        - Stage labels with duration estimates below the bar.
+        - Current stage symptoms: pain %, vomiting frequency, consciousness, moving.
+        - Verdict text: stage-appropriate encouragement ("The worst part is coming soon", "Almost done!").
+    - No graph needed - disease is perfectly linear/predictable; the staged timeline is more informative.
+    - Reads severity rate from `HediffComp_SeverityPerDay.SeverityChangePerDay()` for mod compatibility.
+    - Same tooltip-companion behavior as other windows.
+
 - **ICompanionWindow** (`Source/DiseaseImmunityProgressTracker/UI/ICompanionWindow.cs`):
-    - Simple interface implemented by all companion windows (`DiseaseGraphWindow`, `CumulativeTendWindow`, `TimeBasedWindow`, `ToxicBuildupWindow`, `ChronicDiseaseWindow`, `ArteryBlockageWindow`).
+    - Simple interface implemented by all companion windows (`DiseaseGraphWindow`, `CumulativeTendWindow`, `TimeBasedWindow`, `ToxicBuildupWindow`, `ChronicDiseaseWindow`, `ArteryBlockageWindow`, `FoodPoisoningWindow`).
     - Exposes `Hediff Hediff { get; }` property for the manager to identify which pawn/disease a window belongs to.
     - Enables the stacking logic to group windows by pawn.
 
@@ -253,6 +279,12 @@ Type 4 (Toxic Buildup) is checked FIRST, then Type 6 (Artery Blockage), then Typ
     - Harmony patch on `HediffComp_Immunizable.CompTipStringExtra`.
     - Only handles Type 6 (Artery Blockage) diseases identified by `DiseaseTracker.IsArteryBlockage()`.
     - Opens `ArteryBlockageWindow` when artery blockage tooltip is shown.
+
+- **FoodPoisoningPatch** (`Source/DiseaseImmunityProgressTracker/Patches/FoodPoisoningPatch.cs`):
+    - Harmony patch on `HediffComp_SeverityPerDay.CompTipStringExtra`.
+    - Only handles Type 7 (Food Poisoning) diseases identified by `DiseaseTracker.IsFoodPoisoning()`.
+    - Filters strictly since many hediffs use `HediffComp_SeverityPerDay`.
+    - Opens `FoodPoisoningWindow` when food poisoning tooltip is shown.
 
 - **CumulativeTendPatch** (`Source/DiseaseImmunityProgressTracker/Patches/CumulativeTendPatch.cs`):
     - Harmony patch on `HediffComp_TendDuration.CompTipStringExtra`.
@@ -299,7 +331,7 @@ When a pawn has multiple diseases, multiple companion windows can be open simult
 
 ### Data Structures (in DiseaseTracker.cs)
 
-- **DiseaseDataPoint**: Records immunity and severity at a specific tick (for Type 1, Type 5, and Type 6 diseases). For Type 6 (Artery Blockage), the Immunity field is always 0.
+- **DiseaseDataPoint**: Records immunity and severity at a specific tick (for Type 1, Type 5, Type 6, and Type 7 diseases). For Type 6 (Artery Blockage) and Type 7 (Food Poisoning), the Immunity field is always 0.
 - **TimeBasedDataPoint**: Records severity and time remaining at a specific tick (for Type 3 diseases):
     - `Tick`: When this data point was recorded
     - `Severity`: Current severity (0-1)
@@ -328,7 +360,7 @@ When a pawn has multiple diseases, multiple companion windows can be open simult
     - `MedicineName`: Display label of medicine used
     - `MedicineDefName`: DefName for looking up the medicine's icon (null if no medicine used)
     - `Quality`: The final tend quality (after random variance)
-- **DiseaseHistory**: Container for all tracking data for a single disease instance (supports all five disease types).
+- **DiseaseHistory**: Container for all tracking data for a single disease instance (supports all seven disease types).
 
 ### Source Files
 
@@ -349,6 +381,7 @@ Source/DiseaseImmunityProgressTracker/
 │   ├── ToxicBuildupWindow.cs           # Severity/exposure display for Type 4 (toxic buildup)
 │   ├── ChronicDiseaseWindow.cs         # Treatment/severity display for Type 5 (chronic) diseases
 │   ├── ArteryBlockageWindow.cs         # Heart attack risk display for Type 6 (artery blockage)
+│   ├── FoodPoisoningWindow.cs          # Countdown/stage display for Type 7 (food poisoning)
 │   └── WindowPositionHelper.cs         # Tooltip position calculation logic
 └── Patches/
     ├── TooltipCompanionPatch.cs        # Harmony patch for Type 1 disease tooltips
@@ -357,6 +390,7 @@ Source/DiseaseImmunityProgressTracker/
     ├── ToxicBuildupPatch.cs            # Harmony patch for Type 4 disease tooltips
     ├── ChronicDiseasePatch.cs          # Harmony patch for Type 5 disease tooltips
     ├── ArteryBlockagePatch.cs          # Harmony patch for Type 6 disease tooltips
+    ├── FoodPoisoningPatch.cs           # Harmony patch for Type 7 disease tooltips
     └── TendUtilityPatch.cs             # Harmony patch for capturing tend events
 ```
 
