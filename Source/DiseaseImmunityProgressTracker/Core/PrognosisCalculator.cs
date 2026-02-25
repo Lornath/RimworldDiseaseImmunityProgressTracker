@@ -33,6 +33,7 @@ namespace DiseaseImmunityProgressTracker.Core
             // Projections (in days, float.PositiveInfinity if not applicable)
             public float DaysUntilImmune;
             public float DaysUntilDeath;
+            public float DaysUntilSeverityCleared;
 
             // Verdict
             public bool WillSurvive;
@@ -86,7 +87,17 @@ namespace DiseaseImmunityProgressTracker.Core
             int currentTick = Find.TickManager?.TicksGame ?? 0;
             var observedRates = CalculateObservedRates(history, currentTick);
 
-            if (observedRates.HasValue)
+            if (result.CurrentImmunity >= 1f)
+            {
+                // Post-immunity: use the fixed severityPerDayImmune rate directly from the comp.
+                // SeverityChangePerDay() returns Props.severityPerDayImmune when FullyImmune,
+                // which is a fixed, disease-specific decline rate (no random factor).
+                // Mark as "observed" since the rate is exact (not an estimate needing more data).
+                result.ImmunityPerDay = 0f;
+                result.SeverityPerDay = immunizable.SeverityChangePerDay();
+                result.UsingObservedRates = true;
+            }
+            else if (observedRates.HasValue)
             {
                 // Use observed rates (these naturally account for treatment effects)
                 result.ImmunityPerDay = observedRates.Value.immunityRate;
@@ -104,6 +115,16 @@ namespace DiseaseImmunityProgressTracker.Core
             // Calculate projections
             result.DaysUntilImmune = CalculateDaysUntil(result.CurrentImmunity, 1f, result.ImmunityPerDay);
             result.DaysUntilDeath = CalculateDaysUntil(result.CurrentSeverity, 1f, result.SeverityPerDay);
+
+            // Calculate time until severity clears (reaches 0) after immunity
+            if (result.CurrentImmunity >= 1f && result.SeverityPerDay < 0f && result.CurrentSeverity > 0f)
+            {
+                result.DaysUntilSeverityCleared = result.CurrentSeverity / (-result.SeverityPerDay);
+            }
+            else
+            {
+                result.DaysUntilSeverityCleared = float.PositiveInfinity;
+            }
 
             // Determine verdict
             if (result.DaysUntilImmune < result.DaysUntilDeath)

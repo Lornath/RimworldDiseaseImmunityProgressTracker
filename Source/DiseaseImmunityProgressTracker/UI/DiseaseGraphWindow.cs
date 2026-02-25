@@ -169,7 +169,15 @@ namespace DiseaseImmunityProgressTracker.UI
             // Already immune
             if (prognosis.CurrentImmunity >= 1f)
             {
-                verdictText = "Immune";
+                if (prognosis.SeverityPerDay < 0f && prognosis.CurrentSeverity > 0f
+                    && !float.IsInfinity(prognosis.DaysUntilSeverityCleared))
+                {
+                    verdictText = $"Immune - All clear in {FormatDays(prognosis.DaysUntilSeverityCleared)}";
+                }
+                else
+                {
+                    verdictText = "Immune";
+                }
                 verdictColor = SurviveColor;
             }
             // Severity not increasing (stable or recovering)
@@ -466,6 +474,19 @@ namespace DiseaseImmunityProgressTracker.UI
                 }
             }
 
+            // Add a synthetic "now" point using live values so the historical line
+            // connects seamlessly to the current position and projection line.
+            // Without this, the last recorded point (up to ~1 hour old) leaves a gap.
+            if (prognosis.IsValid)
+            {
+                relevantPoints.Add(new DiseaseDataPoint
+                {
+                    Tick = currentTick,
+                    Immunity = prognosis.CurrentImmunity,
+                    Severity = prognosis.CurrentSeverity
+                });
+            }
+
             if (relevantPoints.Count < 2) return;
 
             // Draw immunity history
@@ -508,21 +529,18 @@ namespace DiseaseImmunityProgressTracker.UI
             Vector2 immNow = new Vector2(nowX, immNowY);
             Vector2 sevNow = new Vector2(nowX, sevNowY);
 
-            // Only draw projections if the disease outcome isn't already resolved
-            // (immune = immunity >= 100%, dead = severity >= 100%)
+            // Draw projections only while the race is still active
+            // Once immune, the historical line shows the decline clearly and
+            // the verdict text shows "All clear in X" — no projection needed.
             bool outcomeResolved = prognosis.CurrentImmunity >= 1f || prognosis.CurrentSeverity >= 1f;
 
             if (!outcomeResolved)
             {
-                // Dimmed color for projections
                 Color immProjectionColor = ImmunityColor * ProjectionDimFactor;
                 Color sevProjectionColor = SeverityColor * ProjectionDimFactor;
 
-                // Draw immunity projection line
                 DrawProjectionLine(graphArea, immNow, prognosis.CurrentImmunity, prognosis.ImmunityPerDay,
                     futureDays, totalDays, pastDays, immProjectionColor);
-
-                // Draw severity projection line
                 DrawProjectionLine(graphArea, sevNow, prognosis.CurrentSeverity, prognosis.SeverityPerDay,
                     futureDays, totalDays, pastDays, sevProjectionColor);
             }
