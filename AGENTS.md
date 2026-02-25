@@ -28,27 +28,14 @@ Tell the user to run this to deploy, do not attempt to deploy automatically:
 .\deploy.ps1
 ```
 
-## Dependencies Setup
-
-Before building, ensure the following DLLs are in `Libs/`:
-- `0Harmony.dll` (from Harmony mod)
-- `Assembly-CSharp.dll` (from RimWorld installation)
-- `UnityEngine.CoreModule.dll` (from RimWorld installation)
-- `UnityEngine.IMGUIModule.dll` (from RimWorld installation)
-- `UnityEngine.TextRenderingModule.dll` (from RimWorld installation)
-
-Run `Libs/CopyLibs.ps1` to fetch these automatically.
-
 ## Decompiled Reference Code
 
 Shared RimWorld decompiled source lives at `../decompiled/RimWorld/` (parent directory).
-Mod-specific decompiled references (if any) live in `./decompiled/`.
+Mod-specific decompiled references live in `./decompiled/`.
 
 **DO NOT ATTEMPT TO FULLY READ THESE FILES** - Some of them are quite large. Search for relevant code and only read specific ranges.
 
-Key locations:
-* `../decompiled/RimWorld/` - Shared RimWorld source (Assembly-CSharp), organized by namespace
-* `./decompiled/mods/` - (If needed) Other mod sources this mod interacts with
+There is the source code for a similar mod to ours in "decompiled\AmIGonnaMakeItDoc\RW.AmIGonnaMakeItDoc" that may provide some useful example code.
 
 ## Architecture
 
