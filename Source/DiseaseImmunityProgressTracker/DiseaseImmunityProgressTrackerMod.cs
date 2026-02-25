@@ -26,7 +26,7 @@ namespace DiseaseImmunityProgressTracker
 
         public override string SettingsCategory()
         {
-            return "Disease Immunity Progress Tracker";
+            return "DIPT_Settings_Category".Translate();
         }
     }
 
@@ -44,7 +44,7 @@ namespace DiseaseImmunityProgressTracker
         {
             Listing_Standard listing = new Listing_Standard();
             listing.Begin(inRect);
-            listing.CheckboxLabeled("Enable verbose logging", ref verboseLogging);
+            listing.CheckboxLabeled("DIPT_Settings_VerboseLogging".Translate(), ref verboseLogging);
             listing.End();
         }
     }

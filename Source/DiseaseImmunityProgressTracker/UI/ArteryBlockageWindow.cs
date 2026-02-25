@@ -175,8 +175,19 @@ namespace DiseaseImmunityProgressTracker.UI
         {
             Text.Font = GameFont.Small;
             string stageName = GetCurrentStageName();
-            string title = $"Artery Blockage ({stageName})";
+            string title = "DIPT_ABW_Title".Translate(stageName);
             Widgets.Label(rect, title);
+        }
+
+        private string TranslateStageName(string label)
+        {
+            switch (label)
+            {
+                case "Minor": return "DIPT_ABW_StageMinor".Translate();
+                case "Major": return "DIPT_ABW_StageMajor".Translate();
+                case "Extreme": return "DIPT_ABW_StageExtreme".Translate();
+                default: return label;
+            }
         }
 
         private string GetCurrentStageName()
@@ -186,10 +197,10 @@ namespace DiseaseImmunityProgressTracker.UI
             {
                 if (severity >= StageInfo[i].threshold)
                 {
-                    return StageInfo[i].label;
+                    return TranslateStageName(StageInfo[i].label);
                 }
             }
-            return "Minor";
+            return "DIPT_ABW_StageMinor".Translate();
         }
 
         private int GetCurrentStageMTB()
@@ -212,7 +223,7 @@ namespace DiseaseImmunityProgressTracker.UI
 
             Color severityColor = GetSeverityColor(hediff.Severity);
             GUI.color = severityColor;
-            Widgets.Label(rect, $"Severity: {severityPct}%");
+            Widgets.Label(rect, "DIPT_ABW_Severity".Translate($"{severityPct}"));
             GUI.color = Color.white;
         }
 
@@ -265,7 +276,7 @@ namespace DiseaseImmunityProgressTracker.UI
 
             GUI.color = AxisColor;
             Widgets.Label(new Rect(rect.x, rect.y, rect.width, rowHeight),
-                $"Progression: ~{progressionPctPerDay:0.0#}%/day");
+                "DIPT_ABW_ProgressionRate".Translate($"{progressionPctPerDay:0.0#}"));
 
             // Calculate time to next stage and fatal
             float severity = hediff.Severity;
@@ -277,16 +288,16 @@ namespace DiseaseImmunityProgressTracker.UI
                 float daysToNextStage = (nextStageThreshold - severity) / progressionRate;
                 string nextStageLabel = GetStageNameAt(nextStageThreshold);
                 int nextStagePct = (int)(nextStageThreshold * 100);
-                nextStageText = $"Next stage ({nextStageLabel} {nextStagePct}%): ~{FormatDays(daysToNextStage)}";
+                nextStageText = "DIPT_ABW_NextStage".Translate(nextStageLabel, $"{nextStagePct}", FormatDays(daysToNextStage));
             }
             else if (progressionRate > 0)
             {
                 float daysToFatal = (1f - severity) / progressionRate;
-                nextStageText = $"Fatal (100%): ~{FormatDays(daysToFatal)}";
+                nextStageText = "DIPT_ABW_FatalIn".Translate(FormatDays(daysToFatal));
             }
             else
             {
-                nextStageText = "Progression stalled";
+                nextStageText = "DIPT_ABW_ProgressionStalled".Translate();
             }
 
             Widgets.Label(new Rect(rect.x, rect.y + rowHeight, rect.width, rowHeight), nextStageText);
@@ -311,10 +322,10 @@ namespace DiseaseImmunityProgressTracker.UI
             {
                 if (threshold >= StageInfo[i].threshold)
                 {
-                    return StageInfo[i].label;
+                    return TranslateStageName(StageInfo[i].label);
                 }
             }
-            return "Minor";
+            return "DIPT_ABW_StageMinor".Translate();
         }
 
         private string FormatDays(float days)
@@ -322,17 +333,17 @@ namespace DiseaseImmunityProgressTracker.UI
             if (days >= 365)
             {
                 float years = days / 365f;
-                return $"{years:0.#} years";
+                return "DIPT_ABW_TimeYears".Translate($"{years:0.#}");
             }
             else if (days >= 60)
             {
                 // RimWorld uses 60-day quadrums
                 float quadrums = days / 60f;
-                return $"{quadrums:0.#} quadrums";
+                return "DIPT_ABW_TimeQuadrums".Translate($"{quadrums:0.#}");
             }
             else
             {
-                return $"{days:0} days";
+                return "DIPT_ABW_TimeDays".Translate($"{days:0}");
             }
         }
 
@@ -343,7 +354,7 @@ namespace DiseaseImmunityProgressTracker.UI
 
             // Row 1: Header
             GUI.color = DangerColor;
-            Widgets.Label(new Rect(rect.x, rect.y, rect.width, rowHeight), "Heart Attack Risk");
+            Widgets.Label(new Rect(rect.x, rect.y, rect.width, rowHeight), "DIPT_ABW_HeartAttackRisk".Translate());
             GUI.color = Color.white;
 
             // Current MTB and daily risk
@@ -353,7 +364,7 @@ namespace DiseaseImmunityProgressTracker.UI
             // Row 2: Current risk
             GUI.color = GetRiskColor(dailyRisk);
             Widgets.Label(new Rect(rect.x, rect.y + rowHeight, rect.width, rowHeight),
-                $"Current: {dailyRisk:0.#}%/day (MTB {mtbDays}d)");
+                "DIPT_ABW_CurrentRisk".Translate($"{dailyRisk:0.#}", $"{mtbDays}"));
 
             // Row 3: Expected attacks before next stage
             float severity = hediff.Severity;
@@ -364,7 +375,7 @@ namespace DiseaseImmunityProgressTracker.UI
             {
                 float expectedAttacks = CalculateExpectedAttacks(severity, nextStageThreshold, progressionRate);
                 Widgets.Label(new Rect(rect.x, rect.y + rowHeight * 2, rect.width, rowHeight),
-                    $"~{expectedAttacks:0.#} attacks expected before next stage");
+                    "DIPT_ABW_ExpectedAttacks".Translate($"{expectedAttacks:0.#}"));
             }
             GUI.color = Color.white;
         }
@@ -595,10 +606,10 @@ namespace DiseaseImmunityProgressTracker.UI
             float rowHeight = TinyFontHeight;
 
             GUI.color = SafeColor;
-            Widgets.Label(new Rect(rect.x, rect.y, rect.width, rowHeight), "Cures:");
+            Widgets.Label(new Rect(rect.x, rect.y, rect.width, rowHeight), "DIPT_ABW_CuresLabel".Translate());
             GUI.color = AxisColor;
             Widgets.Label(new Rect(rect.x, rect.y + rowHeight, rect.width, rowHeight),
-                "Replace heart, healer serum, luciferium, biosculpter");
+                "DIPT_ABW_CuresList".Translate());
             GUI.color = Color.white;
         }
 
@@ -614,27 +625,27 @@ namespace DiseaseImmunityProgressTracker.UI
 
             if (severity >= Stage4Threshold)
             {
-                verdictText = $"CRITICAL - Extreme heart attack risk (MTB {mtbDays}d)";
+                verdictText = "DIPT_ABW_VerdictCritical".Translate($"{mtbDays}");
                 verdictColor = DangerColor;
             }
             else if (severity >= Stage3Threshold)
             {
-                verdictText = $"SERIOUS - High heart attack risk (MTB {mtbDays}d)";
+                verdictText = "DIPT_ABW_VerdictSerious".Translate($"{mtbDays}");
                 verdictColor = DangerColor;
             }
             else if (severity >= Stage2Threshold)
             {
-                verdictText = $"MODERATE - Elevated heart attack risk (MTB {mtbDays}d)";
+                verdictText = "DIPT_ABW_VerdictModerate".Translate($"{mtbDays}");
                 verdictColor = WarningColor;
             }
             else if (severity >= Stage1Threshold)
             {
-                verdictText = $"MILD - Low heart attack risk (MTB {mtbDays}d)";
+                verdictText = "DIPT_ABW_VerdictMild".Translate($"{mtbDays}");
                 verdictColor = WarningColor;
             }
             else
             {
-                verdictText = $"EARLY - Very low heart attack risk (MTB {mtbDays}d)";
+                verdictText = "DIPT_ABW_VerdictEarly".Translate($"{mtbDays}");
                 verdictColor = SafeColor;
             }
 

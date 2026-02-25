@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- ChronicDiseaseWindow (Type 5: Chronic diseases like Asthma) -->
+  <DIPT_CDW_FallbackTitle>Chronic Condition</DIPT_CDW_FallbackTitle>
+  <DIPT_CDW_NotTreatedProgressing>Not treated - PROGRESSING</DIPT_CDW_NotTreatedProgressing>
+  <DIPT_CDW_EffectRegressing>REGRESSING</DIPT_CDW_EffectRegressing>
+  <DIPT_CDW_EffectSlowing>SLOWING</DIPT_CDW_EffectSlowing>
+  <DIPT_CDW_EffectStable>STABLE</DIPT_CDW_EffectStable>
+  <DIPT_CDW_Treatment>Treatment: {0}% - {1}{2}</DIPT_CDW_Treatment>
+  <DIPT_CDW_SeverityWithMax>Severity: {0}% (max {1}%)</DIPT_CDW_SeverityWithMax>
+  <DIPT_CDW_PercentComplete>{0}%</DIPT_CDW_PercentComplete>
+  <DIPT_CDW_HintRegress> [Regress]</DIPT_CDW_HintRegress>
+  <DIPT_CDW_HintSlow> [Slow]</DIPT_CDW_HintSlow>
+  <DIPT_CDW_HintMinimal> [Minimal]</DIPT_CDW_HintMinimal>
+  <DIPT_CDW_TendEntry>{0}%{1} - {2}</DIPT_CDW_TendEntry>
+  <DIPT_CDW_VerdictRegressing>REGRESSING - Severity decreasing ({0}%/d)</DIPT_CDW_VerdictRegressing>
+  <DIPT_CDW_VerdictImproving>IMPROVING - Slowly regressing ({0}%/d)</DIPT_CDW_VerdictImproving>
+  <DIPT_CDW_VerdictStable>STABLE - Severity maintained (need &gt;{0}% to regress)</DIPT_CDW_VerdictStable>
+  <DIPT_CDW_VerdictSlowing>SLOWING - Better treatment needed (&gt;{0}% to regress)</DIPT_CDW_VerdictSlowing>
+  <DIPT_CDW_VerdictProgressing>PROGRESSING - Needs treatment! (&gt;{0}% to regress)</DIPT_CDW_VerdictProgressing>
+</LanguageData>

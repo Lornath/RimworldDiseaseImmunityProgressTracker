@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- TimeBasedWindow (Type 3: Time-based diseases - Mechanites and Fatal Rots) -->
+  <DIPT_TBW_TimeRemainingHours>Tiempo restante: {0}h</DIPT_TBW_TimeRemainingHours>
+  <DIPT_TBW_TimeRemainingDays>Tiempo restante: {0} días</DIPT_TBW_TimeRemainingDays>
+  <DIPT_TBW_Tended>[Tratado]</DIPT_TBW_Tended>
+  <DIPT_TBW_NeedsTending>[Necesita tratamiento]</DIPT_TBW_NeedsTending>
+  <DIPT_TBW_SeverityWithPain>Gravedad: {0}% ({1}, {2}%)</DIPT_TBW_SeverityWithPain>
+  <DIPT_TBW_Severity>Gravedad: {0}%</DIPT_TBW_Severity>
+  <DIPT_TBW_PercentComplete>{0}% completado</DIPT_TBW_PercentComplete>
+  <DIPT_TBW_AxisStart>Inicio</DIPT_TBW_AxisStart>
+  <DIPT_TBW_AxisCure>Curación</DIPT_TBW_AxisCure>
+  <DIPT_TBW_VerdictSafePainControlled>SEGURO - Dolor controlado (leve, 20%)</DIPT_TBW_VerdictSafePainControlled>
+  <DIPT_TBW_VerdictWarningPainIntensify>ADVERTENCIA - El dolor se intensificará sin tratamiento</DIPT_TBW_VerdictWarningPainIntensify>
+  <DIPT_TBW_VerdictImprovingPainDecreasing>MEJORANDO - El dolor disminuye con tratamiento</DIPT_TBW_VerdictImprovingPainDecreasing>
+  <DIPT_TBW_VerdictIntensePain>DOLOR INTENSO - Continuar tratamiento para reducir</DIPT_TBW_VerdictIntensePain>
+  <DIPT_TBW_VerdictSafeWillSurvive>SEGURO - Sobrevivirá (proyectado {0}%)</DIPT_TBW_VerdictSafeWillSurvive>
+  <DIPT_TBW_VerdictDanger>PELIGRO - ¡La gravedad puede alcanzar niveles letales!</DIPT_TBW_VerdictDanger>
+  <DIPT_TBW_VerdictMonitor>MONITOREAR - Gravedad en aumento</DIPT_TBW_VerdictMonitor>
+  <DIPT_TBW_TendEntry>{0}% - {1}</DIPT_TBW_TendEntry>
+</LanguageData>

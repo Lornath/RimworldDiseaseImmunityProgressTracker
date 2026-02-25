@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- Strings reused across multiple windows -->
+  <DIPT_Shared_RecentTends>近期治疗：</DIPT_Shared_RecentTends>
+  <DIPT_Shared_NoTendsRecorded>暂无治疗记录</DIPT_Shared_NoTendsRecorded>
+  <DIPT_Shared_SelfTend>自我治疗</DIPT_Shared_SelfTend>
+  <DIPT_Shared_Calculating>计算中…</DIPT_Shared_Calculating>
+  <DIPT_Shared_Now>现在</DIPT_Shared_Now>
+  <DIPT_Shared_AxisPast>-{0}天</DIPT_Shared_AxisPast>
+  <DIPT_Shared_AxisFuture>+{0}天</DIPT_Shared_AxisFuture>
+</LanguageData>

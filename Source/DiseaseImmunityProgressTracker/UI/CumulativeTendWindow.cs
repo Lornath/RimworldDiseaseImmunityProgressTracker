@@ -119,7 +119,7 @@ namespace DiseaseImmunityProgressTracker.UI
             Text.Font = GameFont.Small;
             float currentPct = totalTendQuality * 100f;
             float targetPct = targetQuality * 100f;
-            string progressText = $"Progress: {currentPct:0.#}% / {targetPct:0.#}%";
+            string progressText = "DIPT_CTW_Progress".Translate($"{currentPct:0.#}", $"{targetPct:0.#}");
             Widgets.Label(new Rect(0, yOffset, inRect.width, smallHeight), progressText);
             yOffset += smallHeight + 2f;
 
@@ -131,7 +131,7 @@ namespace DiseaseImmunityProgressTracker.UI
             // Draw recent tends section
             Text.Font = GameFont.Tiny;
             GUI.color = AxisColor;
-            Widgets.Label(new Rect(0, yOffset, inRect.width, tinyHeight), "Recent tends:");
+            Widgets.Label(new Rect(0, yOffset, inRect.width, tinyHeight), "DIPT_Shared_RecentTends".Translate());
             GUI.color = Color.white;
             yOffset += tinyHeight + 2f;
 
@@ -169,7 +169,7 @@ namespace DiseaseImmunityProgressTracker.UI
             Text.Font = GameFont.Small;
             Text.Anchor = TextAnchor.MiddleCenter;
             int progressPct = (int)(progress * 100);
-            Widgets.Label(rect, $"{progressPct}% complete");
+            Widgets.Label(rect, "DIPT_CTW_PercentComplete".Translate($"{progressPct}"));
             Text.Anchor = TextAnchor.UpperLeft;
         }
 
@@ -181,7 +181,7 @@ namespace DiseaseImmunityProgressTracker.UI
             if (history == null || history.TendingEvents.Count == 0)
             {
                 GUI.color = AxisColor;
-                Widgets.Label(rect, "  No tends recorded yet");
+                Widgets.Label(rect, "DIPT_Shared_NoTendsRecorded".Translate());
                 GUI.color = Color.white;
                 return;
             }
@@ -227,11 +227,11 @@ namespace DiseaseImmunityProgressTracker.UI
             string doctorInfo = tend.DoctorName;
             if (doctorInfo == "Self/Unknown" || string.IsNullOrEmpty(doctorInfo))
             {
-                doctorInfo = "Self-tend";
+                doctorInfo = "DIPT_Shared_SelfTend".Translate();
             }
 
             int qualityPct = (int)(tend.Quality * 100);
-            string text = $"+{qualityPct}% - {doctorInfo}";
+            string text = "DIPT_CTW_TendEntry".Translate($"{qualityPct}", doctorInfo);
 
             Rect textRect = new Rect(iconRect.xMax + iconPadding, rect.y, rect.width - iconSize - iconPadding - 4f, rect.height);
             Widgets.Label(textRect, text);
@@ -243,7 +243,7 @@ namespace DiseaseImmunityProgressTracker.UI
             if (remaining <= 0)
             {
                 GUI.color = ProgressBarFillColor;
-                Widgets.Label(rect, "Will be cured on next tend!");
+                Widgets.Label(rect, "DIPT_CTW_WillCureNextTend".Translate());
                 GUI.color = Color.white;
                 return;
             }
@@ -288,7 +288,7 @@ namespace DiseaseImmunityProgressTracker.UI
             string timeEstimate = estimatedDays < 1f
                 ? $"{estimatedDays * 24f:0.#}h"
                 : $"{estimatedDays:0.#}d";
-            string estimateText = $"Est. ~{estimatedTends} tend{(estimatedTends != 1 ? "s" : "")} remaining (~{timeEstimate})";
+            string estimateText = "DIPT_CTW_TendsRemaining".Translate($"{estimatedTends}", timeEstimate);
             Widgets.Label(rect, estimateText);
             GUI.color = Color.white;
         }

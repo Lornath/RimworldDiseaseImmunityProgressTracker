@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- ToxicBuildupWindow (Type 4: Toxic Buildup) -->
+  <DIPT_TXW_Title>Acumulación Tóxica ({0}) - {1}%</DIPT_TXW_Title>
+  <DIPT_TXW_StageExtreme>Extremo</DIPT_TXW_StageExtreme>
+  <DIPT_TXW_StageSerious>Grave</DIPT_TXW_StageSerious>
+  <DIPT_TXW_StageModerate>Moderado</DIPT_TXW_StageModerate>
+  <DIPT_TXW_StageMinor>Leve</DIPT_TXW_StageMinor>
+  <DIPT_TXW_StageInitial>Inicial</DIPT_TXW_StageInitial>
+  <DIPT_TXW_SafeRecovering>SEGURO - Recuperando</DIPT_TXW_SafeRecovering>
+  <DIPT_TXW_ExposedTo>EXPUESTO: {0}</DIPT_TXW_ExposedTo>
+  <DIPT_TXW_ExposureToxGas>Gas tóxico</DIPT_TXW_ExposureToxGas>
+  <DIPT_TXW_ExposurePollution>Contaminación</DIPT_TXW_ExposurePollution>
+  <DIPT_TXW_ExposureToxicFallout>Lluvia radiactiva tóxica</DIPT_TXW_ExposureToxicFallout>
+  <DIPT_TXW_ResistanceImmune>Resistencia Tóxica: 100% (inmune)</DIPT_TXW_ResistanceImmune>
+  <DIPT_TXW_ResistanceBoth>Resistencia Tóxica: {0}% / Amb: {1}%</DIPT_TXW_ResistanceBoth>
+  <DIPT_TXW_ResistanceSingle>Resistencia Tóxica: {0}%</DIPT_TXW_ResistanceSingle>
+  <DIPT_TXW_LegendSafe>Seguro</DIPT_TXW_LegendSafe>
+  <DIPT_TXW_ExposureRisks>Riesgos de exposición [{0}]:</DIPT_TXW_ExposureRisks>
+  <DIPT_TXW_RiskDementia>Demencia: ~{0}% por día</DIPT_TXW_RiskDementia>
+  <DIPT_TXW_RiskCarcinoma>Carcinoma: ~{0}% por día</DIPT_TXW_RiskCarcinoma>
+  <DIPT_TXW_VerdictNearlyCleared>RECUPERANDO - Casi eliminado</DIPT_TXW_VerdictNearlyCleared>
+  <DIPT_TXW_VerdictClearInDays>RECUPERANDO - Eliminado en ~{0} días</DIPT_TXW_VerdictClearInDays>
+  <DIPT_TXW_VerdictCriticalToxGas>CRÍTICO - ¡Salir del gas tóxico inmediatamente!</DIPT_TXW_VerdictCriticalToxGas>
+  <DIPT_TXW_VerdictWarnToxGasRising>Salir del gas tóxico - ¡La gravedad sube rápido!</DIPT_TXW_VerdictWarnToxGasRising>
+  <DIPT_TXW_VerdictToxGasBeginRecovery>Salir del gas tóxico para comenzar la recuperación</DIPT_TXW_VerdictToxGasBeginRecovery>
+  <DIPT_TXW_VerdictCriticalPollution>CRÍTICO - ¡Salir del terreno contaminado!</DIPT_TXW_VerdictCriticalPollution>
+  <DIPT_TXW_VerdictWarnPollutionRising>Evitar el terreno contaminado - Gravedad en aumento</DIPT_TXW_VerdictWarnPollutionRising>
+  <DIPT_TXW_VerdictPollutionBeginRecovery>Salir del terreno contaminado para comenzar la recuperación</DIPT_TXW_VerdictPollutionBeginRecovery>
+  <DIPT_TXW_VerdictCriticalFallout>CRÍTICO - ¡Buscar refugio inmediatamente!</DIPT_TXW_VerdictCriticalFallout>
+  <DIPT_TXW_VerdictWarnFalloutRising>Buscar refugio - La gravedad sube hacia niveles letales</DIPT_TXW_VerdictWarnFalloutRising>
+  <DIPT_TXW_VerdictFalloutBeginRecovery>Buscar refugio para comenzar la recuperación</DIPT_TXW_VerdictFalloutBeginRecovery>
+  <DIPT_TXW_VerdictCriticalGeneral>CRÍTICO - ¡Buscar un lugar seguro inmediatamente!</DIPT_TXW_VerdictCriticalGeneral>
+  <DIPT_TXW_VerdictGeneralBeginRecovery>Buscar un lugar seguro para comenzar la recuperación</DIPT_TXW_VerdictGeneralBeginRecovery>
+</LanguageData>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- TimeBasedWindow (Type 3: Time-based diseases - Mechanites and Fatal Rots) -->
+  <DIPT_TBW_TimeRemainingHours>Verbleibende Zeit: {0} Std.</DIPT_TBW_TimeRemainingHours>
+  <DIPT_TBW_TimeRemainingDays>Verbleibende Zeit: {0} Tage</DIPT_TBW_TimeRemainingDays>
+  <DIPT_TBW_Tended>[Behandelt]</DIPT_TBW_Tended>
+  <DIPT_TBW_NeedsTending>[Behandlung erforderlich]</DIPT_TBW_NeedsTending>
+  <DIPT_TBW_SeverityWithPain>Schwere: {0}% ({1}, {2}%)</DIPT_TBW_SeverityWithPain>
+  <DIPT_TBW_Severity>Schwere: {0}%</DIPT_TBW_Severity>
+  <DIPT_TBW_PercentComplete>{0}% abgeschlossen</DIPT_TBW_PercentComplete>
+  <DIPT_TBW_AxisStart>Beginn</DIPT_TBW_AxisStart>
+  <DIPT_TBW_AxisCure>Heilung</DIPT_TBW_AxisCure>
+  <DIPT_TBW_VerdictSafePainControlled>SICHER - Schmerz kontrolliert (mild, 20%)</DIPT_TBW_VerdictSafePainControlled>
+  <DIPT_TBW_VerdictWarningPainIntensify>WARNUNG - Schmerz verschlimmert sich ohne Behandlung</DIPT_TBW_VerdictWarningPainIntensify>
+  <DIPT_TBW_VerdictImprovingPainDecreasing>VERBESSERUNG - Schmerz nimmt mit Behandlung ab</DIPT_TBW_VerdictImprovingPainDecreasing>
+  <DIPT_TBW_VerdictIntensePain>STARKE SCHMERZEN - Weiter behandeln zur Linderung</DIPT_TBW_VerdictIntensePain>
+  <DIPT_TBW_VerdictSafeWillSurvive>SICHER - Überlebt (prognostiziert {0}%)</DIPT_TBW_VerdictSafeWillSurvive>
+  <DIPT_TBW_VerdictDanger>GEFAHR - Schwere könnte letale Werte erreichen!</DIPT_TBW_VerdictDanger>
+  <DIPT_TBW_VerdictMonitor>BEOBACHTEN - Schwere steigt</DIPT_TBW_VerdictMonitor>
+  <DIPT_TBW_TendEntry>{0}% - {1}</DIPT_TBW_TendEntry>
+</LanguageData>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- ToxicBuildupWindow (Type 4: Toxic Buildup) -->
+  <DIPT_TXW_Title>Accumulation Toxique ({0}) - {1}%</DIPT_TXW_Title>
+  <DIPT_TXW_StageExtreme>Extrême</DIPT_TXW_StageExtreme>
+  <DIPT_TXW_StageSerious>Grave</DIPT_TXW_StageSerious>
+  <DIPT_TXW_StageModerate>Modéré</DIPT_TXW_StageModerate>
+  <DIPT_TXW_StageMinor>Mineur</DIPT_TXW_StageMinor>
+  <DIPT_TXW_StageInitial>Initial</DIPT_TXW_StageInitial>
+  <DIPT_TXW_SafeRecovering>SÛR - En rétablissement</DIPT_TXW_SafeRecovering>
+  <DIPT_TXW_ExposedTo>EXPOSÉ : {0}</DIPT_TXW_ExposedTo>
+  <DIPT_TXW_ExposureToxGas>Gaz toxique</DIPT_TXW_ExposureToxGas>
+  <DIPT_TXW_ExposurePollution>Pollution</DIPT_TXW_ExposurePollution>
+  <DIPT_TXW_ExposureToxicFallout>Retombées toxiques</DIPT_TXW_ExposureToxicFallout>
+  <DIPT_TXW_ResistanceImmune>Résistance Toxique : 100% (immunisé)</DIPT_TXW_ResistanceImmune>
+  <DIPT_TXW_ResistanceBoth>Résistance Toxique : {0}% / Env : {1}%</DIPT_TXW_ResistanceBoth>
+  <DIPT_TXW_ResistanceSingle>Résistance Toxique : {0}%</DIPT_TXW_ResistanceSingle>
+  <DIPT_TXW_LegendSafe>Sûr</DIPT_TXW_LegendSafe>
+  <DIPT_TXW_ExposureRisks>Risques d'exposition [{0}] :</DIPT_TXW_ExposureRisks>
+  <DIPT_TXW_RiskDementia>Démence : ~{0}% par jour</DIPT_TXW_RiskDementia>
+  <DIPT_TXW_RiskCarcinoma>Carcinome : ~{0}% par jour</DIPT_TXW_RiskCarcinoma>
+  <DIPT_TXW_VerdictNearlyCleared>EN RÉTABLISSEMENT - Presque éliminé</DIPT_TXW_VerdictNearlyCleared>
+  <DIPT_TXW_VerdictClearInDays>EN RÉTABLISSEMENT - Éliminé dans ~{0} jours</DIPT_TXW_VerdictClearInDays>
+  <DIPT_TXW_VerdictCriticalToxGas>CRITIQUE - Sortez du gaz toxique immédiatement !</DIPT_TXW_VerdictCriticalToxGas>
+  <DIPT_TXW_VerdictWarnToxGasRising>Quittez le gaz toxique - Gravité en hausse rapide !</DIPT_TXW_VerdictWarnToxGasRising>
+  <DIPT_TXW_VerdictToxGasBeginRecovery>Quittez le gaz toxique pour commencer le rétablissement</DIPT_TXW_VerdictToxGasBeginRecovery>
+  <DIPT_TXW_VerdictCriticalPollution>CRITIQUE - Quittez le terrain pollué immédiatement !</DIPT_TXW_VerdictCriticalPollution>
+  <DIPT_TXW_VerdictWarnPollutionRising>Évitez le terrain pollué - Gravité en hausse</DIPT_TXW_VerdictWarnPollutionRising>
+  <DIPT_TXW_VerdictPollutionBeginRecovery>Quittez le terrain pollué pour commencer le rétablissement</DIPT_TXW_VerdictPollutionBeginRecovery>
+  <DIPT_TXW_VerdictCriticalFallout>CRITIQUE - Mettez-vous à l'abri immédiatement !</DIPT_TXW_VerdictCriticalFallout>
+  <DIPT_TXW_VerdictWarnFalloutRising>Trouvez un abri - Gravité montant vers un niveau fatal</DIPT_TXW_VerdictWarnFalloutRising>
+  <DIPT_TXW_VerdictFalloutBeginRecovery>Mettez-vous à l'abri pour commencer le rétablissement</DIPT_TXW_VerdictFalloutBeginRecovery>
+  <DIPT_TXW_VerdictCriticalGeneral>CRITIQUE - Trouvez la sécurité immédiatement !</DIPT_TXW_VerdictCriticalGeneral>
+  <DIPT_TXW_VerdictGeneralBeginRecovery>Trouvez la sécurité pour commencer le rétablissement</DIPT_TXW_VerdictGeneralBeginRecovery>
+</LanguageData>

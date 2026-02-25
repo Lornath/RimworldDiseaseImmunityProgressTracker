@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- ToxicBuildupWindow (Type 4: Toxic Buildup) -->
+  <DIPT_TXW_Title>毒素积累（{0}）- {1}%</DIPT_TXW_Title>
+  <DIPT_TXW_StageExtreme>极度</DIPT_TXW_StageExtreme>
+  <DIPT_TXW_StageSerious>严重</DIPT_TXW_StageSerious>
+  <DIPT_TXW_StageModerate>中度</DIPT_TXW_StageModerate>
+  <DIPT_TXW_StageMinor>轻微</DIPT_TXW_StageMinor>
+  <DIPT_TXW_StageInitial>初期</DIPT_TXW_StageInitial>
+  <DIPT_TXW_SafeRecovering>安全 - 恢复中</DIPT_TXW_SafeRecovering>
+  <DIPT_TXW_ExposedTo>暴露：{0}</DIPT_TXW_ExposedTo>
+  <DIPT_TXW_ExposureToxGas>毒气</DIPT_TXW_ExposureToxGas>
+  <DIPT_TXW_ExposurePollution>污染</DIPT_TXW_ExposurePollution>
+  <DIPT_TXW_ExposureToxicFallout>毒性尘降</DIPT_TXW_ExposureToxicFallout>
+  <DIPT_TXW_ResistanceImmune>毒素抗性：100%（免疫）</DIPT_TXW_ResistanceImmune>
+  <DIPT_TXW_ResistanceBoth>毒素抗性：{0}% / 环境：{1}%</DIPT_TXW_ResistanceBoth>
+  <DIPT_TXW_ResistanceSingle>毒素抗性：{0}%</DIPT_TXW_ResistanceSingle>
+  <DIPT_TXW_LegendSafe>安全</DIPT_TXW_LegendSafe>
+  <DIPT_TXW_ExposureRisks>[{0}]暴露风险：</DIPT_TXW_ExposureRisks>
+  <DIPT_TXW_RiskDementia>痴呆：每天约{0}%</DIPT_TXW_RiskDementia>
+  <DIPT_TXW_RiskCarcinoma>癌症：每天约{0}%</DIPT_TXW_RiskCarcinoma>
+  <DIPT_TXW_VerdictNearlyCleared>恢复中 - 即将清除</DIPT_TXW_VerdictNearlyCleared>
+  <DIPT_TXW_VerdictClearInDays>恢复中 - 约{0}天后清除</DIPT_TXW_VerdictClearInDays>
+  <DIPT_TXW_VerdictCriticalToxGas>危急 - 立即离开毒气区域！</DIPT_TXW_VerdictCriticalToxGas>
+  <DIPT_TXW_VerdictWarnToxGasRising>离开毒气 - 严重度快速上升！</DIPT_TXW_VerdictWarnToxGasRising>
+  <DIPT_TXW_VerdictToxGasBeginRecovery>离开毒气以开始恢复</DIPT_TXW_VerdictToxGasBeginRecovery>
+  <DIPT_TXW_VerdictCriticalPollution>危急 - 立即离开污染地带！</DIPT_TXW_VerdictCriticalPollution>
+  <DIPT_TXW_VerdictWarnPollutionRising>避开污染地带 - 严重度上升</DIPT_TXW_VerdictWarnPollutionRising>
+  <DIPT_TXW_VerdictPollutionBeginRecovery>离开污染地带以开始恢复</DIPT_TXW_VerdictPollutionBeginRecovery>
+  <DIPT_TXW_VerdictCriticalFallout>危急 - 立即进入室内！</DIPT_TXW_VerdictCriticalFallout>
+  <DIPT_TXW_VerdictWarnFalloutRising>寻找庇护 - 严重度向致命水平上升</DIPT_TXW_VerdictWarnFalloutRising>
+  <DIPT_TXW_VerdictFalloutBeginRecovery>进入室内以开始恢复</DIPT_TXW_VerdictFalloutBeginRecovery>
+  <DIPT_TXW_VerdictCriticalGeneral>危急 - 立即寻找安全地点！</DIPT_TXW_VerdictCriticalGeneral>
+  <DIPT_TXW_VerdictGeneralBeginRecovery>寻找安全地点以开始恢复</DIPT_TXW_VerdictGeneralBeginRecovery>
+</LanguageData>

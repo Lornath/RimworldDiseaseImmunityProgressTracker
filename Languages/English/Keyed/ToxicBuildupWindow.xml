@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- ToxicBuildupWindow (Type 4: Toxic Buildup) -->
+  <DIPT_TXW_Title>Toxic Buildup ({0}) - {1}%</DIPT_TXW_Title>
+  <DIPT_TXW_StageExtreme>Extreme</DIPT_TXW_StageExtreme>
+  <DIPT_TXW_StageSerious>Serious</DIPT_TXW_StageSerious>
+  <DIPT_TXW_StageModerate>Moderate</DIPT_TXW_StageModerate>
+  <DIPT_TXW_StageMinor>Minor</DIPT_TXW_StageMinor>
+  <DIPT_TXW_StageInitial>Initial</DIPT_TXW_StageInitial>
+  <DIPT_TXW_SafeRecovering>SAFE - Recovering</DIPT_TXW_SafeRecovering>
+  <DIPT_TXW_ExposedTo>EXPOSED: {0}</DIPT_TXW_ExposedTo>
+  <DIPT_TXW_ExposureToxGas>Tox gas</DIPT_TXW_ExposureToxGas>
+  <DIPT_TXW_ExposurePollution>Pollution</DIPT_TXW_ExposurePollution>
+  <DIPT_TXW_ExposureToxicFallout>Toxic fallout</DIPT_TXW_ExposureToxicFallout>
+  <DIPT_TXW_ResistanceImmune>Toxic Resistance: 100% (immune)</DIPT_TXW_ResistanceImmune>
+  <DIPT_TXW_ResistanceBoth>Toxic Resistance: {0}% / Env: {1}%</DIPT_TXW_ResistanceBoth>
+  <DIPT_TXW_ResistanceSingle>Toxic Resistance: {0}%</DIPT_TXW_ResistanceSingle>
+  <DIPT_TXW_LegendSafe>Safe</DIPT_TXW_LegendSafe>
+  <DIPT_TXW_ExposureRisks>[{0}] exposure risks:</DIPT_TXW_ExposureRisks>
+  <DIPT_TXW_RiskDementia>Dementia: ~{0}% per day</DIPT_TXW_RiskDementia>
+  <DIPT_TXW_RiskCarcinoma>Carcinoma: ~{0}% per day</DIPT_TXW_RiskCarcinoma>
+  <DIPT_TXW_VerdictNearlyCleared>RECOVERING - Nearly cleared</DIPT_TXW_VerdictNearlyCleared>
+  <DIPT_TXW_VerdictClearInDays>RECOVERING - Clear in ~{0} days</DIPT_TXW_VerdictClearInDays>
+  <DIPT_TXW_VerdictCriticalToxGas>CRITICAL - Get out of tox gas immediately!</DIPT_TXW_VerdictCriticalToxGas>
+  <DIPT_TXW_VerdictWarnToxGasRising>Move out of tox gas - Severity rising fast!</DIPT_TXW_VerdictWarnToxGasRising>
+  <DIPT_TXW_VerdictToxGasBeginRecovery>Move out of tox gas to begin recovery</DIPT_TXW_VerdictToxGasBeginRecovery>
+  <DIPT_TXW_VerdictCriticalPollution>CRITICAL - Get off polluted terrain!</DIPT_TXW_VerdictCriticalPollution>
+  <DIPT_TXW_VerdictWarnPollutionRising>Avoid polluted terrain - Severity rising</DIPT_TXW_VerdictWarnPollutionRising>
+  <DIPT_TXW_VerdictPollutionBeginRecovery>Move off polluted terrain to begin recovery</DIPT_TXW_VerdictPollutionBeginRecovery>
+  <DIPT_TXW_VerdictCriticalFallout>CRITICAL - Get under a roof immediately!</DIPT_TXW_VerdictCriticalFallout>
+  <DIPT_TXW_VerdictWarnFalloutRising>Find shelter - Severity rising toward lethal</DIPT_TXW_VerdictWarnFalloutRising>
+  <DIPT_TXW_VerdictFalloutBeginRecovery>Get under a roof to begin recovery</DIPT_TXW_VerdictFalloutBeginRecovery>
+  <DIPT_TXW_VerdictCriticalGeneral>CRITICAL - Find safety immediately!</DIPT_TXW_VerdictCriticalGeneral>
+  <DIPT_TXW_VerdictGeneralBeginRecovery>Find safety to begin recovery</DIPT_TXW_VerdictGeneralBeginRecovery>
+</LanguageData>

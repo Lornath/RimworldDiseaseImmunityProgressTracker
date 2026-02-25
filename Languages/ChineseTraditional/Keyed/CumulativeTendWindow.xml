@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- CumulativeTendWindow (Type 2: Cumulative tend diseases) -->
+  <DIPT_CTW_Progress>進度：{0}% / {1}%</DIPT_CTW_Progress>
+  <DIPT_CTW_PercentComplete>已完成{0}%</DIPT_CTW_PercentComplete>
+  <DIPT_CTW_TendEntry>+{0}% - {1}</DIPT_CTW_TendEntry>
+  <DIPT_CTW_WillCureNextTend>下次治療即可痊癒！</DIPT_CTW_WillCureNextTend>
+  <DIPT_CTW_TendsRemaining>估計還需約{0}次治療（約{1}）</DIPT_CTW_TendsRemaining>
+</LanguageData>

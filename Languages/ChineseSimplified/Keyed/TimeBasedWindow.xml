@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- TimeBasedWindow (Type 3: Time-based diseases - Mechanites and Fatal Rots) -->
+  <DIPT_TBW_TimeRemainingHours>剩余时间：{0}小时</DIPT_TBW_TimeRemainingHours>
+  <DIPT_TBW_TimeRemainingDays>剩余时间：{0}天</DIPT_TBW_TimeRemainingDays>
+  <DIPT_TBW_Tended>[已治疗]</DIPT_TBW_Tended>
+  <DIPT_TBW_NeedsTending>[需要治疗]</DIPT_TBW_NeedsTending>
+  <DIPT_TBW_SeverityWithPain>严重度：{0}%（{1}，{2}%）</DIPT_TBW_SeverityWithPain>
+  <DIPT_TBW_Severity>严重度：{0}%</DIPT_TBW_Severity>
+  <DIPT_TBW_PercentComplete>已完成{0}%</DIPT_TBW_PercentComplete>
+  <DIPT_TBW_AxisStart>开始</DIPT_TBW_AxisStart>
+  <DIPT_TBW_AxisCure>治愈</DIPT_TBW_AxisCure>
+  <DIPT_TBW_VerdictSafePainControlled>安全 - 疼痛可控（轻微，20%）</DIPT_TBW_VerdictSafePainControlled>
+  <DIPT_TBW_VerdictWarningPainIntensify>警告 - 不治疗将加剧疼痛</DIPT_TBW_VerdictWarningPainIntensify>
+  <DIPT_TBW_VerdictImprovingPainDecreasing>好转中 - 治疗中疼痛减轻</DIPT_TBW_VerdictImprovingPainDecreasing>
+  <DIPT_TBW_VerdictIntensePain>剧烈疼痛 - 持续治疗以缓解</DIPT_TBW_VerdictIntensePain>
+  <DIPT_TBW_VerdictSafeWillSurvive>安全 - 将存活（预计{0}%）</DIPT_TBW_VerdictSafeWillSurvive>
+  <DIPT_TBW_VerdictDanger>危险 - 严重度可能达致命水平！</DIPT_TBW_VerdictDanger>
+  <DIPT_TBW_VerdictMonitor>监测 - 严重度上升</DIPT_TBW_VerdictMonitor>
+  <DIPT_TBW_TendEntry>{0}% - {1}</DIPT_TBW_TendEntry>
+</LanguageData>

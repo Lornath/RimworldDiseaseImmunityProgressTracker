@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- DiseaseGraphWindow (Type 1: Immunizable diseases) -->
+  <DIPT_DGW_NoPrognosis>Prognose kann nicht berechnet werden</DIPT_DGW_NoPrognosis>
+  <DIPT_DGW_ImmuneAllClear>Immun - Alles klar in {0}</DIPT_DGW_ImmuneAllClear>
+  <DIPT_DGW_Immune>Immun</DIPT_DGW_Immune>
+  <DIPT_DGW_RecoveringImmuneIn>Erholung - Immun in {0}</DIPT_DGW_RecoveringImmuneIn>
+  <DIPT_DGW_Stable>Stabil</DIPT_DGW_Stable>
+  <DIPT_DGW_AtRiskDeathIn>Gefährdet - Tod in {0}</DIPT_DGW_AtRiskDeathIn>
+  <DIPT_DGW_AtRisk>Gefährdet</DIPT_DGW_AtRisk>
+  <DIPT_DGW_WillSurviveImmuneIn>Überlebt - Immun in {0}</DIPT_DGW_WillSurviveImmuneIn>
+  <DIPT_DGW_DeathIn>Tod in {0}</DIPT_DGW_DeathIn>
+  <DIPT_DGW_EstGatheringData>(Schätzung - Daten werden gesammelt)</DIPT_DGW_EstGatheringData>
+  <DIPT_DGW_LegendImmunity>Immunität</DIPT_DGW_LegendImmunity>
+  <DIPT_DGW_LegendSeverity>Schwere</DIPT_DGW_LegendSeverity>
+  <DIPT_DGW_ImmLine>Imm: {0}% ({1})</DIPT_DGW_ImmLine>
+  <DIPT_DGW_SevLine>Sch: {0}% ({1})</DIPT_DGW_SevLine>
+  <DIPT_DGW_RatePlus>+{0}%/T</DIPT_DGW_RatePlus>
+  <DIPT_DGW_RateMinus>{0}%/T</DIPT_DGW_RateMinus>
+</LanguageData>

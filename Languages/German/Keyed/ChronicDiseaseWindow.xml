@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- ChronicDiseaseWindow (Type 5: Chronic diseases like Asthma) -->
+  <DIPT_CDW_FallbackTitle>Chronische Erkrankung</DIPT_CDW_FallbackTitle>
+  <DIPT_CDW_NotTreatedProgressing>Unbehandelt - VERSCHLECHTERT SICH</DIPT_CDW_NotTreatedProgressing>
+  <DIPT_CDW_EffectRegressing>RÜCKLÄUFIG</DIPT_CDW_EffectRegressing>
+  <DIPT_CDW_EffectSlowing>VERLANGSAMEND</DIPT_CDW_EffectSlowing>
+  <DIPT_CDW_EffectStable>STABIL</DIPT_CDW_EffectStable>
+  <DIPT_CDW_Treatment>Behandlung: {0}% - {1}{2}</DIPT_CDW_Treatment>
+  <DIPT_CDW_SeverityWithMax>Schwere: {0}% (max. {1}%)</DIPT_CDW_SeverityWithMax>
+  <DIPT_CDW_PercentComplete>{0}%</DIPT_CDW_PercentComplete>
+  <DIPT_CDW_HintRegress> [Rückläufig]</DIPT_CDW_HintRegress>
+  <DIPT_CDW_HintSlow> [Langsam]</DIPT_CDW_HintSlow>
+  <DIPT_CDW_HintMinimal> [Minimal]</DIPT_CDW_HintMinimal>
+  <DIPT_CDW_TendEntry>{0}%{1} - {2}</DIPT_CDW_TendEntry>
+  <DIPT_CDW_VerdictRegressing>RÜCKLÄUFIG - Schwere nimmt ab ({0}%/T)</DIPT_CDW_VerdictRegressing>
+  <DIPT_CDW_VerdictImproving>VERBESSERUNG - Langsam rückläufig ({0}%/T)</DIPT_CDW_VerdictImproving>
+  <DIPT_CDW_VerdictStable>STABIL - Schwere gehalten (&gt;{0}% für Rückgang nötig)</DIPT_CDW_VerdictStable>
+  <DIPT_CDW_VerdictSlowing>VERLANGSAMEND - Bessere Behandlung nötig (&gt;{0}% für Rückgang)</DIPT_CDW_VerdictSlowing>
+  <DIPT_CDW_VerdictProgressing>VERSCHLECHTERT SICH - Behandlung nötig! (&gt;{0}% für Rückgang)</DIPT_CDW_VerdictProgressing>
+</LanguageData>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- TimeBasedWindow (Type 3: Time-based diseases - Mechanites and Fatal Rots) -->
+  <DIPT_TBW_TimeRemainingHours>Temps restant : {0}h</DIPT_TBW_TimeRemainingHours>
+  <DIPT_TBW_TimeRemainingDays>Temps restant : {0} jours</DIPT_TBW_TimeRemainingDays>
+  <DIPT_TBW_Tended>[Soigné]</DIPT_TBW_Tended>
+  <DIPT_TBW_NeedsTending>[Nécessite des soins]</DIPT_TBW_NeedsTending>
+  <DIPT_TBW_SeverityWithPain>Gravité : {0}% ({1}, {2}%)</DIPT_TBW_SeverityWithPain>
+  <DIPT_TBW_Severity>Gravité : {0}%</DIPT_TBW_Severity>
+  <DIPT_TBW_PercentComplete>{0}% accompli</DIPT_TBW_PercentComplete>
+  <DIPT_TBW_AxisStart>Début</DIPT_TBW_AxisStart>
+  <DIPT_TBW_AxisCure>Guérison</DIPT_TBW_AxisCure>
+  <DIPT_TBW_VerdictSafePainControlled>SÛR - Douleur contrôlée (légère, 20%)</DIPT_TBW_VerdictSafePainControlled>
+  <DIPT_TBW_VerdictWarningPainIntensify>AVERTISSEMENT - La douleur s'intensifiera sans soins</DIPT_TBW_VerdictWarningPainIntensify>
+  <DIPT_TBW_VerdictImprovingPainDecreasing>AMÉLIORATION - Douleur diminuant avec le traitement</DIPT_TBW_VerdictImprovingPainDecreasing>
+  <DIPT_TBW_VerdictIntensePain>DOULEUR INTENSE - Continuer les soins pour réduire</DIPT_TBW_VerdictIntensePain>
+  <DIPT_TBW_VerdictSafeWillSurvive>SÛR - Survivra (projeté {0}%)</DIPT_TBW_VerdictSafeWillSurvive>
+  <DIPT_TBW_VerdictDanger>DANGER - La gravité peut atteindre un niveau fatal !</DIPT_TBW_VerdictDanger>
+  <DIPT_TBW_VerdictMonitor>SURVEILLER - Gravité en hausse</DIPT_TBW_VerdictMonitor>
+  <DIPT_TBW_TendEntry>{0}% - {1}</DIPT_TBW_TendEntry>
+</LanguageData>
