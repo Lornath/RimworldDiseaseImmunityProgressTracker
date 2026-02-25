@@ -419,6 +419,15 @@ namespace DiseaseImmunityProgressTracker.Core
                             continue;
                         }
 
+                        // Type 6 - Artery Blockage (check BEFORE Type 5)
+                        // Has HediffComp_Immunizable but no immunity gain, not tendable, lethal
+                        // Very slow progression, causes heart attacks
+                        if (IsArteryBlockage(hediff))
+                        {
+                            RecordArteryBlockageData(hediff, currentTick);
+                            continue;
+                        }
+
                         // Type 5 - Chronic diseases like Asthma (check before Type 1)
                         // Has HediffComp_Immunizable (no immunity gain) + HediffComp_TendDuration
                         // Treatment quality determines if severity increases or decreases
@@ -596,7 +605,11 @@ namespace DiseaseImmunityProgressTracker.Core
 
         /// <summary>
         /// Checks if a hediff is a Type 4 (toxic buildup) disease.
-        /// These have HediffComp_ImmunizableToxic (extends HediffComp_Immunizable) but:
+        /// These have the SPECIFIC HediffComp_ImmunizableToxic subclass (not just HediffComp_Immunizable).
+        /// This is what distinguishes Toxic Buildup from other non-tendable lethal chronic conditions
+        /// like Artery Blockage.
+        ///
+        /// Properties:
         /// - No immunity gain (immunityPerDaySick = 0)
         /// - Lethal at 100% severity
         /// - NOT tendable (recovery is environmental, not medical)
@@ -608,15 +621,15 @@ namespace DiseaseImmunityProgressTracker.Core
         public static bool IsToxicBuildupDisease(Hediff hediff)
         {
             if (hediff == null) return false;
+
+            // Check for the SPECIFIC toxic immunizable component (not just base Immunizable)
+            // This is what distinguishes Toxic Buildup from other non-tendable chronic conditions
+            // like Artery Blockage which also has HediffComp_Immunizable with no immunity gain.
+            var toxicComp = hediff.TryGetComp<HediffComp_ImmunizableToxic>();
+            if (toxicComp == null) return false;
+
+            // Keep other checks as safety validation
             var def = hediff.def;
-
-            // Must have HediffComp_Immunizable
-            var immunizable = hediff.TryGetComp<HediffComp_Immunizable>();
-            if (immunizable == null) return false;
-
-            // Key check: NO immunity gain when sick (immunityPerDaySick <= 0)
-            // This distinguishes toxic buildup from Type 1 (immunizable) diseases
-            if (immunizable.Props.immunityPerDaySick > 0) return false;
 
             // Must NOT have HediffComp_Disappears (that would be Type 3 time-based)
             var disappearsComp = hediff.TryGetComp<HediffComp_Disappears>();
@@ -626,13 +639,32 @@ namespace DiseaseImmunityProgressTracker.Core
             if (def.lethalSeverity < 0) return false;
 
             // Must NOT be tendable (toxic buildup is not treated medically)
-            // This distinguishes from Type 3a mechanites which ARE tendable
             if (def.tendable) return false;
 
             // Must be a "bad" hediff
             if (!def.isBad) return false;
 
             return true;
+        }
+
+        /// <summary>
+        /// Checks if a hediff is Artery Blockage specifically.
+        /// This is a Type 6 disease - progressive, untreatable, lethal chronic condition.
+        ///
+        /// Properties:
+        /// - Has HediffComp_Immunizable but no immunity gain (just severity change)
+        /// - Severity increases slowly over years (0.0007/day × 0.5-3 random factor)
+        /// - NOT tendable (cannot be treated medically)
+        /// - Lethal at 100% severity
+        /// - Causes heart attacks with escalating MTB (300, 200, 100, 60, 30 days)
+        /// - Only curable by: heart replacement, healer serum, luciferium, biosculpter
+        ///
+        /// Stage thresholds: 0% (minor), 20% (minor), 40% (major), 60% (major), 90% (extreme)
+        /// </summary>
+        public static bool IsArteryBlockage(Hediff hediff)
+        {
+            if (hediff == null) return false;
+            return hediff.def.defName == "HeartArteryBlockage";
         }
 
         /// <summary>
@@ -719,6 +751,16 @@ namespace DiseaseImmunityProgressTracker.Core
 
             // Update exposure interval tracking
             history.UpdateExposureState(currentTick, exposure);
+        }
+
+        private void RecordArteryBlockageData(Hediff hediff, int currentTick)
+        {
+            var history = GetOrCreateHistory(hediff);
+            if (history == null) return;
+
+            // Artery Blockage uses the standard DiseaseDataPoint format
+            // The Immunity field isn't used (always 0), but Severity is tracked
+            history.RecordDataPoint(currentTick, 0f, hediff.Severity);
         }
 
         private void RecordTimeBasedData(Hediff hediff, int currentTick, HediffComp_Disappears disappearsComp, HediffComp_TendDuration tendComp)
