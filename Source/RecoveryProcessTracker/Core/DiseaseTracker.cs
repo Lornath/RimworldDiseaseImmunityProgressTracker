@@ -227,7 +227,7 @@ namespace RecoveryProcessTracker.Core
 
         private void UpdateAllDiseases(int currentTick)
         {
-            // Find all colonists and prisoners with immunizable diseases
+            // Find all colonists and prisoners with trackable diseases
             foreach (var map in Find.Maps)
             {
                 foreach (var pawn in map.mapPawns.AllPawns)
@@ -237,11 +237,23 @@ namespace RecoveryProcessTracker.Core
 
                     foreach (var hediff in pawn.health.hediffSet.hediffs)
                     {
+                        // Track immunizable diseases (e.g., Plague, Flu, Malaria)
                         var immunizable = hediff.TryGetComp<HediffComp_Immunizable>();
-                        if (immunizable == null) continue;
+                        if (immunizable != null)
+                        {
+                            RecordDiseaseData(hediff, currentTick);
+                            RecordBedRestData(hediff, currentTick, pawn);
+                            continue;
+                        }
 
-                        RecordDiseaseData(hediff, currentTick);
-                        RecordBedRestData(hediff, currentTick, pawn);
+                        // Track cumulative tend diseases (e.g., Gut Worms, Muscle Parasites)
+                        var tendComp = hediff.TryGetComp<HediffComp_TendDuration>();
+                        if (tendComp != null && tendComp.TProps.disappearsAtTotalTendQuality >= 0)
+                        {
+                            // Just ensure history exists for tracking tend events
+                            // No data points needed since there's no immunity/severity race
+                            GetOrCreateHistory(hediff);
+                        }
                     }
                 }
             }
