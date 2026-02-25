@@ -406,7 +406,12 @@ namespace DiseaseImmunityProgressTracker.Core
                 foreach (var pawn in map.mapPawns.AllPawns)
                 {
                     if (pawn.Dead || pawn.health?.hediffSet == null) continue;
-                    if (!pawn.IsColonist && !pawn.IsPrisonerOfColony) continue;
+
+                    // Track colonists, prisoners, and colony animals (not mechanoids)
+                    bool shouldTrack = pawn.IsColonist ||
+                                       pawn.IsPrisonerOfColony ||
+                                       (pawn.RaceProps.Animal && pawn.Faction == Faction.OfPlayer);
+                    if (!shouldTrack) continue;
 
                     foreach (var hediff in pawn.health.hediffSet.hediffs)
                     {
