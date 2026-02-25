@@ -1,7 +1,7 @@
 using UnityEngine;
 using Verse;
 
-namespace RecoveryProcessTracker.UI
+namespace DiseaseImmunityProgressTracker.UI
 {
     /// <summary>
     /// Helper class for positioning tooltip companion windows.
@@ -99,7 +99,7 @@ namespace RecoveryProcessTracker.UI
             {
                 // Calculate proposed Y position above mouse
                 float proposedY = mousePos.y - windowSize.y - WindowGapAboveMouse;
-                
+
                 // Check if it fits on screen (top edge >= 0)
                 if (proposedY >= 0)
                 {
@@ -107,14 +107,14 @@ namespace RecoveryProcessTracker.UI
                     yPos = proposedY;
                     goto Finalize;
                 }
-                
+
                 // If it doesn't fit, fall through to fallback strategies
             }
 
             // Strategy 2: Position Right of Tooltip (Fallback or if Tooltip is Above)
             // Use estimated tooltip width to position to the right
             xPos = tooltipPos.x + EstimatedTooltipWidth + WindowGapFromTooltip;
-            
+
             // Check if it fits on screen horizontally
             if (xPos + windowSize.x <= Verse.UI.screenWidth)
             {
@@ -127,7 +127,7 @@ namespace RecoveryProcessTracker.UI
 
             // Strategy 3: Position Left of Tooltip (Last resort)
             xPos = tooltipPos.x - windowSize.x - WindowGapFromTooltip;
-            
+
             // Y position: Bottom-align with tooltip bottom
             float tipBottom = tooltipPos.y + EstimatedTooltipHeight;
             yPos = tipBottom - windowSize.y;

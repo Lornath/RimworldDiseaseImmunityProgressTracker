@@ -17,7 +17,7 @@ Colors turn **red** when overlaps are detected, and overlap events are logged to
 
 ### Step 1: Add Helper Methods to WindowPositionHelper.cs
 
-Add these methods to `Source/RecoveryProcessTracker/UI/WindowPositionHelper.cs` after the `CalculateWindowRect(Vector2 windowSize)` method:
+Add these methods to `Source/DiseaseImmunityProgressTracker/UI/WindowPositionHelper.cs` after the `CalculateWindowRect(Vector2 windowSize)` method:
 
 ```csharp
 /// <summary>
@@ -41,14 +41,14 @@ public static Vector2 GetMousePosition()
 
 ### Step 2: Create DebugOverlayLoader.cs
 
-Create `Source/RecoveryProcessTracker/Core/DebugOverlayLoader.cs`:
+Create `Source/DiseaseImmunityProgressTracker/Core/DebugOverlayLoader.cs`:
 
 ```csharp
 using UnityEngine;
 using Verse;
-using RecoveryProcessTracker.UI;
+using DiseaseImmunityProgressTracker.UI;
 
-namespace RecoveryProcessTracker.Core
+namespace DiseaseImmunityProgressTracker.Core
 {
     /// <summary>
     /// Initializes the Unity-based debug overlay when the game starts.
@@ -61,15 +61,15 @@ namespace RecoveryProcessTracker.Core
         static DebugOverlayLoader()
         {
             // Create a persistent GameObject for our debug overlay
-            overlayObject = new GameObject("RecoveryProcessTracker_DebugOverlay");
+            overlayObject = new GameObject("DiseaseImmunityProgressTracker_DebugOverlay");
             Object.DontDestroyOnLoad(overlayObject);
 
             // Add the controller component
             overlayObject.AddComponent<DebugOverlayController>();
 
-            if (RecoveryProcessTrackerMod.Settings?.verboseLogging == true)
+            if (DiseaseImmunityProgressTrackerMod.Settings?.verboseLogging == true)
             {
-                Log.Message("[RecoveryProcessTracker] Debug overlay initialized");
+                Log.Message("[DiseaseImmunityProgressTracker] Debug overlay initialized");
             }
         }
     }
@@ -78,14 +78,14 @@ namespace RecoveryProcessTracker.Core
 
 ### Step 3: Create DebugOverlayController.cs
 
-Create `Source/RecoveryProcessTracker/UI/DebugOverlayController.cs`:
+Create `Source/DiseaseImmunityProgressTracker/UI/DebugOverlayController.cs`:
 
 ```csharp
 using UnityEngine;
 using Verse;
 using System.Collections.Generic;
 
-namespace RecoveryProcessTracker.UI
+namespace DiseaseImmunityProgressTracker.UI
 {
     /// <summary>
     /// A raw Unity MonoBehaviour that draws debug info on top of the RimWorld UI.
@@ -99,7 +99,7 @@ namespace RecoveryProcessTracker.UI
         public void OnGUI()
         {
             // Only draw if verbose logging is enabled
-            if (RecoveryProcessTrackerMod.Settings == null || !RecoveryProcessTrackerMod.Settings.verboseLogging)
+            if (DiseaseImmunityProgressTrackerMod.Settings == null || !DiseaseImmunityProgressTrackerMod.Settings.verboseLogging)
             {
                 if (lastVerboseState)
                 {
@@ -209,7 +209,7 @@ namespace RecoveryProcessTracker.UI
             string key = $"{pawnName}|{item1Type}|{windowId}";
             if (loggedOverlaps.Add(key))
             {
-                Log.Warning($"[RecoveryProcessTracker] OVERLAP DETECTED ({pawnName}): {item1Type} ({item1Rect}) vs {windowId} @ {window.windowRect}");
+                Log.Warning($"[DiseaseImmunityProgressTracker] OVERLAP DETECTED ({pawnName}): {item1Type} ({item1Rect}) vs {windowId} @ {window.windowRect}");
             }
         }
 
@@ -227,7 +227,7 @@ namespace RecoveryProcessTracker.UI
 
             if (loggedOverlaps.Add(key))
             {
-                Log.Warning($"[RecoveryProcessTracker] OVERLAP DETECTED ({pawnName}): {id1} @ {w1.windowRect} vs {id2} @ {w2.windowRect}");
+                Log.Warning($"[DiseaseImmunityProgressTracker] OVERLAP DETECTED ({pawnName}): {id1} @ {w1.windowRect} vs {id2} @ {w2.windowRect}");
             }
         }
 
@@ -284,8 +284,8 @@ The overlay uses a raw Unity `MonoBehaviour` with `OnGUI()` instead of a RimWorl
 ## Removing the Debug Overlay
 
 After debugging, simply delete the two files you created:
-- `Source/RecoveryProcessTracker/Core/DebugOverlayLoader.cs`
-- `Source/RecoveryProcessTracker/UI/DebugOverlayController.cs`
+- `Source/DiseaseImmunityProgressTracker/Core/DebugOverlayLoader.cs`
+- `Source/DiseaseImmunityProgressTracker/UI/DebugOverlayController.cs`
 
 And remove the helper methods from `WindowPositionHelper.cs`:
 - `GetEstimatedTooltipRect()`

@@ -4,9 +4,9 @@ using System.Linq;
 using UnityEngine;
 using Verse;
 using RimWorld;
-using RecoveryProcessTracker.Core;
+using DiseaseImmunityProgressTracker.Core;
 
-namespace RecoveryProcessTracker.UI
+namespace DiseaseImmunityProgressTracker.UI
 {
     /// <summary>
     /// A tooltip companion window that displays Type 3 (time-based) disease progress.

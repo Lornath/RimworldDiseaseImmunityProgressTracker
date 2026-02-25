@@ -11,12 +11,12 @@ See the README.md file in the root dir for the overview.
 After making changes, always build the mod with:
 
 ```powershell
-dotnet build "Source/RecoveryProcessTracker/RecoveryProcessTracker.csproj"
+dotnet build "Source/DiseaseImmunityProgressTracker/DiseaseImmunityProgressTracker.csproj"
 ```
 
 This should produce:
-- `Assemblies\RecoveryProcessTracker.dll` (the mod assembly)
-- `Assemblies\RecoveryProcessTracker.pdb` (debug symbols)
+- `Assemblies\DiseaseImmunityProgressTracker.dll` (the mod assembly)
+- `Assemblies\DiseaseImmunityProgressTracker.pdb` (debug symbols)
 
 Expected output: `Build succeeded. 0 Warning(s) 0 Error(s)`
 
@@ -61,7 +61,7 @@ Type 3 diseases are checked FIRST (before Type 1) because Type 3a Mechanites hav
 
 ### Core Components
 
-- **DiseaseTracker** (`Source/RecoveryProcessTracker/Core/DiseaseTracker.cs`):
+- **DiseaseTracker** (`Source/DiseaseImmunityProgressTracker/Core/DiseaseTracker.cs`):
     - A `GameComponent` that tracks disease progression history for all pawns.
     - Maintains a dictionary of `DiseaseHistory` objects keyed by hediff load ID.
     - Tracks diseases by type (see Disease Type Classification below).
@@ -69,14 +69,14 @@ Type 3 diseases are checked FIRST (before Type 1) because Type 3a Mechanites hav
     - Contains `IsMechaniteDisease()` static helper to identify Type 3a mechanite diseases.
     - Handles data persistence (Save/Load) via `ExposeData`.
 
-- **PrognosisCalculator** (`Source/RecoveryProcessTracker/Core/PrognosisCalculator.cs`):
+- **PrognosisCalculator** (`Source/DiseaseImmunityProgressTracker/Core/PrognosisCalculator.cs`):
     - Static utility class that calculates disease prognosis (survival chance, time to immunity/death).
     - Can use current rates (instantaneous) or historical data (observed rates over time) for better accuracy.
     - Returns a `PrognosisResult` struct containing all calculated metrics.
 
 ### UI Components
 
-- **DiseaseGraphWindow** (`Source/RecoveryProcessTracker/UI/DiseaseGraphWindow.cs`):
+- **DiseaseGraphWindow** (`Source/DiseaseImmunityProgressTracker/UI/DiseaseGraphWindow.cs`):
     - A `Window` subclass that renders the disease progression graph.
     - Draws historical data (past) and projected trends (future).
     - Features:
@@ -90,7 +90,7 @@ Type 3 diseases are checked FIRST (before Type 1) because Type 3a Mechanites hav
         - Tooltip-like behavior: positions itself near the mouse/tooltip and closes when the tooltip updates.
     - **IMPORTANT: No tooltips allowed** - This window acts as a companion to the game's disease tooltip. When the mouse moves off the disease entry in the health tab, this window closes. Therefore, `TooltipHandler.TipRegion()` cannot be used for interactive elements within this window since users cannot hover over them without triggering the window to close.
 
-- **CumulativeTendWindow** (`Source/RecoveryProcessTracker/UI/CumulativeTendWindow.cs`):
+- **CumulativeTendWindow** (`Source/DiseaseImmunityProgressTracker/UI/CumulativeTendWindow.cs`):
     - A `Window` subclass that displays cumulative tend progress for diseases like Gut Worms and Muscle Parasites.
     - These diseases cure through accumulated tend quality (typically 300% total) rather than immunity racing.
     - Features:
@@ -101,7 +101,7 @@ Type 3 diseases are checked FIRST (before Type 1) because Type 3a Mechanites hav
     - Uses reflection to access private `totalTendQuality` field in `HediffComp_TendDuration`.
     - Same tooltip-companion behavior as `DiseaseGraphWindow`.
 
-- **TimeBasedWindow** (`Source/RecoveryProcessTracker/UI/TimeBasedWindow.cs`):
+- **TimeBasedWindow** (`Source/DiseaseImmunityProgressTracker/UI/TimeBasedWindow.cs`):
     - A `Window` subclass that displays time-based disease progress for Type 3 diseases.
     - Handles both Type 3a (Mechanites) and Type 3b (Fatal Rots).
     - These diseases cure when a countdown timer expires; treatment manages severity while waiting.
@@ -121,7 +121,7 @@ Type 3 diseases are checked FIRST (before Type 1) because Type 3a Mechanites hav
         - Verdict focuses on survival: "SAFE - Will survive", "DANGER - Severity may reach fatal levels"
     - Same tooltip-companion behavior as `DiseaseGraphWindow`.
 
-- **CompanionWindowManager** (`Source/RecoveryProcessTracker/UI/CompanionWindowManager.cs`):
+- **CompanionWindowManager** (`Source/DiseaseImmunityProgressTracker/UI/CompanionWindowManager.cs`):
     - Central coordinator for all tooltip companion windows.
     - Tracks which hediff tooltips are active across all disease types using frame-based staleness detection.
     - Manages window slot assignment for stable ordering when multiple windows are open.
@@ -132,23 +132,23 @@ Type 3 diseases are checked FIRST (before Type 1) because Type 3a Mechanites hav
         - `CalculateStackedWindowRect(size, self)`: Positions windows in a vertical stack, treating all windows for the same pawn as a group.
         - `UnregisterWindow(window)`: Called in `PreClose()` to clean up slot tracking.
 
-- **ICompanionWindow** (`Source/RecoveryProcessTracker/UI/ICompanionWindow.cs`):
+- **ICompanionWindow** (`Source/DiseaseImmunityProgressTracker/UI/ICompanionWindow.cs`):
     - Simple interface implemented by all companion windows (`DiseaseGraphWindow`, `CumulativeTendWindow`, `TimeBasedWindow`).
     - Exposes `Hediff Hediff { get; }` property for the manager to identify which pawn/disease a window belongs to.
     - Enables the stacking logic to group windows by pawn.
 
-- **TooltipCompanionPatch** (`Source/RecoveryProcessTracker/Patches/TooltipCompanionPatch.cs`):
+- **TooltipCompanionPatch** (`Source/DiseaseImmunityProgressTracker/Patches/TooltipCompanionPatch.cs`):
     - Harmony patch on `HediffComp_Immunizable.CompTipStringExtra`.
     - Detects when a Type 1 (immunizable) disease tooltip is shown and opens `DiseaseGraphWindow`.
     - Skips Type 3a (Mechanites) which have Immunizable but should use `TimeBasedWindow`.
 
-- **CumulativeTendPatch** (`Source/RecoveryProcessTracker/Patches/CumulativeTendPatch.cs`):
+- **CumulativeTendPatch** (`Source/DiseaseImmunityProgressTracker/Patches/CumulativeTendPatch.cs`):
     - Harmony patch on `HediffComp_TendDuration.CompTipStringExtra`.
     - Detects Type 2 (cumulative tend) diseases where `TProps.disappearsAtTotalTendQuality >= 0`.
     - Skips diseases that also have `HediffComp_Immunizable` (handled by `TooltipCompanionPatch`).
     - Opens/positions the `CumulativeTendWindow` for qualifying diseases.
 
-- **TimeBasedDiseasePatch** (`Source/RecoveryProcessTracker/Patches/TimeBasedDiseasePatch.cs`):
+- **TimeBasedDiseasePatch** (`Source/DiseaseImmunityProgressTracker/Patches/TimeBasedDiseasePatch.cs`):
     - Harmony patch on `HediffComp_TendDuration.CompTipStringExtra` (same as CumulativeTendPatch).
     - Note: `HediffComp_Disappears` doesn't have `CompTipStringExtra`, so we patch the tend component instead.
     - Detects Type 3 diseases (both 3a and 3b) using `DiseaseTracker.IsTimeBasedDisease()`.
@@ -156,7 +156,7 @@ Type 3 diseases are checked FIRST (before Type 1) because Type 3a Mechanites hav
     - Filters out Type 1 (true immunizable) and Type 2 (cumulative tend) diseases.
     - Opens/positions the `TimeBasedWindow` for qualifying diseases.
 
-- **TendUtilityPatch** (`Source/RecoveryProcessTracker/Patches/TendUtilityPatch.cs`):
+- **TendUtilityPatch** (`Source/DiseaseImmunityProgressTracker/Patches/TendUtilityPatch.cs`):
     - Harmony patches to capture tending events for diseases.
     - `TendingContext`: Static class that holds context during a tend operation (doctor name, medicine used, skill level).
     - `TendUtility_DoTend_Patch`: Prefix/Postfix on `TendUtility.DoTend` to set up and tear down tending context.
@@ -208,9 +208,9 @@ When a pawn has multiple diseases, multiple companion windows can be open simult
 ### Source Files
 
 ```
-Source/RecoveryProcessTracker/
-├── RecoveryProcessTracker.csproj       # Build configuration
-├── RecoveryProcessTrackerMod.cs        # Main mod class & settings
+Source/DiseaseImmunityProgressTracker/
+├── DiseaseImmunityProgressTracker.csproj       # Build configuration
+├── DiseaseImmunityProgressTrackerMod.cs        # Main mod class & settings
 ├── Core/
 │   ├── DiseaseTracker.cs               # Data tracking & persistence
 │   └── PrognosisCalculator.cs          # Math & prediction logic
@@ -311,7 +311,7 @@ Inside a `Window.DoWindowContents(Rect inRect)` method, the GUI matrix has been 
 
 ### Namespace Collision
 
-This project uses namespace `RecoveryProcessTracker.UI`. RimWorld's UI utilities are in `Verse.UI`. Always use fully-qualified `Verse.UI.screenWidth`, `Verse.UI.MousePositionOnUIInverted`, etc. to avoid ambiguity.
+This project uses namespace `DiseaseImmunityProgressTracker.UI`. RimWorld's UI utilities are in `Verse.UI`. Always use fully-qualified `Verse.UI.screenWidth`, `Verse.UI.MousePositionOnUIInverted`, etc. to avoid ambiguity.
 
 ## Development Tools
 

@@ -1,9 +1,9 @@
 using HarmonyLib;
 using Verse;
-using RecoveryProcessTracker.Core;
-using RecoveryProcessTracker.UI;
+using DiseaseImmunityProgressTracker.Core;
+using DiseaseImmunityProgressTracker.UI;
 
-namespace RecoveryProcessTracker.Patches
+namespace DiseaseImmunityProgressTracker.Patches
 {
     /// <summary>
     /// Harmony patch to detect when the tooltip for a Type 3 (time-based) disease is being displayed.
@@ -60,9 +60,9 @@ namespace RecoveryProcessTracker.Patches
             {
                 Find.WindowStack.Add(new TimeBasedWindow(hediff, disappearsComp));
 
-                if (RecoveryProcessTrackerMod.Settings.verboseLogging)
+                if (DiseaseImmunityProgressTrackerMod.Settings.verboseLogging)
                 {
-                    Log.Message($"[RecoveryProcessTracker] Opened time-based disease window for {hediff.Label}");
+                    Log.Message($"[DiseaseImmunityProgressTracker] Opened time-based disease window for {hediff.Label}");
                 }
             }
         }

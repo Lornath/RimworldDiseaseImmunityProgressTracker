@@ -3,20 +3,20 @@ using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace RecoveryProcessTracker
+namespace DiseaseImmunityProgressTracker
 {
-    public class RecoveryProcessTrackerMod : Mod
+    public class DiseaseImmunityProgressTrackerMod : Mod
     {
-        public static RecoveryProcessTrackerSettings Settings;
+        public static DiseaseImmunityProgressTrackerSettings Settings;
 
-        public RecoveryProcessTrackerMod(ModContentPack content) : base(content)
+        public DiseaseImmunityProgressTrackerMod(ModContentPack content) : base(content)
         {
-            Settings = GetSettings<RecoveryProcessTrackerSettings>();
+            Settings = GetSettings<DiseaseImmunityProgressTrackerSettings>();
 
-            var harmony = new Harmony("Lornath.RecoveryProcessTracker");
+            var harmony = new Harmony("Lornath.DiseaseImmunityProgressTracker");
             harmony.PatchAll();
 
-            Log.Message("[RecoveryProcessTracker] Initialized");
+            Log.Message("[DiseaseImmunityProgressTracker] Initialized");
         }
 
         public override void DoSettingsWindowContents(Rect inRect)
@@ -26,11 +26,11 @@ namespace RecoveryProcessTracker
 
         public override string SettingsCategory()
         {
-            return "Recovery Process Tracker";
+            return "Disease Immunity Progress Tracker";
         }
     }
 
-    public class RecoveryProcessTrackerSettings : ModSettings
+    public class DiseaseImmunityProgressTrackerSettings : ModSettings
     {
         public bool verboseLogging = false;
 

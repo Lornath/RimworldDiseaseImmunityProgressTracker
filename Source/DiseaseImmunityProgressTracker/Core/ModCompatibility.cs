@@ -1,6 +1,6 @@
 using Verse;
 
-namespace RecoveryProcessTracker.Core
+namespace DiseaseImmunityProgressTracker.Core
 {
     /// <summary>
     /// Helper class for mod compatibility checks.

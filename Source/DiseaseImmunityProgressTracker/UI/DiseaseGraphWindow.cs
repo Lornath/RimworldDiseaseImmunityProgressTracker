@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Verse;
-using RecoveryProcessTracker.Core;
+using DiseaseImmunityProgressTracker.Core;
 
-namespace RecoveryProcessTracker.UI
+namespace DiseaseImmunityProgressTracker.UI
 {
     /// <summary>
     /// A tooltip companion window that displays a graphical timeline of disease progression vs immunity gain.

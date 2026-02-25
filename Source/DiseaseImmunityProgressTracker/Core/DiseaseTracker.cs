@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using RimWorld;
 using Verse;
 
-namespace RecoveryProcessTracker.Core
+namespace DiseaseImmunityProgressTracker.Core
 {
     /// <summary>
     /// A single data point recording immunity and severity at a point in time.

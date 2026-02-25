@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using RimWorld;
 using Verse;
 
-namespace RecoveryProcessTracker.Core
+namespace DiseaseImmunityProgressTracker.Core
 {
     /// <summary>
     /// Calculates disease prognosis by extracting immunity/severity data from hediffs

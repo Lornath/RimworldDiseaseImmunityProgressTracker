@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Verse;
 
-namespace RecoveryProcessTracker.UI
+namespace DiseaseImmunityProgressTracker.UI
 {
     /// <summary>
     /// Central manager for tooltip companion windows.
@@ -131,10 +131,10 @@ namespace RecoveryProcessTracker.UI
             Pawn selfPawn = (self as ICompanionWindow)?.Hediff?.pawn;
             var allWindows = GetOpenCompanionWindows();
             var myWindows = new List<Window>();
-            
+
             // Debug info
-            bool verbose = RecoveryProcessTrackerMod.Settings.verboseLogging && logDebug;
-            if (verbose) Log.Message($"[RecoveryProcessTracker] CalcStack for {self}, Pawn={selfPawn}, AllWins={allWindows.Count}");
+            bool verbose = DiseaseImmunityProgressTrackerMod.Settings.verboseLogging && logDebug;
+            if (verbose) Log.Message($"[DiseaseImmunityProgressTracker] CalcStack for {self}, Pawn={selfPawn}, AllWins={allWindows.Count}");
 
             foreach (var w in allWindows)
             {
@@ -170,17 +170,17 @@ namespace RecoveryProcessTracker.UI
             // 2. Calculate total stack dimensions
             float totalHeight = 0f;
             float maxWidth = 0f;
-            
+
             foreach (var w in myWindows)
             {
                 // Use passed size for self, current rect for others
                 float h = (w == self) ? windowSize.y : w.windowRect.height;
                 float width = (w == self) ? windowSize.x : w.windowRect.width;
-                
+
                 totalHeight += h;
                 maxWidth = Mathf.Max(maxWidth, width);
             }
-            
+
             // Add gaps
             if (myWindows.Count > 1) totalHeight += (myWindows.Count - 1) * VerticalStackGap;
 
@@ -193,21 +193,21 @@ namespace RecoveryProcessTracker.UI
             // 4. Find our position within the stack
             // We stack UPWARDS from the bottom (stackRect.yMax)
             float currentY = stackRect.yMax;
-            
+
             foreach (var w in myWindows)
             {
                 float h = (w == self) ? windowSize.y : w.windowRect.height;
                 float width = (w == self) ? windowSize.x : w.windowRect.width;
-                
+
                 // Move cursor up to the top of this window
                 currentY -= h;
-                
+
                 if (w == self)
                 {
                     if (verbose) Log.Message($"  Found self at Y={currentY}");
                     return new Rect(stackRect.x, currentY, width, h);
                 }
-                
+
                 // Add gap before next window (moving up)
                 currentY -= VerticalStackGap;
             }

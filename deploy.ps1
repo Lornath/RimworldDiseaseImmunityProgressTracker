@@ -1,7 +1,7 @@
-# Deploy script for RecoveryProcessTracker
+# Deploy script for DiseaseImmunityProgressTracker
 # Copies mod files to RimWorld Mods directory
 
-$modName = "RecoveryProcessTracker"
+$modName = "DiseaseImmunityProgressTracker"
 $sourceDir = $PSScriptRoot
 $destDir = "E:\Steam\steamapps\common\RimWorld\Mods\$modName"
 $dllPath = Join-Path $sourceDir "Assemblies\$modName.dll"

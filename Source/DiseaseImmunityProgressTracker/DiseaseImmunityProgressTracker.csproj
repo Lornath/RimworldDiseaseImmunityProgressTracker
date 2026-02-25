@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <LangVersion>latest</LangVersion>
-    <AssemblyName>RecoveryProcessTracker</AssemblyName>
-    <RootNamespace>RecoveryProcessTracker</RootNamespace>
+    <AssemblyName>DiseaseImmunityProgressTracker</AssemblyName>
+    <RootNamespace>DiseaseImmunityProgressTracker</RootNamespace>
     <OutputPath>..\..\Assemblies\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
