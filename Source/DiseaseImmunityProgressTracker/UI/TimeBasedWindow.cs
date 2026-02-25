@@ -28,11 +28,13 @@ namespace DiseaseImmunityProgressTracker.UI
 
         // Layout constants
         private const float Padding = 10f;
-        private const float TitleHeight = 24f;
         private const float ProgressBarHeight = 22f;
         private const float GraphHeight = 95f;
-        private const float TendEntryHeight = 18f;
         private const int MaxTendsToShow = 3;
+
+        // Text heights - measured from actual font metrics
+        private static float SmallFontHeight => Text.LineHeightOf(GameFont.Small);
+        private static float TinyFontHeight => Text.LineHeightOf(GameFont.Tiny);
 
         // Time constants
         private const float TicksPerDay = 60000f;
@@ -60,7 +62,23 @@ namespace DiseaseImmunityProgressTracker.UI
         // Fallback icon for tending without medicine
         private static readonly Texture2D NoMedsIcon = ContentFinder<Texture2D>.Get("UI/Icons/Medical/NoMeds");
 
-        public override Vector2 InitialSize => new Vector2(320f, 340f);
+        public override Vector2 InitialSize => new Vector2(320f, CalculateWindowHeight());
+
+        /// <summary>
+        /// Calculate window height based on actual font metrics.
+        /// </summary>
+        private static float CalculateWindowHeight()
+        {
+            return Padding * 2                          // Top and bottom padding
+                 + SmallFontHeight + 4f                 // Title + gap
+                 + SmallFontHeight + 4f                 // Time remaining + gap
+                 + ProgressBarHeight + 6f              // Progress bar + gap
+                 + SmallFontHeight + 4f                 // Severity display + gap
+                 + GraphHeight + 6f                     // Severity graph + gap
+                 + TinyFontHeight + 2f                  // "Recent tends:" label + gap
+                 + TinyFontHeight * MaxTendsToShow + 8f // Tend entries + gap
+                 + SmallFontHeight;                     // Verdict
+        }
 
         protected override float Margin => 0f;
 
@@ -110,6 +128,10 @@ namespace DiseaseImmunityProgressTracker.UI
             // Calculate prognosis
             var prognosis = CalculatePrognosis(history);
 
+            // Cache font heights
+            float smallHeight = SmallFontHeight;
+            float tinyHeight = TinyFontHeight;
+
             // Apply padding to create content area
             Rect contentRect = inRect.ContractedBy(Padding);
             float yOffset = contentRect.y;
@@ -118,34 +140,34 @@ namespace DiseaseImmunityProgressTracker.UI
             // Draw title
             Text.Font = GameFont.Small;
             string title = hediff?.Label?.CapitalizeFirst() ?? "Disease";
-            Widgets.Label(new Rect(contentRect.x, yOffset, contentWidth, TitleHeight), title);
-            yOffset += TitleHeight + 4f;
+            Widgets.Label(new Rect(contentRect.x, yOffset, contentWidth, smallHeight), title);
+            yOffset += smallHeight + 4f;
 
             // Draw time remaining
-            DrawTimeRemaining(new Rect(contentRect.x, yOffset, contentWidth, 24f));
-            yOffset += 26f;
+            DrawTimeRemaining(new Rect(contentRect.x, yOffset, contentWidth, smallHeight));
+            yOffset += smallHeight + 4f;
 
             // Draw progress bar for cure countdown
             Rect progressBarRect = new Rect(contentRect.x, yOffset, contentWidth, ProgressBarHeight);
             DrawProgressBar(progressBarRect);
-            yOffset += ProgressBarHeight + 10f;
+            yOffset += ProgressBarHeight + 6f;
 
             // Draw severity section with mini-graph
-            DrawSeveritySection(new Rect(contentRect.x, yOffset, contentWidth, GraphHeight + 30f), history, prognosis);
-            yOffset += GraphHeight + 38f;
+            DrawSeveritySection(new Rect(contentRect.x, yOffset, contentWidth, GraphHeight + smallHeight + 4f), history, prognosis);
+            yOffset += GraphHeight + smallHeight + 10f;
 
             // Draw recent tends section
             Text.Font = GameFont.Tiny;
             GUI.color = AxisColor;
-            Widgets.Label(new Rect(contentRect.x, yOffset, contentWidth, 16f), "Recent tends:");
+            Widgets.Label(new Rect(contentRect.x, yOffset, contentWidth, tinyHeight), "Recent tends:");
             GUI.color = Color.white;
-            yOffset += 20f;
+            yOffset += tinyHeight + 2f;
 
-            DrawRecentTends(new Rect(contentRect.x, yOffset, contentWidth, MaxTendsToShow * TendEntryHeight), history);
-            yOffset += MaxTendsToShow * TendEntryHeight + 8f;
+            DrawRecentTends(new Rect(contentRect.x, yOffset, contentWidth, MaxTendsToShow * tinyHeight), history);
+            yOffset += MaxTendsToShow * tinyHeight + 8f;
 
             // Draw verdict
-            DrawVerdict(new Rect(contentRect.x, yOffset, contentWidth, 24f), prognosis);
+            DrawVerdict(new Rect(contentRect.x, yOffset, contentWidth, smallHeight), prognosis);
 
             Text.Font = GameFont.Small;
         }
@@ -402,6 +424,7 @@ namespace DiseaseImmunityProgressTracker.UI
         private void DrawRecentTends(Rect rect, DiseaseHistory history)
         {
             Text.Font = GameFont.Tiny;
+            float entryHeight = TinyFontHeight;
 
             if (history == null || history.TendingEvents.Count == 0)
             {
@@ -419,9 +442,9 @@ namespace DiseaseImmunityProgressTracker.UI
             float yOffset = 0f;
             foreach (var tend in recentTends)
             {
-                Rect entryRect = new Rect(rect.x, rect.y + yOffset, rect.width, TendEntryHeight);
+                Rect entryRect = new Rect(rect.x, rect.y + yOffset, rect.width, entryHeight);
                 DrawTendEntry(entryRect, tend);
-                yOffset += TendEntryHeight;
+                yOffset += entryHeight;
             }
         }
 
