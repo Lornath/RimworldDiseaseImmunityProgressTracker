@@ -19,10 +19,10 @@ namespace RecoveryProcessTracker.UI
 
         // Graph layout constants
         private const float GraphPadding = 10f;
-        private const float AxisLabelWidth = 30f;
+        private const float AxisLabelWidth = 36f;
         private const float AxisLabelHeight = 20f;
         private const float TendInfoHeight = 24f; // Space below x-axis for medicine icons and quality
-        private const float TitleHeight = 20f;
+        private const float TitleHeight = 24f;
         private const float VerdictHeight = 18f;
 
         // Time window for the graph (in days)
@@ -40,7 +40,9 @@ namespace RecoveryProcessTracker.UI
         private static readonly Color ProjectionDimFactor = new Color(0.7f, 0.7f, 0.7f, 0.7f);
         private static readonly Color SurviveColor = new Color(0.4f, 1f, 0.4f);
         private static readonly Color RiskColor = new Color(1f, 0.4f, 0.4f);
-        private static readonly Color BedRestColor = new Color(0.2f, 0.4f, 0.8f, 0.2f); // Light Blue transparent
+        // Bed rest colors - base (sleeping spot, factor=1.0) to enhanced (hospital bed + vitals, factor~1.15)
+        private static readonly Color BedRestColorMin = new Color(0.2f, 0.3f, 0.5f, 0.15f); // Dim blue for no bonus
+        private static readonly Color BedRestColorMax = new Color(0.3f, 0.5f, 1.0f, 0.35f); // Bright blue for good bonus
         private static readonly Color TendingLineColor = new Color(1f, 0.9f, 0.2f, 0.7f); // Yellowish
 
         // Fallback icon for tending without medicine
@@ -141,8 +143,8 @@ namespace RecoveryProcessTracker.UI
             // Draw trend lines with real data
             DrawTrendLines(graphArea, pastDays, futureDays);
 
-            // Draw legend
-            DrawLegend(new Rect(graphArea.x + 5f, graphArea.y + 5f, 80f, 30f));
+            // Draw legend (bottom-right to avoid overlap with high trend lines)
+            DrawLegend(new Rect(graphArea.xMax - 120f, graphArea.yMax - 30f, 150f, 45f));
         }
 
         private void DrawVerdict(Rect rect)
@@ -369,9 +371,15 @@ namespace RecoveryProcessTracker.UI
                 float startX = TickToX(graphArea, visibleStart, currentTick, pastDays, totalDays);
                 float endX = TickToX(graphArea, visibleEnd, currentTick, pastDays, totalDays);
 
+                // Calculate color based on immunity gain speed factor
+                // Factor of 1.0 = no bonus (dim), factor of 1.15+ = great bonus (bright)
+                float factor = interval.ImmunityGainSpeedFactor;
+                float t = Mathf.Clamp01((factor - 1f) / 0.15f); // 0 at factor=1.0, 1 at factor=1.15+
+                Color bedColor = Color.Lerp(BedRestColorMin, BedRestColorMax, t);
+
                 // Draw rectangle
                 Rect rect = new Rect(startX, graphArea.y, endX - startX, graphArea.height);
-                Widgets.DrawBoxSolid(rect, BedRestColor);
+                Widgets.DrawBoxSolid(rect, bedColor);
             }
         }
 
@@ -496,20 +504,24 @@ namespace RecoveryProcessTracker.UI
             Vector2 immNow = new Vector2(nowX, immNowY);
             Vector2 sevNow = new Vector2(nowX, sevNowY);
 
-            // Dimmed color for projections
-            Color immProjectionColor = ImmunityColor * ProjectionDimFactor;
-            Color sevProjectionColor = SeverityColor * ProjectionDimFactor;
+            // Only draw projections if the disease outcome isn't already resolved
+            // (immune = immunity >= 100%, dead = severity >= 100%)
+            bool outcomeResolved = prognosis.CurrentImmunity >= 1f || prognosis.CurrentSeverity >= 1f;
 
-            // Y position for 100%
-            float y100 = graphArea.y; // Top of graph = 100%
+            if (!outcomeResolved)
+            {
+                // Dimmed color for projections
+                Color immProjectionColor = ImmunityColor * ProjectionDimFactor;
+                Color sevProjectionColor = SeverityColor * ProjectionDimFactor;
 
-            // Draw immunity projection line
-            DrawProjectionLine(graphArea, immNow, prognosis.CurrentImmunity, prognosis.ImmunityPerDay,
-                futureDays, totalDays, pastDays, immProjectionColor);
+                // Draw immunity projection line
+                DrawProjectionLine(graphArea, immNow, prognosis.CurrentImmunity, prognosis.ImmunityPerDay,
+                    futureDays, totalDays, pastDays, immProjectionColor);
 
-            // Draw severity projection line
-            DrawProjectionLine(graphArea, sevNow, prognosis.CurrentSeverity, prognosis.SeverityPerDay,
-                futureDays, totalDays, pastDays, sevProjectionColor);
+                // Draw severity projection line
+                DrawProjectionLine(graphArea, sevNow, prognosis.CurrentSeverity, prognosis.SeverityPerDay,
+                    futureDays, totalDays, pastDays, sevProjectionColor);
+            }
 
             // Draw a line from past data to current (if no history, estimate from rates)
             var tracker = DiseaseTracker.Instance;
@@ -569,7 +581,7 @@ namespace RecoveryProcessTracker.UI
             }
             else
             {
-                // Will hit 100% - draw line to 100%, then horizontal at 100%
+                // Will hit 100% - draw line to 100% and cap with a circle
                 float nowRatio = pastDays / totalDays;
                 float hit100Ratio = nowRatio + (daysTo100 / totalDays);
                 float hit100X = graphArea.x + graphArea.width * hit100Ratio;
@@ -578,12 +590,23 @@ namespace RecoveryProcessTracker.UI
                 Vector2 hit100Point = new Vector2(hit100X, graphArea.y); // graphArea.y is top = 100%
                 Widgets.DrawLine(startPoint, hit100Point, color, 2f);
 
-                // Horizontal line at 100% to end of graph
-                if (hit100X < graphArea.xMax)
-                {
-                    Vector2 endPoint = new Vector2(graphArea.xMax, graphArea.y);
-                    Widgets.DrawLine(hit100Point, endPoint, color, 2f);
-                }
+                // Draw circle marker at 100% intercept
+                DrawCircleMarker(hit100Point, color);
+            }
+        }
+
+        private void DrawCircleMarker(Vector2 center, Color color, float radius = 4f)
+        {
+            const int segments = 12;
+            for (int i = 0; i < segments; i++)
+            {
+                float angle1 = 2f * Mathf.PI * i / segments;
+                float angle2 = 2f * Mathf.PI * (i + 1) / segments;
+
+                Vector2 p1 = new Vector2(center.x + radius * Mathf.Cos(angle1), center.y + radius * Mathf.Sin(angle1));
+                Vector2 p2 = new Vector2(center.x + radius * Mathf.Cos(angle2), center.y + radius * Mathf.Sin(angle2));
+
+                Widgets.DrawLine(p1, p2, color, 1.5f);
             }
         }
 
@@ -612,11 +635,11 @@ namespace RecoveryProcessTracker.UI
                 Widgets.DrawBoxSolid(new Rect(legendArea.x, legendArea.y + 16f, 12f, 3f), SeverityColor);
                 Widgets.Label(new Rect(legendArea.x + 15f, legendArea.y + 12f, 140f, 16f), sevText);
 
-                // Show data source indicator
+                // Show data source indicator (above the legend entries to avoid x-axis overlap)
                 if (!prognosis.UsingObservedRates)
                 {
                     GUI.color = AxisColor;
-                    Widgets.Label(new Rect(legendArea.x, legendArea.y + 30f, 160f, 16f), "(est. - gathering data)");
+                    Widgets.Label(new Rect(legendArea.x, legendArea.y - 14f, 160f, 16f), "(est. - gathering data)");
                     GUI.color = Color.white;
                 }
             }

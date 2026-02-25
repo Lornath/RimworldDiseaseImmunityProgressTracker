@@ -34,19 +34,22 @@ namespace RecoveryProcessTracker.Core
     {
         public int StartTick;
         public int EndTick;
+        public float ImmunityGainSpeedFactor; // The bed's immunity gain speed factor (1.0 = no bonus)
 
         public BedRestInterval() { }
 
-        public BedRestInterval(int startTick)
+        public BedRestInterval(int startTick, float immunityGainSpeedFactor)
         {
             StartTick = startTick;
             EndTick = -1; // -1 means ongoing
+            ImmunityGainSpeedFactor = immunityGainSpeedFactor;
         }
 
         public void ExposeData()
         {
             Scribe_Values.Look(ref StartTick, "startTick");
             Scribe_Values.Look(ref EndTick, "endTick", -1);
+            Scribe_Values.Look(ref ImmunityGainSpeedFactor, "immunityGainSpeedFactor", 1f);
         }
     }
 
@@ -131,7 +134,7 @@ namespace RecoveryProcessTracker.Core
             TendingEvents.Add(new TendingEvent(tick, doctorName, medicineName, medicineDefName, quality, doctorSkill));
         }
 
-        public void UpdateBedRest(int tick, bool inBed)
+        public void UpdateBedRest(int tick, bool inBed, float immunityGainSpeedFactor)
         {
             // Get the last interval if it exists
             BedRestInterval currentInterval = null;
@@ -145,9 +148,16 @@ namespace RecoveryProcessTracker.Core
                 // If we're not currently tracking an open interval, start one
                 if (currentInterval == null || currentInterval.EndTick != -1)
                 {
-                    BedRestIntervals.Add(new BedRestInterval(tick));
+                    BedRestIntervals.Add(new BedRestInterval(tick, immunityGainSpeedFactor));
                 }
-                // If we have an open interval, it just continues (no action needed)
+                // If we have an open interval but the factor changed significantly, close it and start a new one
+                else if (currentInterval.EndTick == -1 &&
+                         UnityEngine.Mathf.Abs(currentInterval.ImmunityGainSpeedFactor - immunityGainSpeedFactor) > 0.01f)
+                {
+                    currentInterval.EndTick = tick;
+                    BedRestIntervals.Add(new BedRestInterval(tick, immunityGainSpeedFactor));
+                }
+                // If we have an open interval with same factor, it just continues (no action needed)
             }
             else
             {
@@ -242,11 +252,21 @@ namespace RecoveryProcessTracker.Core
             int loadId = hediff.loadID;
             if (!histories.TryGetValue(loadId, out var history)) return;
 
-            // Simple check: is the pawn in bed right now?
-            // We could check for medical bed specifically, or just any bed (resting)
-            // HediffComp_Immunizable checks if pawn is in bed for immunity gain
-            bool inBed = pawn.InBed(); 
-            history.UpdateBedRest(currentTick, inBed);
+            // Check if the pawn is in bed and get the bed's immunity gain speed factor
+            bool inBed = pawn.InBed();
+            float immunityGainSpeedFactor = 1f;
+
+            if (inBed)
+            {
+                Building_Bed bed = pawn.CurrentBed();
+                if (bed != null)
+                {
+                    // Get the bed's ImmunityGainSpeedFactor stat (includes vitals monitor bonus)
+                    immunityGainSpeedFactor = bed.GetStatValue(StatDefOf.ImmunityGainSpeedFactor);
+                }
+            }
+
+            history.UpdateBedRest(currentTick, inBed, immunityGainSpeedFactor);
         }
 
         private void RecordDiseaseData(Hediff hediff, int currentTick)

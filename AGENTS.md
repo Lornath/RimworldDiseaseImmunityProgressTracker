@@ -58,10 +58,13 @@ There is the source code for a similar mod to ours in "decompiled\AmIGonnaMakeIt
     - A `Window` subclass that renders the disease progression graph.
     - Draws historical data (past) and projected trends (future).
     - Features:
-        - Immunity (Green) and Severity (Red) trend lines.
+        - Immunity (Green) and Severity (Red) trend lines with projection into the future.
+        - Projection lines stop at 100% with a circle marker (no horizontal continuation).
+        - Projections are disabled once disease outcome is resolved (immunity or severity >= 100%).
         - "Verdict" text predicting the outcome (Immune, Death, etc.).
-        - Blue background regions indicating bed rest periods.
+        - Blue background regions indicating bed rest periods, with brightness varying by bed quality (dim for sleeping spot, bright for hospital bed with vitals monitor).
         - Yellow vertical lines for tending events, with medicine icon and quality below the x-axis.
+        - Legend positioned in bottom-right corner to avoid overlap with high trend lines.
         - Tooltip-like behavior: positions itself near the mouse/tooltip and closes when the tooltip updates.
     - **IMPORTANT: No tooltips allowed** - This window acts as a companion to the game's disease tooltip. When the mouse moves off the disease entry in the health tab, this window closes. Therefore, `TooltipHandler.TipRegion()` cannot be used for interactive elements within this window since users cannot hover over them without triggering the window to close.
 
@@ -79,7 +82,9 @@ There is the source code for a similar mod to ours in "decompiled\AmIGonnaMakeIt
 ### Data Structures (in DiseaseTracker.cs)
 
 - **DiseaseDataPoint**: Records immunity and severity at a specific tick.
-- **BedRestInterval**: Tracks periods when the pawn was in bed (StartTick, EndTick; EndTick=-1 means ongoing).
+- **BedRestInterval**: Tracks periods when the pawn was in bed:
+    - `StartTick`, `EndTick`: Time range (EndTick=-1 means ongoing)
+    - `ImmunityGainSpeedFactor`: The bed's immunity gain speed stat (1.0 = no bonus like sleeping spot, ~1.07+ = hospital bed, higher with vitals monitor). Used to vary the blue background brightness in the graph.
 - **TendingEvent**: Records a tending action with:
     - `Tick`: When it happened
     - `DoctorName`, `DoctorSkill`: Who performed the tend
