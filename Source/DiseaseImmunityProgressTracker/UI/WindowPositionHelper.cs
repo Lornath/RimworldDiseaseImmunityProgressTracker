@@ -14,6 +14,10 @@ namespace DiseaseImmunityProgressTracker.UI
         private const float EstimatedTooltipWidth = 270f;
         private const float EstimatedTooltipHeight = 200f;
 
+        // Safety margin added to tooltip height estimate to avoid boundary condition issues.
+        // The game's tooltip positioning may use slightly different thresholds than our prediction.
+        private const float TooltipHeightSafetyMargin = 50f;
+
         // Tooltip positioning constants (from GenUI.GetMouseAttachedWindowPos)
         private const float TooltipOffsetBelow = 14f;
         private const float TooltipOffsetAbove = 5f;
@@ -86,8 +90,14 @@ namespace DiseaseImmunityProgressTracker.UI
         /// <returns>The Rect for the window position</returns>
         public static Rect CalculateWindowRect(Vector2 mousePos, Vector2 windowSize)
         {
-            // Calculate where the tooltip would be positioned (using estimates)
-            Vector2 tooltipPos = CalculateTooltipPosition(mousePos, EstimatedTooltipWidth, EstimatedTooltipHeight);
+            // Scale tooltip height estimate based on number of diseases being displayed.
+            // In the Medical tab, multiple diseases are combined into one tall tooltip.
+            // Add safety margin to avoid boundary condition issues at screen edges.
+            int diseaseCount = Mathf.Max(1, CompanionWindowManager.GetActiveHediffCount());
+            float scaledTooltipHeight = (EstimatedTooltipHeight * diseaseCount) + TooltipHeightSafetyMargin;
+
+            // Calculate where the tooltip would be positioned (using scaled estimates)
+            Vector2 tooltipPos = CalculateTooltipPosition(mousePos, EstimatedTooltipWidth, scaledTooltipHeight);
 
             // Determine if the tooltip is above or below the mouse by comparing Y positions
             bool tooltipIsBelowMouse = tooltipPos.y > mousePos.y;
@@ -119,8 +129,7 @@ namespace DiseaseImmunityProgressTracker.UI
             if (xPos + windowSize.x <= Verse.UI.screenWidth)
             {
                 // Y position: Bottom-align with tooltip bottom to keep close to mouse/focus
-                // Tooltip bottom = tooltipPos.y + EstimatedTooltipHeight
-                float tooltipBottom = tooltipPos.y + EstimatedTooltipHeight;
+                float tooltipBottom = tooltipPos.y + scaledTooltipHeight;
                 yPos = tooltipBottom - windowSize.y;
                 goto Finalize;
             }
@@ -129,7 +138,7 @@ namespace DiseaseImmunityProgressTracker.UI
             xPos = tooltipPos.x - windowSize.x - WindowGapFromTooltip;
 
             // Y position: Bottom-align with tooltip bottom
-            float tipBottom = tooltipPos.y + EstimatedTooltipHeight;
+            float tipBottom = tooltipPos.y + scaledTooltipHeight;
             yPos = tipBottom - windowSize.y;
 
             Finalize:
