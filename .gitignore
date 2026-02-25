@@ -9,3 +9,4 @@ docs/*.pdf
 # IDE files
 *.code-workspace
 *.sln
+.vscode
