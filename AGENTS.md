@@ -52,6 +52,7 @@ The mod tracks diseases using a type system based on their cure mechanics:
 | **Type 3a** | Mechanites | Fibrous Mechanites, Sensory Mechanites | Time-based (1-2 quadrums); treatment controls severity/pain only | `HediffComp_Disappears` + `HediffComp_Immunizable` (NO immunity gain) | `TimeBasedWindow` |
 | **Type 3b** | Fatal Rots | Lung Rot, Blood Rot | Time-based; treatment prevents fatal severity | `HediffComp_Disappears` + `HediffComp_TendDuration` (no Immunizable) | `TimeBasedWindow` |
 | **Type 4** | Toxic Buildup | Toxic Buildup | Severity heals when safe (-8%/day); exposure blocks recovery | `HediffComp_ImmunizableToxic` (no immunity gain, NOT tendable, lethal) | `ToxicBuildupWindow` |
+| **Type 5** | Chronic | Asthma | Treatment quality controls severity; no cure, permanent management | `HediffComp_Immunizable` (NO immunity gain) + `HediffComp_TendDuration` | `ChronicDiseaseWindow` |
 
 **Type 3a vs 3b Key Differences:**
 - **Type 3a (Mechanites)**: Non-fatal. Severity controls pain level (0-49% = mild 20% pain, 50-100% = intense 60% pain). Has `HediffComp_Immunizable` but `immunityPerDaySick = 0` (no immunity gain).
@@ -65,9 +66,24 @@ The mod tracks diseases using a type system based on their cure mechanics:
 - Lethal at 100% severity.
 - Causes dementia/carcinoma risks at 40%+ severity (MTB decreases at higher stages).
 
+**Type 5 (Chronic) Key Differences:**
+- Has `HediffComp_Immunizable` but `immunityPerDaySick = 0` (no immunity gain).
+- Has `HediffComp_TendDuration` (IS tendable - unlike Type 4).
+- NO `HediffComp_Disappears` (not time-based - unlike Type 3).
+- Cannot be cured through natural recovery or treatment; severity is permanently managed.
+- Severity capped below 100% (e.g., asthma caps at 50%) - not immediately fatal.
+- Treatment mechanics (Asthma example):
+  - Untreated: +0.25/day severity increase
+  - Tending effect: `severityPerDayTended * tendQuality` = -0.8 * quality
+  - Net rate = 0.25 + (-0.8 * quality)
+  - Regression threshold: quality >= 32% (severity starts decreasing)
+  - Below threshold: severity still increases, but slower
+- Has stage thresholds (30%, 45% for asthma) that determine symptom severity.
+
 **Detection Order in Code:**
-Type 4 (Toxic Buildup) is checked FIRST, then Type 3 diseases, then Type 1. This ordering prevents misclassification since:
+Type 4 (Toxic Buildup) is checked FIRST, then Type 5 (Chronic), then Type 3 diseases, then Type 1. This ordering prevents misclassification since:
 - Type 4 has `HediffComp_Immunizable` but should not show the Type 1 immunity graph.
+- Type 5 has `HediffComp_Immunizable` but should use `ChronicDiseaseWindow`.
 - Type 3a Mechanites have `HediffComp_Immunizable` but should use `TimeBasedWindow`.
 
 ### Core Components
@@ -78,6 +94,7 @@ Type 4 (Toxic Buildup) is checked FIRST, then Type 3 diseases, then Type 1. This
     - Tracks diseases by type (see Disease Type Classification above).
     - Contains static helpers for disease type detection (checked in this order):
         - `IsToxicBuildupDisease()`: Identifies Type 4 (Toxic Buildup).
+        - `IsChronicDisease()`: Identifies Type 5 (Chronic diseases like Asthma).
         - `IsTimeBasedDisease()`: Identifies Type 3 diseases (both 3a and 3b).
         - `IsMechaniteDisease()`: Identifies Type 3a mechanite diseases specifically.
     - Contains `GetCurrentExposure(pawn)` to get `ExposureFlags` for toxic buildup tracking.
@@ -163,8 +180,25 @@ Type 4 (Toxic Buildup) is checked FIRST, then Type 3 diseases, then Type 1. This
         - Verdict text: Recovery estimate when safe, or danger warning when exposed.
     - Same tooltip-companion behavior as other windows.
 
+- **ChronicDiseaseWindow** (`Source/DiseaseImmunityProgressTracker/UI/ChronicDiseaseWindow.cs`):
+    - A `Window` subclass that displays Type 5 (chronic) disease progress like Asthma.
+    - These diseases have no immunity gain; severity is managed through treatment quality.
+    - Features:
+        - Title with disease name and stage.
+        - Treatment status showing: quality percentage, effect (REGRESSING/SLOWING/STABLE), time remaining.
+        - Severity display with current value and max cap (e.g., "Severity: 25% (max 50%)").
+        - Severity progress bar with stage threshold markers (yellow at 30%, orange at 45%).
+        - Severity graph with:
+            - Y-axis scaled to maxSeverity (e.g., 50% for asthma instead of 100%).
+            - Horizontal threshold lines at stage boundaries (colored yellow/orange).
+            - Historical severity trend and 2-day projection.
+        - Recent tends list (up to 3) with quality and effect hint ([Regress]/[Slow]/[Minimal]).
+        - Verdict text showing current trend and regression threshold (e.g., "need >32% to regress").
+    - Calculates regression threshold dynamically: `-severityPerDayNotImmune / severityPerDayTended`.
+    - Same tooltip-companion behavior as other windows.
+
 - **ICompanionWindow** (`Source/DiseaseImmunityProgressTracker/UI/ICompanionWindow.cs`):
-    - Simple interface implemented by all companion windows (`DiseaseGraphWindow`, `CumulativeTendWindow`, `TimeBasedWindow`, `ToxicBuildupWindow`).
+    - Simple interface implemented by all companion windows (`DiseaseGraphWindow`, `CumulativeTendWindow`, `TimeBasedWindow`, `ToxicBuildupWindow`, `ChronicDiseaseWindow`).
     - Exposes `Hediff Hediff { get; }` property for the manager to identify which pawn/disease a window belongs to.
     - Enables the stacking logic to group windows by pawn.
 
@@ -172,7 +206,13 @@ Type 4 (Toxic Buildup) is checked FIRST, then Type 3 diseases, then Type 1. This
     - Harmony patch on `HediffComp_Immunizable.CompTipStringExtra`.
     - Detects when a Type 1 (immunizable) disease tooltip is shown and opens `DiseaseGraphWindow`.
     - Skips Type 4 (Toxic Buildup) which has Immunizable but should use `ToxicBuildupWindow`.
+    - Skips Type 5 (Chronic) which has Immunizable but should use `ChronicDiseaseWindow`.
     - Skips Type 3a (Mechanites) which have Immunizable but should use `TimeBasedWindow`.
+
+- **ChronicDiseasePatch** (`Source/DiseaseImmunityProgressTracker/Patches/ChronicDiseasePatch.cs`):
+    - Harmony patch on `HediffComp_Immunizable.CompTipStringExtra`.
+    - Only handles Type 5 (Chronic) diseases identified by `DiseaseTracker.IsChronicDisease()`.
+    - Opens `ChronicDiseaseWindow` when chronic disease tooltip is shown.
 
 - **ToxicBuildupPatch** (`Source/DiseaseImmunityProgressTracker/Patches/ToxicBuildupPatch.cs`):
     - Harmony patch on `HediffComp_Immunizable.CompTipStringExtra`.
@@ -253,7 +293,7 @@ When a pawn has multiple diseases, multiple companion windows can be open simult
     - `MedicineName`: Display label of medicine used
     - `MedicineDefName`: DefName for looking up the medicine's icon (null if no medicine used)
     - `Quality`: The final tend quality (after random variance)
-- **DiseaseHistory**: Container for all tracking data for a single disease instance (supports all four disease types).
+- **DiseaseHistory**: Container for all tracking data for a single disease instance (supports all five disease types).
 
 ### Source Files
 
@@ -272,12 +312,14 @@ Source/DiseaseImmunityProgressTracker/
 │   ├── CumulativeTendWindow.cs         # Progress display for Type 2 (cumulative tend) diseases
 │   ├── TimeBasedWindow.cs              # Time/severity display for Type 3 (time-based) diseases
 │   ├── ToxicBuildupWindow.cs           # Severity/exposure display for Type 4 (toxic buildup)
+│   ├── ChronicDiseaseWindow.cs         # Treatment/severity display for Type 5 (chronic) diseases
 │   └── WindowPositionHelper.cs         # Tooltip position calculation logic
 └── Patches/
     ├── TooltipCompanionPatch.cs        # Harmony patch for Type 1 disease tooltips
     ├── CumulativeTendPatch.cs          # Harmony patch for Type 2 disease tooltips
     ├── TimeBasedDiseasePatch.cs        # Harmony patch for Type 3 disease tooltips
     ├── ToxicBuildupPatch.cs            # Harmony patch for Type 4 disease tooltips
+    ├── ChronicDiseasePatch.cs          # Harmony patch for Type 5 disease tooltips
     └── TendUtilityPatch.cs             # Harmony patch for capturing tend events
 ```
 

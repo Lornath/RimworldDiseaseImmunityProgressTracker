@@ -28,6 +28,9 @@ namespace DiseaseImmunityProgressTracker.Patches
             // Skip Type 4 (Toxic Buildup) - handled by ToxicBuildupPatch
             if (DiseaseTracker.IsToxicBuildupDisease(hediff)) return;
 
+            // Skip Type 5 (Chronic diseases like Asthma) - handled by ChronicDiseasePatch
+            if (DiseaseTracker.IsChronicDisease(hediff)) return;
+
             // Skip Type 3a (Mechanites) - they have Immunizable but should use TimeBasedWindow
             // (handled by TimeBasedDiseasePatch instead)
             if (DiseaseTracker.IsMechaniteDisease(hediff)) return;
