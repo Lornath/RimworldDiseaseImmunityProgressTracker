@@ -2,6 +2,7 @@ using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
+using RecoveryProcessTracker.Core;
 using RecoveryProcessTracker.UI;
 
 namespace RecoveryProcessTracker.Patches
@@ -35,9 +36,15 @@ namespace RecoveryProcessTracker.Patches
             var pawn = __instance.Pawn;
             if (pawn == null || pawn.Dead) return;
 
+            // Disable when Numbers mod window is open - it calls CompTipStringExtra during
+            // table rendering which interferes with our tooltip detection
+            if (ModCompatibility.IsNumbersWindowOpen()) return;
+
+            int currentFrame = Time.frameCount;
+
             // Update the active hediff tracker using Unity frame count
             activeHediff = hediff;
-            lastActiveFrame = Time.frameCount;
+            lastActiveFrame = currentFrame;
 
             // Close any windows for other hediffs
             CumulativeTendWindow.CloseOtherWindows(hediff);
