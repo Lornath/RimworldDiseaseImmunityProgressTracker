@@ -82,6 +82,14 @@ Shows:
 [*] Heart attack risk (daily percentage and expected attacks before the next stage)
 [*] Severity graph showing historical trend and projection
 [*] Available cure options
+[/list]
+
+[h3]Food Poisoning[/h3]
+
+This is what happens when you use your kitchen as corpse storage and let your "Cooking: 1" colonist be the chef.  Just gotta tough it out over a 24 hour period - watch the mood and hunger as these can take a big hit.
+
+[img]https://images.steamusercontent.com/ugc/17943444718310979872/785CA3665B71F1030B3B53A8A31CD85B2D07029C/?imw=500&imh=500&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false[/img]
+
 
 [h2]Compatibility[/h2]
 This was tested only on Vanilla diseases, I have no idea if it'll work with any additional disease provided by other addons.
