@@ -25,6 +25,8 @@ When you hover over a disease or infection in a pawn's Health tab, a companion w
 
 ## Developer Setup
 
+This is for scripted setup on a Windows machine.
+
 ### 1. Configure paths
 
 Two scripts contain a hardcoded Steam path (`$steamBase`) that you need to update for your system. Open each file and change the path at the top:

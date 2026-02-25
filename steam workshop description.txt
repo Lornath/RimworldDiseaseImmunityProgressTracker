@@ -93,3 +93,7 @@ This is what happens when you use your kitchen as corpse storage and let your "C
 
 [h2]Compatibility[/h2]
 This was tested only on Vanilla diseases, I have no idea if it'll work with any additional disease provided by other addons.
+
+[h2]Source Code[/h2]
+
+[b]github[/b]: https://github.com/Lornath/RimworldDiseaseImmunityProgressTracker
