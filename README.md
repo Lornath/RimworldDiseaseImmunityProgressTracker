@@ -1,0 +1,7 @@
+For this rimworld addon, I'd like to be able to track the status of a disease, infection, or anything else that progresses until cured and improves faster with treatment and/or rest.  I want a clear picture of the course of the problem, treatment, and most importantly a prediction of whether or not immunity will be achieved based on the current course of things.
+
+Treatment quality seems to depend on doctor skill, medecine quality used, and possibly bed and/or vitals monitor (?).
+
+I'm not really sure how treatment quality combines with the "immunity gain" factors of the bed and vitals monitor to determine the final outcome - that's what I want to visualize with this addon.
+
+Ideally, when you view the tooltip for someone's infection or disease on their health overview, you'd see a graph with the immunity, infection progress, and treatments marked on a timeline.  There would be a future trendline showing where the disease progression vs immunity gain trends intersect.  The trendline or "will this pawn survive or not" prediction is the main key here as that prediction isn't available in the game - and thus doesn't really inform you if you should alter the treatment or not to save the pawn.
