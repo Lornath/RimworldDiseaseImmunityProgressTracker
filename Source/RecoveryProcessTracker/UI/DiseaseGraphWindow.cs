@@ -10,9 +10,10 @@ namespace RecoveryProcessTracker.UI
     /// Opens automatically when hovering over an immunizable disease in the health tab.
     /// </summary>
     [StaticConstructorOnStartup]
-    public class DiseaseGraphWindow : Window
+    public class DiseaseGraphWindow : Window, ICompanionWindow
     {
         private readonly Hediff hediff;
+        public Hediff Hediff => hediff;
 
         // Cached prognosis (recalculated each frame)
         private PrognosisCalculator.PrognosisResult prognosis;
@@ -69,19 +70,19 @@ namespace RecoveryProcessTracker.UI
             drawShadow = true;
             preventCameraMotion = false;
             focusWhenOpened = false;
+            onlyOneOfTypeAllowed = false; // Allow multiple disease windows simultaneously
         }
 
         protected override void SetInitialSizeAndPosition()
         {
-            // Use helper to position window avoiding overlap with the game's tooltip
-            windowRect = WindowPositionHelper.CalculateWindowRect(InitialSize);
+            // Use stacked positioning to avoid overlap with other companion windows
+            windowRect = CompanionWindowManager.CalculateStackedWindowRect(InitialSize, this);
         }
 
         public override void DoWindowContents(Rect inRect)
         {
-            // Dynamically update position to follow the tooltip as the mouse moves
-            // (Done here in DoWindowContents where Event.current is valid)
-            Rect newRect = WindowPositionHelper.CalculateWindowRect(InitialSize);
+            // Position/Size update
+            Rect newRect = CompanionWindowManager.CalculateStackedWindowRect(InitialSize, this);
             windowRect.x = newRect.x;
             windowRect.y = newRect.y;
 
@@ -666,6 +667,12 @@ namespace RecoveryProcessTracker.UI
             }
         }
 
+        public override void PreClose()
+        {
+            base.PreClose();
+            CompanionWindowManager.UnregisterWindow(this);
+        }
+
         /// <summary>
         /// Check if a window is already open for the given hediff.
         /// </summary>
@@ -673,15 +680,21 @@ namespace RecoveryProcessTracker.UI
         {
             if (hediff == null) return false;
 
+            int graphWindowCount = 0;
             foreach (var window in Find.WindowStack.Windows)
             {
-                if (window is DiseaseGraphWindow graphWindow && graphWindow.hediff == hediff)
+                if (window is DiseaseGraphWindow graphWindow)
                 {
-                    return true;
+                    graphWindowCount++;
+                    if (graphWindow.hediff == hediff)
+                    {
+                        return true;
+                    }
                 }
             }
+			
             return false;
-        }
+         }
 
         /// <summary>
         /// Close any existing graph window for a different hediff.

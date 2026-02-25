@@ -1,6 +1,5 @@
 using HarmonyLib;
 using RimWorld;
-using UnityEngine;
 using Verse;
 using RecoveryProcessTracker.Core;
 using RecoveryProcessTracker.UI;
@@ -14,10 +13,6 @@ namespace RecoveryProcessTracker.Patches
     [HarmonyPatch(typeof(HediffComp_TendDuration), nameof(HediffComp_TendDuration.CompTipStringExtra), MethodType.Getter)]
     public static class CumulativeTendPatch
     {
-        // Track which hediff's tooltip is currently active
-        private static Hediff activeHediff;
-        private static int lastActiveFrame;
-
         /// <summary>
         /// Called after CompTipStringExtra is accessed (when tooltip is being rendered).
         /// </summary>
@@ -40,14 +35,8 @@ namespace RecoveryProcessTracker.Patches
             // table rendering which interferes with our tooltip detection
             if (ModCompatibility.IsNumbersWindowOpen()) return;
 
-            int currentFrame = Time.frameCount;
-
-            // Update the active hediff tracker using Unity frame count
-            activeHediff = hediff;
-            lastActiveFrame = currentFrame;
-
-            // Close any windows for other hediffs
-            CumulativeTendWindow.CloseOtherWindows(hediff);
+            // Register this hediff's tooltip as active (for multi-disease support)
+            CompanionWindowManager.RegisterTooltipActive(hediff);
 
             // Open a new window if one isn't already open for this hediff
             if (!CumulativeTendWindow.IsOpenFor(hediff))
@@ -63,30 +52,11 @@ namespace RecoveryProcessTracker.Patches
 
         /// <summary>
         /// Check if the tooltip is currently active for the given hediff.
-        /// Returns false if we haven't seen the tooltip update in a few frames.
+        /// Delegates to the central CompanionWindowManager.
         /// </summary>
         public static bool IsTooltipActiveFor(Hediff hediff)
         {
-            if (hediff == null || activeHediff != hediff) return false;
-
-            // Consider tooltip "stale" if it hasn't been refreshed in 3 frames
-            int currentFrame = Time.frameCount;
-            if (currentFrame - lastActiveFrame > 3)
-            {
-                activeHediff = null;
-                return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Clear the active hediff tracking (for cleanup purposes).
-        /// </summary>
-        public static void ClearActiveHediff()
-        {
-            activeHediff = null;
-            lastActiveFrame = 0;
+            return CompanionWindowManager.IsTooltipActiveFor(hediff);
         }
     }
 }

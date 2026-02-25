@@ -14,9 +14,11 @@ namespace RecoveryProcessTracker.UI
     /// like Gut Worms and Muscle Parasites that cure through accumulated tend quality.
     /// </summary>
     [StaticConstructorOnStartup]
-    public class CumulativeTendWindow : Window
+    public class CumulativeTendWindow : Window, ICompanionWindow
     {
         private readonly Hediff hediff;
+        public Hediff Hediff => hediff;
+
         private readonly HediffComp_TendDuration tendComp;
 
         // Reflection for accessing private field
@@ -63,19 +65,20 @@ namespace RecoveryProcessTracker.UI
             drawShadow = true;
             preventCameraMotion = false;
             focusWhenOpened = false;
+            onlyOneOfTypeAllowed = false; // Allow multiple disease windows simultaneously
         }
 
         protected override void SetInitialSizeAndPosition()
         {
-            // Use helper to position window avoiding overlap with the game's tooltip
-            windowRect = WindowPositionHelper.CalculateWindowRect(InitialSize);
+            // Use stacked positioning to avoid overlap with other companion windows
+            windowRect = CompanionWindowManager.CalculateStackedWindowRect(InitialSize, this);
         }
 
         public override void DoWindowContents(Rect inRect)
         {
             // Dynamically update position to follow the tooltip as the mouse moves
             // (Done here in DoWindowContents where Event.current is valid)
-            Rect newRect = WindowPositionHelper.CalculateWindowRect(InitialSize);
+            Rect newRect = CompanionWindowManager.CalculateStackedWindowRect(InitialSize, this);
             windowRect.x = newRect.x;
             windowRect.y = newRect.y;
 
@@ -284,6 +287,12 @@ namespace RecoveryProcessTracker.UI
             {
                 Close(false);
             }
+        }
+
+        public override void PreClose()
+        {
+            base.PreClose();
+            CompanionWindowManager.UnregisterWindow(this);
         }
 
         /// <summary>

@@ -121,6 +121,22 @@ Type 3 diseases are checked FIRST (before Type 1) because Type 3a Mechanites hav
         - Verdict focuses on survival: "SAFE - Will survive", "DANGER - Severity may reach fatal levels"
     - Same tooltip-companion behavior as `DiseaseGraphWindow`.
 
+- **CompanionWindowManager** (`Source/RecoveryProcessTracker/UI/CompanionWindowManager.cs`):
+    - Central coordinator for all tooltip companion windows.
+    - Tracks which hediff tooltips are active across all disease types using frame-based staleness detection.
+    - Manages window slot assignment for stable ordering when multiple windows are open.
+    - Calculates stacked window positions to prevent overlap between companion windows.
+    - Key methods:
+        - `RegisterTooltipActive(hediff)`: Called by patches when a tooltip is rendered.
+        - `IsTooltipActiveFor(hediff)`: Checks if tooltip is still active (with 2-frame grace period).
+        - `CalculateStackedWindowRect(size, self)`: Positions windows in a vertical stack, treating all windows for the same pawn as a group.
+        - `UnregisterWindow(window)`: Called in `PreClose()` to clean up slot tracking.
+
+- **ICompanionWindow** (`Source/RecoveryProcessTracker/UI/ICompanionWindow.cs`):
+    - Simple interface implemented by all companion windows (`DiseaseGraphWindow`, `CumulativeTendWindow`, `TimeBasedWindow`).
+    - Exposes `Hediff Hediff { get; }` property for the manager to identify which pawn/disease a window belongs to.
+    - Enables the stacking logic to group windows by pawn.
+
 - **TooltipCompanionPatch** (`Source/RecoveryProcessTracker/Patches/TooltipCompanionPatch.cs`):
     - Harmony patch on `HediffComp_Immunizable.CompTipStringExtra`.
     - Detects when a Type 1 (immunizable) disease tooltip is shown and opens `DiseaseGraphWindow`.
@@ -147,6 +163,27 @@ Type 3 diseases are checked FIRST (before Type 1) because Type 3a Mechanites hav
     - `Hediff_Tended_Patch`: Postfix on `HediffWithComps.Tended` to record the tend event.
     - Records tends for all three disease types: immunizable, cumulative tend, and time-based.
     - **Note on tend quality**: The `quality` parameter passed to `Hediff.Tended` is the BASE quality. The actual displayed quality includes ±25% random variance applied in `HediffComp_TendDuration.CompTended`. Always read the final quality from `HediffComp_TendDuration.tendQuality` after tending completes.
+
+### Multi-Window Architecture
+
+When a pawn has multiple diseases, multiple companion windows can be open simultaneously. This requires careful coordination:
+
+**Key Design Decisions:**
+- **Centralized tooltip tracking**: `CompanionWindowManager` tracks active tooltips for ALL disease types, replacing per-patch tracking. This prevents race conditions and ensures consistent staleness detection.
+- **Window slots for stable ordering**: Windows are assigned slot numbers when opened. This ensures consistent vertical stacking order even as windows open/close.
+- **Pawn-based grouping**: Windows are stacked only with other windows for the same pawn. Different pawns' windows are positioned independently.
+- **`onlyOneOfTypeAllowed = false`**: All companion windows set this to allow multiple instances of the same window type.
+
+**Stacking Algorithm** (in `CompanionWindowManager.CalculateStackedWindowRect`):
+1. Find all open companion windows for the same pawn
+2. Calculate total stack height (sum of window heights + gaps)
+3. Position the entire stack as a single "super window" using `WindowPositionHelper`
+4. Assign each window its position within the stack (stacking upward from bottom)
+
+**Window Lifecycle:**
+- `SetInitialSizeAndPosition()`: Gets stacked position via `CompanionWindowManager.CalculateStackedWindowRect()`
+- `DoWindowContents()`: Updates position each frame to follow mouse/tooltip
+- `PreClose()`: Calls `CompanionWindowManager.UnregisterWindow(this)` to clean up slot tracking
 
 ### Data Structures (in DiseaseTracker.cs)
 
@@ -178,10 +215,12 @@ Source/RecoveryProcessTracker/
 │   ├── DiseaseTracker.cs               # Data tracking & persistence
 │   └── PrognosisCalculator.cs          # Math & prediction logic
 ├── UI/
+│   ├── CompanionWindowManager.cs       # Central coordinator for multi-window support
+│   ├── ICompanionWindow.cs             # Interface for companion windows
 │   ├── DiseaseGraphWindow.cs           # Graph rendering for Type 1 (immunizable) diseases
 │   ├── CumulativeTendWindow.cs         # Progress display for Type 2 (cumulative tend) diseases
 │   ├── TimeBasedWindow.cs              # Time/severity display for Type 3 (time-based) diseases
-│   └── WindowPositionHelper.cs         # Shared tooltip-companion window positioning logic
+│   └── WindowPositionHelper.cs         # Tooltip position calculation logic
 └── Patches/
     ├── TooltipCompanionPatch.cs        # Harmony patch for Type 1 disease tooltips
     ├── CumulativeTendPatch.cs          # Harmony patch for Type 2 disease tooltips
@@ -273,3 +312,17 @@ Inside a `Window.DoWindowContents(Rect inRect)` method, the GUI matrix has been 
 ### Namespace Collision
 
 This project uses namespace `RecoveryProcessTracker.UI`. RimWorld's UI utilities are in `Verse.UI`. Always use fully-qualified `Verse.UI.screenWidth`, `Verse.UI.MousePositionOnUIInverted`, etc. to avoid ambiguity.
+
+## Development Tools
+
+### Debug Overlay for Window Positioning
+
+When debugging window positioning or overlap issues, a visual debug overlay can be temporarily added to the mod. See `docs/DEBUG_OVERLAY.md` for instructions.
+
+The overlay draws:
+- Yellow crosshair at mouse position
+- Green/red box showing estimated tooltip position
+- Cyan/red boxes around companion windows
+- Overlap detection with warnings logged to player.log
+
+**Why a Unity MonoBehaviour?** RimWorld `Window` subclasses capture mouse input and interfere with tooltip detection. The debug overlay uses a raw Unity `MonoBehaviour` with `OnGUI()` to bypass the WindowStack entirely, ensuring it doesn't affect the UI behavior being debugged.
