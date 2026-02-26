@@ -2,11 +2,11 @@
 <LanguageData>
   <!-- ToxicBuildupWindow (Type 4: Toxic Buildup) -->
   <DIPT_TXW_Title>毒素積累（{0}）- {1}%</DIPT_TXW_Title>
-  <DIPT_TXW_StageExtreme>極度</DIPT_TXW_StageExtreme>
-  <DIPT_TXW_StageSerious>嚴重</DIPT_TXW_StageSerious>
+  <DIPT_TXW_StageExtreme>極重度</DIPT_TXW_StageExtreme>
+  <DIPT_TXW_StageSerious>重度</DIPT_TXW_StageSerious>
   <DIPT_TXW_StageModerate>中度</DIPT_TXW_StageModerate>
-  <DIPT_TXW_StageMinor>輕微</DIPT_TXW_StageMinor>
-  <DIPT_TXW_StageInitial>初期</DIPT_TXW_StageInitial>
+  <DIPT_TXW_StageMinor>輕度</DIPT_TXW_StageMinor>
+  <DIPT_TXW_StageInitial>輕微</DIPT_TXW_StageInitial>
   <DIPT_TXW_SafeRecovering>安全 - 恢復中</DIPT_TXW_SafeRecovering>
   <DIPT_TXW_ExposedTo>暴露：{0}</DIPT_TXW_ExposedTo>
   <DIPT_TXW_ExposureToxGas>毒氣</DIPT_TXW_ExposureToxGas>
