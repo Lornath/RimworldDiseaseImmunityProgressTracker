@@ -17,7 +17,7 @@
   <DIPT_FPW_VomitingEvery5h>預計每5小時嘔吐一次</DIPT_FPW_VomitingEvery5h>
   <DIPT_FPW_VomitingEvery10h>預計每10小時嘔吐一次</DIPT_FPW_VomitingEvery10h>
   <DIPT_FPW_StageDescInitial>輕度 - 症狀逐漸加重</DIPT_FPW_StageDescInitial>
-  <DIPT_FPW_StageDescMajor>重度 - 嚴重受損</DIPT_FPW_StageDescMajor>
+  <DIPT_FPW_StageDescMajor>重度 - 重度症狀</DIPT_FPW_StageDescMajor>
   <DIPT_FPW_StageDescRecovering>痊癒中 - 症狀減輕</DIPT_FPW_StageDescRecovering>
   <DIPT_FPW_VerdictWorstComing>最難熬的時刻即將到來 - 做好準備</DIPT_FPW_VerdictWorstComing>
   <DIPT_FPW_VerdictHangInThere>撐住，約{0}小時後開始恢復</DIPT_FPW_VerdictHangInThere>
