@@ -3,13 +3,13 @@
   <!-- ArteryBlockageWindow (Type 6: Artery Blockage) -->
   <DIPT_ABW_Title>動脈阻塞（{0}）</DIPT_ABW_Title>
   <DIPT_ABW_StageMinor>輕微</DIPT_ABW_StageMinor>
-  <DIPT_ABW_StageMajor>嚴重</DIPT_ABW_StageMajor>
-  <DIPT_ABW_StageExtreme>極度</DIPT_ABW_StageExtreme>
+  <DIPT_ABW_StageMajor>重度</DIPT_ABW_StageMajor>
+  <DIPT_ABW_StageExtreme>極重度</DIPT_ABW_StageExtreme>
   <DIPT_ABW_Severity>嚴重度：{0}%</DIPT_ABW_Severity>
-  <DIPT_ABW_ProgressionRate>進展：約{0}%/天</DIPT_ABW_ProgressionRate>
+  <DIPT_ABW_ProgressionRate>進度：約{0}%/天</DIPT_ABW_ProgressionRate>
   <DIPT_ABW_NextStage>下一階段（{0} {1}%）：約{2}</DIPT_ABW_NextStage>
   <DIPT_ABW_FatalIn>致命（100%）：約{0}</DIPT_ABW_FatalIn>
-  <DIPT_ABW_ProgressionStalled>進展停止</DIPT_ABW_ProgressionStalled>
+  <DIPT_ABW_ProgressionStalled>進度停止</DIPT_ABW_ProgressionStalled>
   <DIPT_ABW_TimeYears>{0}年</DIPT_ABW_TimeYears>
   <DIPT_ABW_TimeQuadrums>{0}季度</DIPT_ABW_TimeQuadrums>
   <DIPT_ABW_TimeDays>{0}天</DIPT_ABW_TimeDays>
