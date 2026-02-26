@@ -11,7 +11,7 @@
   <DIPT_TXW_ExposedTo>暴露：{0}</DIPT_TXW_ExposedTo>
   <DIPT_TXW_ExposureToxGas>毒氣</DIPT_TXW_ExposureToxGas>
   <DIPT_TXW_ExposurePollution>污染</DIPT_TXW_ExposurePollution>
-  <DIPT_TXW_ExposureToxicFallout>毒性塵降</DIPT_TXW_ExposureToxicFallout>
+  <DIPT_TXW_ExposureToxicFallout>有毒塵埃</DIPT_TXW_ExposureToxicFallout>
   <DIPT_TXW_ResistanceImmune>毒素抗性：100%（免疫）</DIPT_TXW_ResistanceImmune>
   <DIPT_TXW_ResistanceBoth>毒素抗性：{0}% / 環境：{1}%</DIPT_TXW_ResistanceBoth>
   <DIPT_TXW_ResistanceSingle>毒素抗性：{0}%</DIPT_TXW_ResistanceSingle>
