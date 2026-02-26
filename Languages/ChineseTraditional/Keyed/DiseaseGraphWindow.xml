@@ -11,8 +11,8 @@
   <DIPT_DGW_WillSurviveImmuneIn>將存活 - {0}後免疫</DIPT_DGW_WillSurviveImmuneIn>
   <DIPT_DGW_DeathIn>{0}後死亡</DIPT_DGW_DeathIn>
   <DIPT_DGW_EstGatheringData>（估算 - 收集數據中）</DIPT_DGW_EstGatheringData>
-  <DIPT_DGW_LegendImmunity>免疫力</DIPT_DGW_LegendImmunity>
-  <DIPT_DGW_LegendSeverity>嚴重度</DIPT_DGW_LegendSeverity>
+  <DIPT_DGW_LegendImmunity>免疫性</DIPT_DGW_LegendImmunity>
+  <DIPT_DGW_LegendSeverity>嚴重程度</DIPT_DGW_LegendSeverity>
   <DIPT_DGW_ImmLine>免：{0}%（{1}）</DIPT_DGW_ImmLine>
   <DIPT_DGW_SevLine>嚴：{0}%（{1}）</DIPT_DGW_SevLine>
   <DIPT_DGW_RatePlus>+{0}%/天</DIPT_DGW_RatePlus>
