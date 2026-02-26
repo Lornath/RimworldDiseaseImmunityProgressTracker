@@ -8,7 +8,7 @@
   <DIPT_TBW_SeverityWithPain>嚴重程度：{0}%（{1}，{2}%）</DIPT_TBW_SeverityWithPain>
   <DIPT_TBW_Severity>嚴重程度：{0}%</DIPT_TBW_Severity>
   <DIPT_TBW_PercentComplete>已完成{0}%</DIPT_TBW_PercentComplete>
-  <DIPT_TBW_AxisStart>病發</DIPT_TBW_AxisStart>
+  <DIPT_TBW_AxisStart>發病</DIPT_TBW_AxisStart>
   <DIPT_TBW_AxisCure>痊癒</DIPT_TBW_AxisCure>
   <DIPT_TBW_VerdictSafePainControlled>安全 - 疼痛可控（輕度疼痛，20%）</DIPT_TBW_VerdictSafePainControlled>
   <DIPT_TBW_VerdictWarningPainIntensify>警告 - 不治療將加劇疼痛</DIPT_TBW_VerdictWarningPainIntensify>
