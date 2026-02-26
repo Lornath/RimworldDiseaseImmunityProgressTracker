@@ -15,7 +15,7 @@
   <DIPT_TBW_VerdictImprovingPainDecreasing>好轉中 - 治療中疼痛減輕</DIPT_TBW_VerdictImprovingPainDecreasing>
   <DIPT_TBW_VerdictIntensePain>劇烈疼痛 - 持續治療以緩解</DIPT_TBW_VerdictIntensePain>
   <DIPT_TBW_VerdictSafeWillSurvive>安全 - 將存活（預計{0}%）</DIPT_TBW_VerdictSafeWillSurvive>
-  <DIPT_TBW_VerdictDanger>危險 - 嚴重程度可能達致命水平！</DIPT_TBW_VerdictDanger>
+  <DIPT_TBW_VerdictDanger>危險 - 嚴重程度可能達致死值！</DIPT_TBW_VerdictDanger>
   <DIPT_TBW_VerdictMonitor>觀察中 - 嚴重程度上升</DIPT_TBW_VerdictMonitor>
   <DIPT_TBW_TendEntry>{0}% - {1}</DIPT_TBW_TendEntry>
 </LanguageData>
