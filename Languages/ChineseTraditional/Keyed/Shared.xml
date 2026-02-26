@@ -3,9 +3,9 @@
   <!-- Strings reused across multiple windows -->
   <DIPT_Shared_RecentTends>近期治療：</DIPT_Shared_RecentTends>
   <DIPT_Shared_NoTendsRecorded>暫無治療記錄</DIPT_Shared_NoTendsRecorded>
-  <DIPT_Shared_SelfTend>自我治療</DIPT_Shared_SelfTend>
+  <DIPT_Shared_SelfTend>自行治療</DIPT_Shared_SelfTend>
   <DIPT_Shared_Calculating>計算中…</DIPT_Shared_Calculating>
   <DIPT_Shared_Now>現在</DIPT_Shared_Now>
-  <DIPT_Shared_AxisPast>-{0}天</DIPT_Shared_AxisPast>
-  <DIPT_Shared_AxisFuture>+{0}天</DIPT_Shared_AxisFuture>
+  <DIPT_Shared_AxisPast>{0}天前</DIPT_Shared_AxisPast>
+  <DIPT_Shared_AxisFuture>{0}天後</DIPT_Shared_AxisFuture>
 </LanguageData>
