@@ -6,8 +6,8 @@
   <DIPT_DGW_Immune>已免疫</DIPT_DGW_Immune>
   <DIPT_DGW_RecoveringImmuneIn>恢復中 - {0}後免疫</DIPT_DGW_RecoveringImmuneIn>
   <DIPT_DGW_Stable>穩定</DIPT_DGW_Stable>
-  <DIPT_DGW_AtRiskDeathIn>危險 - {0}後死亡</DIPT_DGW_AtRiskDeathIn>
-  <DIPT_DGW_AtRisk>危險</DIPT_DGW_AtRisk>
+  <DIPT_DGW_AtRiskDeathIn>病危 - {0}後死亡</DIPT_DGW_AtRiskDeathIn>
+  <DIPT_DGW_AtRisk>病危</DIPT_DGW_AtRisk>
   <DIPT_DGW_WillSurviveImmuneIn>將存活 - {0}後免疫</DIPT_DGW_WillSurviveImmuneIn>
   <DIPT_DGW_DeathIn>{0}後死亡</DIPT_DGW_DeathIn>
   <DIPT_DGW_EstGatheringData>（估算 - 收集數據中）</DIPT_DGW_EstGatheringData>
