@@ -25,7 +25,7 @@
   <DIPT_TXW_VerdictWarnToxGasRising>離開毒氣 - 嚴重程度快速上升！</DIPT_TXW_VerdictWarnToxGasRising>
   <DIPT_TXW_VerdictToxGasBeginRecovery>離開毒氣以開始恢復</DIPT_TXW_VerdictToxGasBeginRecovery>
   <DIPT_TXW_VerdictCriticalPollution>危急 - 立即離開污染地帶！</DIPT_TXW_VerdictCriticalPollution>
-  <DIPT_TXW_VerdictWarnPollutionRising>避開污染地帶 - 嚴重度上升</DIPT_TXW_VerdictWarnPollutionRising>
+  <DIPT_TXW_VerdictWarnPollutionRising>避開污染地帶 - 嚴重程度上升</DIPT_TXW_VerdictWarnPollutionRising>
   <DIPT_TXW_VerdictPollutionBeginRecovery>離開污染地帶以開始恢復</DIPT_TXW_VerdictPollutionBeginRecovery>
   <DIPT_TXW_VerdictCriticalFallout>危急 - 立即進入室內！</DIPT_TXW_VerdictCriticalFallout>
   <DIPT_TXW_VerdictWarnFalloutRising>找掩護 - 嚴重程度向致死值攀升</DIPT_TXW_VerdictWarnFalloutRising>
