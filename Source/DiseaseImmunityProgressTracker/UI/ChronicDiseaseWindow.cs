@@ -233,10 +233,21 @@ namespace DiseaseImmunityProgressTracker.UI
             }
         }
 
+        /// <summary>
+        /// Returns a usable maxSeverity value. RimWorld defaults HediffDef.maxSeverity to float.MaxValue
+        /// when unset, which causes integer overflow when multiplied by 100 and cast to int.
+        /// We clamp to a reasonable range (0, 10] and fall back to 1f if outside that range.
+        /// </summary>
+        private float GetMaxSeverity()
+        {
+            float raw = hediff.def.maxSeverity;
+            return (raw > 0f && raw < 10f) ? raw : 1f;
+        }
+
         private void DrawSeverityDisplay(Rect rect)
         {
             Text.Font = GameFont.Small;
-            float maxSeverity = hediff.def.maxSeverity > 0 ? hediff.def.maxSeverity : 1f;
+            float maxSeverity = GetMaxSeverity();
             int severityPct = (int)(hediff.Severity * 100);
             int maxPct = (int)(maxSeverity * 100);
 
@@ -248,7 +259,7 @@ namespace DiseaseImmunityProgressTracker.UI
 
         private void DrawSeverityBar(Rect rect)
         {
-            float maxSeverity = hediff.def.maxSeverity > 0 ? hediff.def.maxSeverity : 1f;
+            float maxSeverity = GetMaxSeverity();
 
             // Background
             Widgets.DrawBoxSolid(rect, ProgressBarBgColor);
@@ -293,7 +304,7 @@ namespace DiseaseImmunityProgressTracker.UI
 
         private void DrawSeverityGraph(Rect graphArea, DiseaseHistory history, ChronicPrognosis prognosis)
         {
-            float maxSeverity = hediff.def.maxSeverity > 0 ? hediff.def.maxSeverity : 1f;
+            float maxSeverity = GetMaxSeverity();
             // Use a display scale 1.5x the max severity (e.g., 75% for asthma's 50% max)
             // This gives more room for threshold labels and avoids overlap
             float displayMaxSeverity = Mathf.Min(maxSeverity * 1.5f, 1f);
@@ -302,7 +313,7 @@ namespace DiseaseImmunityProgressTracker.UI
             const float leftMargin = 38f;
             const float rightMargin = 28f;
             const float topMargin = 2f;
-            const float bottomMargin = 18f;
+            const float bottomMargin = 22f;
 
             Rect plotArea = new Rect(
                 graphArea.x + leftMargin,
@@ -427,11 +438,11 @@ namespace DiseaseImmunityProgressTracker.UI
             Widgets.Label(new Rect(graphArea.x, plotArea.yMax - 14f, leftMargin - 4f, 16f), "0%");
             Text.Anchor = TextAnchor.UpperLeft;
 
-            // X-axis labels
+            // X-axis labels - 70f wide to fit CJK strings like "2天前"; +4f Y gap keeps tops clear of axis line
             Text.Anchor = TextAnchor.UpperCenter;
-            Widgets.Label(new Rect(plotArea.x - 15f, plotArea.yMax + 1f, 30f, 16f), "DIPT_Shared_AxisPast".Translate("2"));
-            Widgets.Label(new Rect(nowX - 15f, plotArea.yMax + 1f, 30f, 16f), "DIPT_Shared_Now".Translate());
-            Widgets.Label(new Rect(plotArea.xMax - 15f, plotArea.yMax + 1f, 30f, 16f), "DIPT_Shared_AxisFuture".Translate("2"));
+            Widgets.Label(new Rect(plotArea.x - 35f, plotArea.yMax + 4f, 70f, 16f), "DIPT_Shared_AxisPast".Translate("2"));
+            Widgets.Label(new Rect(nowX - 35f, plotArea.yMax + 4f, 70f, 16f), "DIPT_Shared_Now".Translate());
+            Widgets.Label(new Rect(plotArea.xMax - 35f, plotArea.yMax + 4f, 70f, 16f), "DIPT_Shared_AxisFuture".Translate("2"));
             Text.Anchor = TextAnchor.UpperLeft;
 
             GUI.color = Color.white;

@@ -23,4 +23,6 @@
   <DIPT_ABW_VerdictModerate>MODÉRÉ - Risque accru d'infarctus (TME {0}j)</DIPT_ABW_VerdictModerate>
   <DIPT_ABW_VerdictMild>LÉGER - Faible risque d'infarctus (TME {0}j)</DIPT_ABW_VerdictMild>
   <DIPT_ABW_VerdictEarly>PRÉCOCE - Très faible risque d'infarctus (TME {0}j)</DIPT_ABW_VerdictEarly>
+  <DIPT_ABW_AxisPast>-{0}Q</DIPT_ABW_AxisPast>
+  <DIPT_ABW_AxisFuture>+{0}Q</DIPT_ABW_AxisFuture>
 </LanguageData>

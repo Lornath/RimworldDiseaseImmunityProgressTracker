@@ -23,4 +23,6 @@
   <DIPT_ABW_VerdictModerate>MÄSSIG - Erhöhtes Herzinfarktrisiko (MZI {0}T)</DIPT_ABW_VerdictModerate>
   <DIPT_ABW_VerdictMild>GERING - Niedriges Herzinfarktrisiko (MZI {0}T)</DIPT_ABW_VerdictMild>
   <DIPT_ABW_VerdictEarly>FRÜH - Sehr niedriges Herzinfarktrisiko (MZI {0}T)</DIPT_ABW_VerdictEarly>
+  <DIPT_ABW_AxisPast>-{0}Q</DIPT_ABW_AxisPast>
+  <DIPT_ABW_AxisFuture>+{0}Q</DIPT_ABW_AxisFuture>
 </LanguageData>

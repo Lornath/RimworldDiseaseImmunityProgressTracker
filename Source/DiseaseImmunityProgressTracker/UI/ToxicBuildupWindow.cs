@@ -259,7 +259,7 @@ namespace DiseaseImmunityProgressTracker.UI
             const float leftMargin = 38f;
             const float rightMargin = 28f;
             const float topMargin = 2f;
-            const float bottomMargin = 18f;
+            const float bottomMargin = 22f;
 
             Rect plotArea = new Rect(
                 graphArea.x + leftMargin,
@@ -344,9 +344,9 @@ namespace DiseaseImmunityProgressTracker.UI
 
             // X-axis labels
             Text.Anchor = TextAnchor.UpperCenter;
-            Widgets.Label(new Rect(plotArea.x - 20f, plotArea.yMax + 1f, 40f, 16f), "DIPT_Shared_AxisPast".Translate($"{pastDays:0}"));
-            Widgets.Label(new Rect(nowX - 20f, plotArea.yMax + 1f, 40f, 16f), "DIPT_Shared_Now".Translate());
-            Widgets.Label(new Rect(plotArea.xMax - 20f, plotArea.yMax + 1f, 40f, 16f), "DIPT_Shared_AxisFuture".Translate($"{futureDays:0.#}"));
+            Widgets.Label(new Rect(plotArea.x - 35f, plotArea.yMax + 4f, 70f, 16f), "DIPT_Shared_AxisPast".Translate($"{pastDays:0}"));
+            Widgets.Label(new Rect(nowX - 35f, plotArea.yMax + 4f, 70f, 16f), "DIPT_Shared_Now".Translate());
+            Widgets.Label(new Rect(plotArea.xMax - 35f, plotArea.yMax + 4f, 70f, 16f), "DIPT_Shared_AxisFuture".Translate($"{futureDays:0.#}"));
             Text.Anchor = TextAnchor.UpperLeft;
 
             GUI.color = Color.white;

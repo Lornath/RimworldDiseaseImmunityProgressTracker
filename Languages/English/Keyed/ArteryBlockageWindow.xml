@@ -23,4 +23,6 @@
   <DIPT_ABW_VerdictModerate>MODERATE - Elevated heart attack risk (MTB {0}d)</DIPT_ABW_VerdictModerate>
   <DIPT_ABW_VerdictMild>MILD - Low heart attack risk (MTB {0}d)</DIPT_ABW_VerdictMild>
   <DIPT_ABW_VerdictEarly>EARLY - Very low heart attack risk (MTB {0}d)</DIPT_ABW_VerdictEarly>
+  <DIPT_ABW_AxisPast>-{0}Q</DIPT_ABW_AxisPast>
+  <DIPT_ABW_AxisFuture>+{0}Q</DIPT_ABW_AxisFuture>
 </LanguageData>

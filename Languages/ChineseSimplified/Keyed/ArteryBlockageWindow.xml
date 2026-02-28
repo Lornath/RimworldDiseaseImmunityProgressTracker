@@ -23,4 +23,6 @@
   <DIPT_ABW_VerdictModerate>中度 - 较高心脏病发作风险（平均间隔{0}天）</DIPT_ABW_VerdictModerate>
   <DIPT_ABW_VerdictMild>轻微 - 低心脏病发作风险（平均间隔{0}天）</DIPT_ABW_VerdictMild>
   <DIPT_ABW_VerdictEarly>早期 - 极低心脏病发作风险（平均间隔{0}天）</DIPT_ABW_VerdictEarly>
+  <DIPT_ABW_AxisPast>-{0}季</DIPT_ABW_AxisPast>
+  <DIPT_ABW_AxisFuture>+{0}季</DIPT_ABW_AxisFuture>
 </LanguageData>

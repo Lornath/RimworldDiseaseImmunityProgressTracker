@@ -263,7 +263,7 @@ namespace DiseaseImmunityProgressTracker.UI
             const float leftMargin = 38f;   // Space for "100%" and "50%" labels
             const float rightMargin = 28f;  // Space for projected % label
             const float topMargin = 2f;     // Small top padding
-            const float bottomMargin = 18f; // Space for X-axis labels
+            const float bottomMargin = 22f; // Space for X-axis labels
 
             // The actual drawable plot area (inside margins)
             Rect plotArea = new Rect(
@@ -376,13 +376,13 @@ namespace DiseaseImmunityProgressTracker.UI
             // X-axis labels - show progress from start to cure
             Text.Anchor = TextAnchor.UpperCenter;
             // "Start" label at left edge
-            Widgets.Label(new Rect(plotArea.x - 20f, plotArea.yMax + 1f, 40f, 16f), "DIPT_TBW_AxisStart".Translate());
+            Widgets.Label(new Rect(plotArea.x - 35f, plotArea.yMax + 4f, 70f, 16f), "DIPT_TBW_AxisStart".Translate());
             // "Cure" label at right end
-            Widgets.Label(new Rect(plotArea.xMax - 20f, plotArea.yMax + 1f, 40f, 16f), "DIPT_TBW_AxisCure".Translate());
+            Widgets.Label(new Rect(plotArea.xMax - 35f, plotArea.yMax + 4f, 70f, 16f), "DIPT_TBW_AxisCure".Translate());
             // "Now" label under the now line (only if not too close to edges to avoid overlap)
             if (currentProgress > 0.15f && currentProgress < 0.85f)
             {
-                Widgets.Label(new Rect(nowX - 20f, plotArea.yMax + 1f, 40f, 16f), "DIPT_Shared_Now".Translate());
+                Widgets.Label(new Rect(nowX - 35f, plotArea.yMax + 4f, 70f, 16f), "DIPT_Shared_Now".Translate());
             }
             Text.Anchor = TextAnchor.UpperLeft;
 

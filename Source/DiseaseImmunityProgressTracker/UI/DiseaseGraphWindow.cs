@@ -314,9 +314,10 @@ namespace DiseaseImmunityProgressTracker.UI
             float nowX = graphArea.x + graphArea.width * nowRatio;
 
             Text.Anchor = TextAnchor.UpperCenter;
-            Widgets.Label(new Rect(graphArea.x - 15f, graphArea.yMax + 2f, 30f, 16f), "DIPT_Shared_AxisPast".Translate($"{pastDays:0.#}"));
-            Widgets.Label(new Rect(nowX - 15f, graphArea.yMax + 2f, 30f, 16f), "DIPT_Shared_Now".Translate());
-            Widgets.Label(new Rect(graphArea.xMax - 35f, graphArea.yMax + 2f, 45f, 16f), "DIPT_Shared_AxisFuture".Translate($"{futureDays:0.#}"));
+            Widgets.Label(new Rect(graphArea.x - 35f, graphArea.yMax + 4f, 70f, 16f), "DIPT_Shared_AxisPast".Translate($"{pastDays:0.#}"));
+            Widgets.Label(new Rect(nowX - 35f, graphArea.yMax + 4f, 70f, 16f), "DIPT_Shared_Now".Translate());
+            Text.Anchor = TextAnchor.UpperRight;
+            Widgets.Label(new Rect(graphArea.xMax - 60f, graphArea.yMax + 4f, 60f, 16f), "DIPT_Shared_AxisFuture".Translate($"{futureDays:0.#}"));
 
             Text.Anchor = TextAnchor.UpperLeft;
             GUI.color = oldColor;
