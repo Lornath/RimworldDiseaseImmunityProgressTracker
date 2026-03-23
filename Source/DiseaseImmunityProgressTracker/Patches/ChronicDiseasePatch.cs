@@ -30,8 +30,10 @@ namespace DiseaseImmunityProgressTracker.Patches
             // Only handle Type 5 (Chronic) diseases like Asthma
             if (!DiseaseTracker.IsChronicDisease(hediff)) return;
 
-            // Disable when Numbers mod window is open
-            if (ModCompatibility.IsNumbersWindowOpen()) return;
+            // Only proceed if we're in a vanilla tooltip context (Hediff.GetTooltip call).
+            // Mods like Moody and Numbers call CompTipStringExtra outside of tooltip rendering,
+            // which would cause false-positive window openings.
+            if (!TooltipContextPatch.IsInVanillaTooltipContext) return;
 
             // Register this hediff's tooltip as active
             CompanionWindowManager.RegisterTooltipActive(hediff);

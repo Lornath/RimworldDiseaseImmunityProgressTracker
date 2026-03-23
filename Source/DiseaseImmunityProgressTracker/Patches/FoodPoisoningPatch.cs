@@ -37,9 +37,10 @@ namespace DiseaseImmunityProgressTracker.Patches
             var pawn = __instance.Pawn;
             if (pawn == null || pawn.Dead) return;
 
-            // Disable when Numbers mod window is open - it calls CompTipStringExtra during
-            // table rendering which interferes with our tooltip detection
-            if (ModCompatibility.IsNumbersWindowOpen()) return;
+            // Only proceed if we're in a vanilla tooltip context (Hediff.GetTooltip call).
+            // Mods like Moody and Numbers call CompTipStringExtra outside of tooltip rendering,
+            // which would cause false-positive window openings.
+            if (!TooltipContextPatch.IsInVanillaTooltipContext) return;
 
             // Register this hediff's tooltip as active (for multi-disease support)
             CompanionWindowManager.RegisterTooltipActive(hediff);
