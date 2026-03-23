@@ -346,6 +346,12 @@ Type 4 (Toxic Buildup) is checked FIRST, then Type 6 (Artery Blockage), then Typ
     - Records tends for all three disease types: immunizable, cumulative tend, and time-based.
     - **Note on tend quality**: The `quality` parameter passed to `Hediff.Tended` is the BASE quality. The actual displayed quality includes ±25% random variance applied in `HediffComp_TendDuration.CompTended`. Always read the final quality from `HediffComp_TendDuration.tendQuality` after tending completes.
 
+- **TooltipContextPatch** (`Source/DiseaseImmunityProgressTracker/Patches/TooltipContextPatch.cs`):
+    - Harmony prefix/postfix on `Hediff.GetTooltip()` that sets a static `IsInVanillaTooltipContext` flag.
+    - All `CompTipStringExtra` patches check this flag before opening companion windows.
+    - In vanilla RimWorld, tooltip rendering calls `Hediff.GetTooltip()` → `TipStringExtra` → `CompTipStringExtra`. Mods like Moody and Numbers call `TipStringExtra` directly (bypassing `GetTooltip`) to build their own UI strings. This flag prevents those non-tooltip calls from triggering companion windows.
+    - Uses `__state` parameter to correctly handle nested/re-entrant calls.
+
 ### Multi-Window Architecture
 
 When a pawn has multiple diseases, multiple companion windows can be open simultaneously. This requires careful coordination:
@@ -408,7 +414,6 @@ Source/DiseaseImmunityProgressTracker/
 ├── DiseaseImmunityProgressTrackerMod.cs        # Main mod class & settings
 ├── Core/
 │   ├── DiseaseTracker.cs               # Data tracking & persistence
-│   ├── ModCompatibility.cs             # Mod compatibility checks (e.g., Numbers mod)
 │   └── PrognosisCalculator.cs          # Math & prediction logic
 ├── UI/
 │   ├── CompanionWindowManager.cs       # Central coordinator for multi-window support
@@ -429,7 +434,8 @@ Source/DiseaseImmunityProgressTracker/
     ├── ChronicDiseasePatch.cs          # Harmony patch for Type 5 disease tooltips
     ├── ArteryBlockagePatch.cs          # Harmony patch for Type 6 disease tooltips
     ├── FoodPoisoningPatch.cs           # Harmony patch for Type 7 disease tooltips
-    └── TendUtilityPatch.cs             # Harmony patch for capturing tend events
+    ├── TendUtilityPatch.cs             # Harmony patch for capturing tend events
+    └── TooltipContextPatch.cs          # Harmony patch on Hediff.GetTooltip for mod compatibility
 ```
 
 ## Mod Structure
